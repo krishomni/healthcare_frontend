@@ -63,6 +63,8 @@ export default function App() {
         />
 
         <Route path="/portfolios/handyman" element={<HandymanPage />} />
+        <Route path="/dashboard" element={<Dashboard />} /> // This is the dashboard for logged-in users
+        
       </Routes>
       {adminRequested && (
         <Tip message="Request received! Our admin team will contact you shortly." />
