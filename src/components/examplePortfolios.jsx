@@ -12,7 +12,8 @@ export default function ExamplePortfolios() {
 
     {
       title: "Software Engineer",
-      summary: "Porftolio showcasing Sofware Engineer's Resume",
+      summary: "Portfolio showcasing Software Engineer's Resume",
+      location: "/portfolios/software-engineer/example",
     },
 
     {

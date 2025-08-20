@@ -15,12 +15,12 @@ import SignUp from "./pages/login/SignUp";
 import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import SoftwareEngineerApp from "./pages/portfolios/softwareEngineer/SoftwareEngineerApp.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
 
   const handleGetStarted = () => {
-    if (loggedIn) return;
     // Show tip/suggestion for plus button
   };
 
@@ -29,45 +29,51 @@ export default function App() {
   };
 
   return (
-    <Layout>
+    <>
       <Routes>
-        <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
+        <Route path="/portfolios/software-engineer/*" element={<SoftwareEngineerApp />} />
+        
+        <Route path="*" element={
+          <Layout>
+            <Routes>
+              <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
 
-        <Route
-          path="/dashboard"
-          element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
-        />
+              <Route
+                path="/dashboard"
+                element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
+              />
 
-        <Route path={"/signup"} element={<SignUp />} />
-        <Route path="/occupations" element={<Occupations />} />
+              <Route path={"/signup"} element={<SignUp />} />
+              <Route path="/occupations" element={<Occupations />} />
 
-        <Route path="/resume" element={<ResumeUpload />} />
+              <Route path="/resume" element={<ResumeUpload />} />
 
-        <Route path="/portfolios" element={<ExamplePortfolios />} />
+              <Route
+                path="/portfolios/project-manager/:username/:id"
+                element={<PortfolioPage />}
+              />
 
-        <Route
-          path="/portfolios/project-manager/:username/:id"
-          element={<PortfolioPage />}
-        />
+              <Route path="/portfolios" element={<ExamplePortfolios />} />
+              <Route
+                path="/portfolios/data-scientist/*"
+                element={<DataScientistPage />}
+              />
+              <Route path="/portfolios/cleaning-services" />
+              <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
+              <Route
+                path="/portfolios/photographer/*"
+                element={<PhotographerPage />}
+              />
 
-        <Route path="/portfolios/software-engineer" />
-        <Route
-          path="/portfolios/data-scientist/*"
-          element={<DataScientistPage />}
-        />
-        <Route path="/portfolios/cleaning-services" />
-        <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
-        <Route
-          path="/portfolios/photographer/*"
-          element={<PhotographerPage />}
-        />
-
-        <Route path="/portfolios/handyman" element={<HandymanPage />} />
+              <Route path="/portfolios/handyman" element={<HandymanPage />} />
+            </Routes>
+            {adminRequested && (
+              <Tip message="Request received! Our admin team will contact you shortly." />
+            )}
+            <Footer />
+          </Layout>
+        } />
       </Routes>
-      {adminRequested && (
-        <Tip message="Request received! Our admin team will contact you shortly." />
-      )}
-      <Footer />
-    </Layout>
+    </>
   );
 }
