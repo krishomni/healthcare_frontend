@@ -31,8 +31,6 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/portfolios/software-engineer/*" element={<SoftwareEngineerApp />} />
-        
         <Route path="*" element={
           <Layout>
             <Routes>
@@ -48,12 +46,16 @@ export default function App() {
 
               <Route path="/resume" element={<ResumeUpload />} />
 
+              <Route path="/portfolios" element={<ExamplePortfolios />} />
+              <Route path="/portfolios/" element={<ExamplePortfolios isAdmin={true} />} />
+              
+              <Route path="/portfolios/software-engineer/*" element={<SoftwareEngineerApp />} />
+              
               <Route
                 path="/portfolios/project-manager/:username/:id"
                 element={<PortfolioPage />}
               />
-
-              <Route path="/portfolios" element={<ExamplePortfolios />} />
+              
               <Route
                 path="/portfolios/data-scientist/*"
                 element={<DataScientistPage />}

@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Login from './components/Login';
-import ProtectedRoute from './components/ProtectedRoute';
+import { AuthContext } from '../../../context/AuthContext';
 import { io } from 'socket.io-client';
 import './App.css';
 import Layout from './components/Layout';
@@ -11,7 +9,7 @@ import Layout from './components/Layout';
 const getFullUploadUrl = (relativePath) => {
   if (!relativePath) return '';
   if (relativePath.startsWith('http')) return relativePath;
-  return `http://localhost:5100${relativePath}`;
+  return `http://localhost:5000${relativePath}`;
 };
 
 // CSS Isolation Wrapper Component
@@ -33,7 +31,8 @@ const SoftwareEngineerWrapper = ({ children }) => {
 
 // Unauthorized Page Component
 const Unauthorized = () => {
-  const { logout } = useAuth();
+  const { contextLogout } = useContext(AuthContext);
+  const logout = contextLogout;
   
   return (
     <div className="unauthorized-container">
@@ -55,6 +54,13 @@ const Unauthorized = () => {
 
 // Admin Portfolio Component with Editing Capabilities
 const Portfolio = () => {
+  const { contextLoggedIn, contextLogout } = useContext(AuthContext);
+  const user = contextLoggedIn ? { 
+    email: localStorage.getItem('email'),
+    ownerId: localStorage.getItem('email'),
+    role: 'admin'
+  } : null;
+  const logout = contextLogout;
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -92,6 +98,13 @@ const Portfolio = () => {
   const [addCustomItem, setAddCustomItem] = useState(null);
   const [editingCustomItem, setEditingCustomItem] = useState(null);
   const [newCustomItem, setNewCustomItem] = useState({ title: '', description: '' });
+
+  // Resume upload states
+  const [showResumeUpload, setShowResumeUpload] = useState(false);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [resumeUploadError, setResumeUploadError] = useState(null);
+  const resumeInputRef = useRef(null);
 
   // Navigation sections - using state to allow dynamic updates
   const [sections, setSections] = useState([
@@ -418,7 +431,7 @@ const Portfolio = () => {
 
   // Fetch portfolio data from backend
   const fetchPortfolio = async (ownerId) => {
-    const response = await fetch(`http://localhost:5100/portfolio/${ownerId}`);
+    const response = await fetch(`http://localhost:5000/portfolio/${ownerId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch portfolio');
     }
@@ -432,7 +445,7 @@ const Portfolio = () => {
     
     try {
       // Update the current portfolio
-      const response = await fetch(`http://localhost:5100/portfolio/${actualOwnerId}`, {
+      const response = await fetch(`http://localhost:5000/portfolio/${actualOwnerId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1000,6 +1013,78 @@ const Portfolio = () => {
     return { projects, experience };
   };
 
+  // Resume upload functions
+  const handleResumeFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        setResumeUploadError('Please select a PDF file');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        setResumeUploadError('File size must be less than 10MB');
+        return;
+      }
+      setResumeFile(file);
+      setResumeUploadError(null);
+    }
+  };
+
+  const handleResumeUpload = async () => {
+    if (!resumeFile) {
+      setResumeUploadError('Please select a resume file');
+      return;
+    }
+
+    try {
+      setUploadingResume(true);
+      setResumeUploadError(null);
+
+      const formData = new FormData();
+      formData.append('resume', resumeFile);
+
+      const response = await fetch(`http://localhost:5000/portfolio/${user.ownerId}/resume`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Resume uploaded successfully:', result);
+        
+        // Update the portfolio with new data
+        setPortfolio(result.portfolio);
+        
+        // Close the upload modal
+        setShowResumeUpload(false);
+        setResumeFile(null);
+        
+        // Show success message
+        alert('Resume uploaded successfully! Your portfolio has been updated with the extracted information.');
+      } else {
+        const errorData = await response.json();
+        setResumeUploadError(errorData.error || 'Failed to upload resume');
+      }
+    } catch (error) {
+      console.error('❌ Resume upload error:', error);
+      setResumeUploadError('Network error. Please try again.');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+  const openResumeUpload = () => {
+    setShowResumeUpload(true);
+    setResumeFile(null);
+    setResumeUploadError(null);
+  };
+
+  const closeResumeUpload = () => {
+    setShowResumeUpload(false);
+    setResumeFile(null);
+    setResumeUploadError(null);
+  };
+
   // Load portfolio data
   useEffect(() => {
     const loadPortfolio = async () => {
@@ -1280,6 +1365,115 @@ const Portfolio = () => {
             </div>
           </div>
         </header>
+
+        {/* Resume Upload Section for Admin */}
+        {isAdmin && (
+          <div style={{ 
+            background: 'rgba(0, 0, 0, 0.3)', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            marginBottom: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ margin: '0 0 1rem 0', color: '#00adb5' }}>📄 Resume Upload</h3>
+            <p style={{ margin: '0 0 1rem 0', color: '#cccccc', fontSize: '0.9rem' }}>
+              Upload your resume (PDF) to automatically extract and update your portfolio information
+            </p>
+            <button
+              onClick={openResumeUpload}
+              style={{
+                background: '#00adb5',
+                border: 'none',
+                color: 'white',
+                padding: '0.8rem 1.5rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.background = '#00848a'}
+              onMouseOut={(e) => e.target.style.background = '#00adb5'}
+            >
+              📄 Upload Resume
+            </button>
+          </div>
+        )}
+
+        {/* Resume Upload Modal */}
+        {showResumeUpload && (
+          <div className="modal-overlay" onClick={closeResumeUpload}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={closeResumeUpload}>×</button>
+              <div className="modal-header">
+                <h2>📄 Upload Resume</h2>
+              </div>
+              <div className="modal-body">
+                <div style={{ marginBottom: '1rem' }}>
+                  <p style={{ color: '#cccccc', marginBottom: '1rem' }}>
+                    Select a PDF resume file. The system will automatically extract information and update your portfolio.
+                  </p>
+                  
+                  <input
+                    ref={resumeInputRef}
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleResumeFileSelect}
+                    style={{ display: 'none' }}
+                  />
+                  
+                  <button
+                    onClick={() => resumeInputRef.current?.click()}
+                    style={{
+                      background: 'transparent',
+                      border: '2px dashed #00adb5',
+                      color: '#00adb5',
+                      padding: '1rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      width: '100%',
+                      fontSize: '1rem',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = 'rgba(0, 173, 181, 0.1)'}
+                    onMouseOut={(e) => e.target.style.background = 'transparent'}
+                  >
+                    {resumeFile ? `Selected: ${resumeFile.name}` : '📄 Choose PDF File'}
+                  </button>
+                  
+                  {resumeUploadError && (
+                    <p style={{ color: '#ff6b6b', marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                      ❌ {resumeUploadError}
+                    </p>
+                  )}
+                  
+                  {resumeFile && (
+                    <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                      <button
+                        onClick={handleResumeUpload}
+                        disabled={uploadingResume}
+                        style={{
+                          background: uploadingResume ? '#666' : '#00adb5',
+                          border: 'none',
+                          color: 'white',
+                          padding: '0.8rem 1.5rem',
+                          borderRadius: '6px',
+                          cursor: uploadingResume ? 'not-allowed' : 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {uploadingResume ? '⏳ Uploading...' : '🚀 Upload & Extract'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Base REM Control for Admin */}
         {isAdmin && (
@@ -3574,7 +3768,19 @@ const Portfolio = () => {
 
 // Read-only Portfolio Component for Customers and Example Viewers
 const ReadOnlyPortfolio = () => {
-  const { user, logout } = useAuth();
+  const { contextLoggedIn, contextLogout } = useContext(AuthContext);
+  const location = useLocation();
+  
+  // Check if this is an example view based on the URL path
+  const isExampleView = location.pathname.includes('/example');
+  
+  // Only create user object if not in example view and user is logged in
+  const user = (!isExampleView && contextLoggedIn) ? { 
+    email: localStorage.getItem('email'),
+    ownerId: localStorage.getItem('email'),
+    role: 'customer'
+  } : null;
+  const logout = contextLogout;
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -3582,9 +3788,6 @@ const ReadOnlyPortfolio = () => {
 
   // Set isAdmin to false for read-only portfolio
   const isAdmin = false;
-  
-  // Check if this is an example view (no user logged in)
-  const isExampleView = !user;
 
   console.log('ReadOnlyPortfolio rendered, user:', user, 'isExampleView:', isExampleView);
 
@@ -3697,7 +3900,7 @@ const ReadOnlyPortfolio = () => {
   const fetchPortfolio = async (ownerId) => {
     const timestamp = Date.now(); // Add cache busting parameter
     const randomId = Math.random().toString(36).substring(7); // Add random parameter
-    const response = await fetch(`http://localhost:5100/portfolio/${ownerId}?t=${timestamp}&r=${randomId}`, {
+    const response = await fetch(`http://localhost:5000/portfolio/${ownerId}?t=${timestamp}&r=${randomId}`, {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -3822,8 +4025,12 @@ const ReadOnlyPortfolio = () => {
     }
   };
 
-  // WebSocket connection for instant updates (disabled for example view)
+  // WebSocket connection for instant updates (completely disabled for now)
   useEffect(() => {
+    // Completely disable WebSocket for now to prevent infinite refresh
+    console.log('🚫 WebSocket completely disabled to prevent infinite refresh');
+    return;
+    
     let socket = null;
     let refreshInterval = null;
 
@@ -3835,7 +4042,7 @@ const ReadOnlyPortfolio = () => {
       }
 
       try {
-        socket = io('http://localhost:5100', {
+        socket = io('http://localhost:5000', {
           transports: ['websocket', 'polling'],
           timeout: 5000
         });
@@ -3953,21 +4160,17 @@ const ReadOnlyPortfolio = () => {
     };
 
     const startPolling = () => {
-      console.log('🔄 Starting polling fallback...');
-      refreshInterval = setInterval(() => {
-        loadPortfolio();
-      }, 3000);
+      console.log('🔄 Polling disabled to prevent infinite refresh...');
+      // refreshInterval = setInterval(() => {
+      //   loadPortfolio();
+      // }, 3000);
     };
 
-    if (user || isExampleView) {
-      // Initial load
-      loadPortfolio();
-      
-      // Try WebSocket only for authenticated users
-      if (user) {
-        connectSocket();
-      }
-    }
+    // WebSocket functionality completely disabled for now
+    // loadPortfolio();
+    // if (user) {
+    //   connectSocket();
+    // }
 
     return () => {
       if (socket) {
@@ -3977,7 +4180,12 @@ const ReadOnlyPortfolio = () => {
         clearInterval(refreshInterval);
       }
     };
-  }, [user, isExampleView]);
+  }, [isExampleView]); // Only depend on isExampleView to prevent infinite loops
+
+  // Load portfolio data on component mount
+  useEffect(() => {
+    loadPortfolio();
+  }, []); // Empty dependency array - only run once on mount
 
   // Update CSS variables when portfolio changes
   useEffect(() => {
@@ -4852,9 +5060,14 @@ const ReadOnlyPortfolio = () => {
 
 // Dashboard Component
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { contextLoggedIn } = useContext(AuthContext);
+  const user = contextLoggedIn ? { 
+    email: localStorage.getItem('email'),
+    username: localStorage.getItem('email'),
+    role: 'admin'
+  } : null;
   
-  if (!user) {
+  if (!contextLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
@@ -4880,25 +5093,30 @@ const TestPage = () => {
 // Main Software Engineer App Component (without Router)
 const SoftwareEngineerApp = () => {
   const location = useLocation();
+  const { contextLoggedIn } = useContext(AuthContext);
+  
+  console.log('🔍 SoftwareEngineerApp rendered');
+  console.log('📍 Current location:', location.pathname);
+  console.log('👤 User logged in:', contextLoggedIn);
   
   return (
     <SoftwareEngineerWrapper>
-      <AuthProvider>
-        <div className="App">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute requiredRole="customer">
-                <ReadOnlyPortfolio />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin" element={<Portfolio />} />
-            <Route path="/example" element={<ReadOnlyPortfolio />} />
-            <Route path="/" element={<Navigate to="/admin" replace />} />
-          </Routes>
-        </div>
-      </AuthProvider>
+      <div className="App">
+        <Routes>
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/dashboard" element={
+            contextLoggedIn ? <ReadOnlyPortfolio /> : <Navigate to="/login" replace />
+          } />
+          <Route path="/admin" element={<Portfolio />} />
+          <Route path="/example" element={<ReadOnlyPortfolio />} />
+          <Route path="/" element={
+            (() => {
+              console.log('🚀 Default route triggered - redirecting to /admin');
+              return <Navigate to="/admin" replace />;
+            })()
+          } />
+        </Routes>
+      </div>
     </SoftwareEngineerWrapper>
   );
 };

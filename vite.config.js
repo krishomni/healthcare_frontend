@@ -32,12 +32,15 @@ const spaFallback = () => {
 export default defineConfig({
     plugins: [react(), tailwindcss(), spaFallback()],
     server: {
+        hmr: {
+            overlay: false
+        },
         proxy: {
-            '/portfolio': 'http://localhost:5100',
-            '/auth': 'http://localhost:5100',
-            '/user': 'http://localhost:5100',
-            '/settings': 'http://localhost:5100',
-            '/uploads': 'http://localhost:5100'
+            '/portfolio': 'http://localhost:5000',
+            '/auth': 'http://localhost:5000',
+            '/user': 'http://localhost:5000',
+            '/settings': 'http://localhost:5000',
+            '/uploads': 'http://localhost:5000'
         }
     }
 })
