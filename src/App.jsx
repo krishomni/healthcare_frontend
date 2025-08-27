@@ -47,7 +47,7 @@ export default function App() {
               <Route path="/resume" element={<ResumeUpload />} />
 
               <Route path="/portfolios" element={<ExamplePortfolios />} />
-              <Route path="/portfolios/" element={<ExamplePortfolios isAdmin={true} />} />
+              <Route path="/portfolios/admin" element={<ExamplePortfolios isAdmin={true} />} />
               
               <Route path="/portfolios/software-engineer/*" element={<SoftwareEngineerApp />} />
               
