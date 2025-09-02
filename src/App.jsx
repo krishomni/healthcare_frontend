@@ -17,6 +17,7 @@ import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortfolio.jsx";
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import Payment from "./components/Payment"; // Add this import
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -71,6 +72,7 @@ export default function App() {
 
         {/* Route 3: The page where a logged-in user can edit their portfolio */}
         <Route path="/portfolios/handyman/:id/edit" element={<EditHandymanPortfolio />} />
+        <Route path="/payment" element={<Payment />} /> {/* Add this line */}
       </Routes>
       {adminRequested && (
         <Tip message="Request received! Our admin team will contact you shortly." />
