@@ -9,7 +9,7 @@ import Layout from './components/Layout';
 const getFullUploadUrl = (relativePath) => {
   if (!relativePath) return '';
   if (relativePath.startsWith('http')) return relativePath;
-  return `http://localhost:5000${relativePath}`;
+  return `${import.meta.env.VITE_BACKEND_API}${relativePath}`;
 };
 
 // CSS Isolation Wrapper Component
@@ -431,7 +431,7 @@ const Portfolio = () => {
 
   // Fetch portfolio data from backend
   const fetchPortfolio = async (ownerId) => {
-    const response = await fetch(`http://localhost:5000/portfolio/${ownerId}`);
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${ownerId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch portfolio');
     }
@@ -445,7 +445,7 @@ const Portfolio = () => {
     
     try {
       // Update the current portfolio
-      const response = await fetch(`http://localhost:5000/portfolio/${actualOwnerId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${actualOwnerId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1043,7 +1043,7 @@ const Portfolio = () => {
       const formData = new FormData();
       formData.append('resume', resumeFile);
 
-      const response = await fetch(`http://localhost:5000/portfolio/${user.ownerId}/resume`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${user.ownerId}/resume`, {
         method: 'POST',
         body: formData,
       });
@@ -3900,7 +3900,7 @@ const ReadOnlyPortfolio = () => {
   const fetchPortfolio = async (ownerId) => {
     const timestamp = Date.now(); // Add cache busting parameter
     const randomId = Math.random().toString(36).substring(7); // Add random parameter
-    const response = await fetch(`http://localhost:5000/portfolio/${ownerId}?t=${timestamp}&r=${randomId}`, {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${ownerId}?t=${timestamp}&r=${randomId}`, {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -4042,7 +4042,7 @@ const ReadOnlyPortfolio = () => {
       }
 
       try {
-        socket = io('http://localhost:5000', {
+        socket = io(import.meta.env.VITE_BACKEND_API, {
           transports: ['websocket', 'polling'],
           timeout: 5000
         });
