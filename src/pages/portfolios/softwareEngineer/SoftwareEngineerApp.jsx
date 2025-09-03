@@ -1190,8 +1190,8 @@ const Portfolio = () => {
         onOpenNavModal={handleOpenNavModal}
         sections={sections}
       >
-        {/* Portfolio Navigation Bar - Fixed at Top */}
-        <nav className="portfolio-navigation" style={{
+        {/* Fixed Navigation Bar - Stays at top when scrolling */}
+        <nav className="portfolio-fixed-navigation" style={{
           position: 'fixed',
           top: '80px',
           left: '0',
@@ -1202,10 +1202,11 @@ const Portfolio = () => {
           alignItems: 'center',
           gap: '1rem',
           padding: '1rem',
-          background: 'rgba(0, 0, 0, 0.9)',
+          background: 'rgba(0, 0, 0, 0.95)',
           backdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
         }}>
           {sections.map((section) => (
             <a
@@ -1231,22 +1232,26 @@ const Portfolio = () => {
                 transition: 'all 0.3s ease',
                 fontWeight: '500',
                 fontSize: '0.95rem',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                cursor: 'pointer'
               }}
               onMouseOver={(e) => {
                 e.target.style.background = 'rgba(0, 173, 181, 0.2)';
                 e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(0, 173, 181, 0.3)';
               }}
               onMouseOut={(e) => {
                 e.target.style.background = 'rgba(0, 173, 181, 0.1)';
                 e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
               }}
             >
               {section.label}
             </a>
           ))}
         </nav>
-      <div className="admin-dashboard" style={{ paddingTop: '120px' }}>
+
+        <div className="admin-dashboard" style={{ paddingTop: '120px' }}>
         {/* Header with name and subtitle */}
         <header className="portfolio-header">
           <div className="header-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', marginTop: '2rem' }}>
@@ -4315,104 +4320,73 @@ const ReadOnlyPortfolio = () => {
   }
 
     return (
-    <Layout 
-      user={isExampleView ? { role: 'example' } : { role: 'customer' }} 
-      logout={isExampleView ? null : (logout || (() => {}))} 
-      isAdmin={false}
-      sections={sections}
-    >
-      {/* Portfolio Navigation Bar - Fixed at Top */}
-      <nav className="portfolio-navigation" style={{
-        position: 'fixed',
-        top: '80px',
-        left: '0',
-        right: '0',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '1rem',
-        padding: '1rem',
-        background: 'rgba(0, 0, 0, 0.9)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
-        flexWrap: 'wrap'
-      }}>
-        {sections.map((section) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(0, 173, 181, 0.1)',
-              color: '#00adb5',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              border: '1px solid rgba(0, 173, 181, 0.3)',
-              transition: 'all 0.3s ease',
-              fontWeight: '500',
-              fontSize: '0.95rem',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.background = 'rgba(0, 173, 181, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.background = 'rgba(0, 173, 181, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-            }}
-          >
-            {section.label}
-          </a>
-        ))}
-      </nav>
-      {/* Portfolio Navigation Bar - Fixed at Top */}
-      <nav className="portfolio-navigation" style={{
-        position: 'fixed',
-        top: '80px',
-        left: '0',
-        right: '0',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '1rem',
-        padding: '1rem',
-        background: 'rgba(0, 0, 0, 0.9)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
-        flexWrap: 'wrap'
-      }}>
-        {sections.map((section) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(0, 173, 181, 0.1)',
-              color: '#00adb5',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              border: '1px solid rgba(0, 173, 181, 0.3)',
-              transition: 'all 0.3s ease',
-              fontWeight: '500',
-              fontSize: '0.95rem',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.background = 'rgba(0, 173, 181, 0.2)';
-              e.target.style.transform = 'translateY(-2px)';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.background = 'rgba(0, 173, 181, 0.1)';
-              e.target.style.transform = 'translateY(0)';
-            }}
-          >
-            {section.label}
-          </a>
-        ))}
-              </nav>
+          <Layout 
+        user={isExampleView ? { role: 'example' } : { role: 'customer' }} 
+        logout={isExampleView ? null : (logout || (() => {}))} 
+        isAdmin={false}
+        sections={sections}
+      >
+        {/* Fixed Navigation Bar - Stays at top when scrolling */}
+        <nav className="portfolio-fixed-navigation" style={{
+          position: 'fixed',
+          top: '80px',
+          left: '0',
+          right: '0',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          padding: '1rem',
+          background: 'rgba(0, 0, 0, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
+          flexWrap: 'wrap',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        }}>
+          {sections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById(section.id);
+                if (element) {
+                  element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }
+              }}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'rgba(0, 173, 181, 0.1)',
+                color: '#00adb5',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                border: '1px solid rgba(0, 173, 181, 0.3)',
+                transition: 'all 0.3s ease',
+                fontWeight: '500',
+                fontSize: '0.95rem',
+                whiteSpace: 'nowrap',
+                cursor: 'pointer'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.2)';
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(0, 173, 181, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.1)';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = 'none';
+              }}
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
+        
         <div className="admin-dashboard" style={{ paddingTop: '120px' }}>
           {/* Header with name and subtitle */}
         <header className="portfolio-header">
@@ -4425,48 +4399,7 @@ const ReadOnlyPortfolio = () => {
           </div>
         </header>
 
-        {/* Portfolio Navigation Bar */}
-        <nav className="portfolio-navigation" style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '1rem',
-          margin: '2rem 0',
-          padding: '1rem',
-          background: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '12px',
-          border: '1px solid rgba(0, 173, 181, 0.3)',
-          flexWrap: 'wrap'
-        }}>
-          {sections.map((section) => (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: 'rgba(0, 173, 181, 0.1)',
-                color: '#00adb5',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                border: '1px solid rgba(0, 173, 181, 0.3)',
-                transition: 'all 0.3s ease',
-                fontWeight: '500',
-                fontSize: '0.95rem',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = 'rgba(0, 173, 181, 0.2)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = 'rgba(0, 173, 181, 0.1)';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              {section.label}
-            </a>
-          ))}
-        </nav>
+
 
         {/* Welcome Section (now just tagline/about) */}
         <section className="section" id="welcome">
