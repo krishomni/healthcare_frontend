@@ -714,13 +714,17 @@ const Portfolio = () => {
 
     console.log('Uploading project file:', file.name, file.type, file.size);
 
-    const formData = new FormData();
-    formData.append('projectImage', file);
+    // Convert file to ArrayBuffer for raw upload
+    const arrayBuffer = await file.arrayBuffer();
+    const fileBuffer = new Uint8Array(arrayBuffer);
 
     try {
-      const response = await fetch(`/portfolio/${portfolio.ownerId}/project-image`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/project-image`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: fileBuffer,
       });
 
       if (response.ok) {
@@ -770,13 +774,17 @@ const Portfolio = () => {
 
     console.log('Uploading certificate file:', file.name, file.type, file.size);
 
-    const formData = new FormData();
-    formData.append('certificateImage', file);
+    // Convert file to ArrayBuffer for raw upload
+    const arrayBuffer = await file.arrayBuffer();
+    const fileBuffer = new Uint8Array(arrayBuffer);
 
     try {
-      const response = await fetch(`/portfolio/${portfolio.ownerId}/certificate-image`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/certificate-image`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: fileBuffer,
       });
 
       console.log('Upload response status:', response.status);
@@ -828,14 +836,18 @@ const Portfolio = () => {
 
     console.log('Uploading new project file:', file.name, file.type, file.size);
 
-    const formData = new FormData();
-    formData.append('projectImage', file);
+    // Convert file to ArrayBuffer for raw upload
+    const arrayBuffer = await file.arrayBuffer();
+    const fileBuffer = new Uint8Array(arrayBuffer);
 
     try {
-              console.log('Sending request to:', `/portfolio/${portfolio.ownerId}/project-image`);
-        const response = await fetch(`/portfolio/${portfolio.ownerId}/project-image`, {
+              console.log('Sending request to:', `${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/project-image`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/project-image`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: fileBuffer,
       });
 
       console.log('New project upload response status:', response.status);
@@ -875,14 +887,18 @@ const Portfolio = () => {
 
     console.log('Uploading new certificate file:', file.name, file.type, file.size);
 
-    const formData = new FormData();
-    formData.append('certificateImage', file);
+    // Convert file to ArrayBuffer for raw upload
+    const arrayBuffer = await file.arrayBuffer();
+    const fileBuffer = new Uint8Array(arrayBuffer);
 
     try {
-      console.log('Sending request to:', `/portfolio/${portfolio.ownerId}/certificate-image`);
-      const response = await fetch(`/portfolio/${portfolio.ownerId}/certificate-image`, {
+      console.log('Sending request to:', `${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/certificate-image`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${portfolio.ownerId}/certificate-image`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: fileBuffer,
       });
 
       console.log('New certificate upload response status:', response.status);
@@ -1040,12 +1056,16 @@ const Portfolio = () => {
       setUploadingResume(true);
       setResumeUploadError(null);
 
-      const formData = new FormData();
-      formData.append('resume', resumeFile);
+      // Convert file to ArrayBuffer for raw upload
+      const arrayBuffer = await resumeFile.arrayBuffer();
+      const fileBuffer = new Uint8Array(arrayBuffer);
 
       const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/portfolio/${user.ownerId}/resume`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/pdf',
+        },
+        body: fileBuffer,
       });
 
       if (response.ok) {
@@ -2148,7 +2168,7 @@ const Portfolio = () => {
                 {cert.imageUrl && (
                   <div className="certification-image-container">
                     <div className="certification-image">
-                    {cert.imageUrl.toLowerCase().endsWith('.pdf') || cert.imageUrl.toLowerCase().endsWith('.pptx') || cert.imageUrl.toLowerCase().endsWith('.ppt') ? (
+                    {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
                         <div style={{
                         width: '100%',
                           height: '120px',
@@ -2182,7 +2202,7 @@ const Portfolio = () => {
                             fontSize: '10px',
                           fontWeight: 'bold'
                         }}>
-                          {cert.imageUrl.toLowerCase().endsWith('.pdf') ? 'PDF' : 'PPT'}
+                          {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? 'PDF' : 'Image'}
                         </div>
                       </div>
                     ) : (
@@ -2866,7 +2886,7 @@ const Portfolio = () => {
                 
                 {selectedCertificate.imageUrl && (
                   <div className="modal-image-container">
-                                            {selectedCertificate.imageUrl.toLowerCase().endsWith('.pdf') || selectedCertificate.imageUrl.toLowerCase().endsWith('.pptx') || selectedCertificate.imageUrl.toLowerCase().endsWith('.ppt') ? (
+                                            {selectedCertificate.imageUrl.toLowerCase().includes('pdf') || selectedCertificate.imageUrl.toLowerCase().includes('raw') ? (
                       <div style={{
                         width: '100%',
                         height: '500px',
@@ -2901,7 +2921,7 @@ const Portfolio = () => {
                           borderRadius: '4px',
                           fontSize: '12px'
                         }}>
-                          {selectedCertificate.imageUrl.toLowerCase().endsWith('.pdf') ? 'PDF Document' : 'PowerPoint Document'}
+                          {selectedCertificate.imageUrl.toLowerCase().includes('pdf') || selectedCertificate.imageUrl.toLowerCase().includes('raw') ? 'PDF Document' : 'Image Document'}
                         </div>
                         <div style={{
                           position: 'absolute',
@@ -4430,7 +4450,7 @@ const ReadOnlyPortfolio = () => {
                 {cert.imageUrl && (
                   <div className="certification-image-container">
                     <div className="certification-image">
-                    {cert.imageUrl.toLowerCase().endsWith('.pdf') || cert.imageUrl.toLowerCase().endsWith('.pptx') || cert.imageUrl.toLowerCase().endsWith('.ppt') ? (
+                    {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
                         <div style={{
                         width: '100%',
                           height: '120px',
@@ -4940,7 +4960,7 @@ const ReadOnlyPortfolio = () => {
                 
                 {selectedCertificate.imageUrl && (
                   <div className="modal-image-container">
-                                            {selectedCertificate.imageUrl.toLowerCase().endsWith('.pdf') || selectedCertificate.imageUrl.toLowerCase().endsWith('.pptx') || selectedCertificate.imageUrl.toLowerCase().endsWith('.ppt') ? (
+                                            {selectedCertificate.imageUrl.toLowerCase().includes('pdf') || selectedCertificate.imageUrl.toLowerCase().includes('raw') ? (
                       <div style={{
                         width: '100%',
                         height: '500px',

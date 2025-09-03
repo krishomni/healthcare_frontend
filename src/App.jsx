@@ -18,7 +18,7 @@ import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortf
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
 import SoftwareEngineerApp from "./pages/portfolios/softwareEngineer/SoftwareEngineerApp.jsx";
-import Payment from "./components/Payment"; // Add this import
+import Payment from "./components/Payment"; 
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
