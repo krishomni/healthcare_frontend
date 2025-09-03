@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
 import { io } from 'socket.io-client';
 import './App.css';
-import Layout from './components/Layout';
+import Layout from '../../../components/Layout';
 
 // Helper function to convert relative upload paths to full backend URLs
 const getFullUploadUrl = (relativePath) => {
@@ -16,13 +16,11 @@ const getFullUploadUrl = (relativePath) => {
 const SoftwareEngineerWrapper = ({ children }) => {
   return (
     <div className="software-engineer-isolation-wrapper" style={{
-      all: 'initial',
       fontFamily: 'inherit',
       fontSize: 'inherit',
       lineHeight: 'inherit',
       color: 'inherit',
-      background: 'inherit',
-      isolation: 'isolate'
+      background: 'inherit'
     }}>
       {children}
     </div>
@@ -1192,7 +1190,63 @@ const Portfolio = () => {
         onOpenNavModal={handleOpenNavModal}
         sections={sections}
       >
-      <div className="admin-dashboard">
+        {/* Portfolio Navigation Bar - Fixed at Top */}
+        <nav className="portfolio-navigation" style={{
+          position: 'fixed',
+          top: '80px',
+          left: '0',
+          right: '0',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          padding: '1rem',
+          background: 'rgba(0, 0, 0, 0.9)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
+          flexWrap: 'wrap'
+        }}>
+          {sections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById(section.id);
+                if (element) {
+                  element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }
+              }}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'rgba(0, 173, 181, 0.1)',
+                color: '#00adb5',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                border: '1px solid rgba(0, 173, 181, 0.3)',
+                transition: 'all 0.3s ease',
+                fontWeight: '500',
+                fontSize: '0.95rem',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.2)';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.1)';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
+      <div className="admin-dashboard" style={{ paddingTop: '120px' }}>
         {/* Header with name and subtitle */}
         <header className="portfolio-header">
           <div className="header-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', marginTop: '2rem' }}>
@@ -2168,7 +2222,7 @@ const Portfolio = () => {
                 {cert.imageUrl && (
                   <div className="certification-image-container">
                     <div className="certification-image">
-                    {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
+                                        {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
                         <div style={{
                         width: '100%',
                           height: '120px',
@@ -2176,33 +2230,47 @@ const Portfolio = () => {
                         overflow: 'hidden',
                           position: 'relative',
                           background: 'white',
-                          border: '1px solid rgba(0, 173, 181, 0.3)'
+                          border: '1px solid rgba(0, 173, 181, 0.3)',
+                          cursor: 'pointer'
                       }}>
                         <iframe
-                            src={`${getFullUploadUrl(cert.imageUrl)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                            src={`${getFullUploadUrl(cert.imageUrl)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
                           style={{
                             width: '100%',
                             height: '100%',
                             border: 'none',
-                              borderRadius: '8px'
+                              borderRadius: '8px',
+                            pointerEvents: 'none'
                           }}
-                            title={`Certificate - ${cert.title}`}
+                            title={`Certificate Preview - ${cert.title}`}
                             onError={(e) => {
-                              console.error('PDF iframe failed to load:', e);
+                              console.error('PDF preview failed to load:', e);
                             }}
                         />
                         <div style={{
                           position: 'absolute',
                             top: '5px',
                             right: '5px',
-                            background: 'rgba(0, 173, 181, 0.9)',
+                          background: 'rgba(0, 173, 181, 0.9)',
                           color: 'white',
                             padding: '2px 6px',
                           borderRadius: '4px',
                             fontSize: '10px',
                           fontWeight: 'bold'
                         }}>
-                          {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? 'PDF' : 'Image'}
+                          PDF
+                        </div>
+                        <div style={{
+                          position: 'absolute',
+                            bottom: '5px',
+                            left: '5px',
+                          background: 'rgba(0, 0, 0, 0.7)',
+                          color: 'white',
+                            padding: '2px 6px',
+                          borderRadius: '4px',
+                            fontSize: '10px'
+                        }}>
+                          Click to View Full
                         </div>
                       </div>
                     ) : (
@@ -2898,8 +2966,9 @@ const Portfolio = () => {
                         position: 'relative',
                         background: 'white'
                       }}>
+                        {/* PDF Preview */}
                         <iframe
-                          src={`${selectedCertificate.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                          src={`${getFullUploadUrl(selectedCertificate.imageUrl)}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
                           style={{
                             width: '100%',
                             height: '100%',
@@ -2910,6 +2979,9 @@ const Portfolio = () => {
                           onError={(e) => {
                             console.error('PDF iframe failed to load:', e);
                           }}
+                          onLoad={() => {
+                            console.log('PDF iframe loaded successfully for:', selectedCertificate.title);
+                          }}
                         />
                         <div style={{
                           position: 'absolute',
@@ -2919,30 +2991,10 @@ const Portfolio = () => {
                           color: 'white',
                           padding: '5px 10px',
                           borderRadius: '4px',
-                          fontSize: '12px'
-                        }}>
-                          {selectedCertificate.imageUrl.toLowerCase().includes('pdf') || selectedCertificate.imageUrl.toLowerCase().includes('raw') ? 'PDF Document' : 'Image Document'}
-                        </div>
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '10px',
-                          background: 'rgba(0, 173, 181, 0.9)',
-                          color: 'white',
-                          padding: '8px 12px',
-                          borderRadius: '4px',
                           fontSize: '12px',
-                          cursor: 'pointer',
-                          textDecoration: 'none'
+                          fontWeight: 'bold'
                         }}>
-                          <a 
-                            href={`${selectedCertificate.imageUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: 'white', textDecoration: 'none' }}
-                          >
-                            📄 Download PDF
-                          </a>
+                          PDF Document
                         </div>
                       </div>
                     ) : (
@@ -4269,8 +4321,100 @@ const ReadOnlyPortfolio = () => {
       isAdmin={false}
       sections={sections}
     >
-      <div className="admin-dashboard">
-        {/* Header with name and subtitle */}
+      {/* Portfolio Navigation Bar - Fixed at Top */}
+      <nav className="portfolio-navigation" style={{
+        position: 'fixed',
+        top: '80px',
+        left: '0',
+        right: '0',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '1rem',
+        padding: '1rem',
+        background: 'rgba(0, 0, 0, 0.9)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
+        flexWrap: 'wrap'
+      }}>
+        {sections.map((section) => (
+          <a
+            key={section.id}
+            href={`#${section.id}`}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'rgba(0, 173, 181, 0.1)',
+              color: '#00adb5',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              border: '1px solid rgba(0, 173, 181, 0.3)',
+              transition: 'all 0.3s ease',
+              fontWeight: '500',
+              fontSize: '0.95rem',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = 'rgba(0, 173, 181, 0.2)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = 'rgba(0, 173, 181, 0.1)';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            {section.label}
+          </a>
+        ))}
+      </nav>
+      {/* Portfolio Navigation Bar - Fixed at Top */}
+      <nav className="portfolio-navigation" style={{
+        position: 'fixed',
+        top: '80px',
+        left: '0',
+        right: '0',
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '1rem',
+        padding: '1rem',
+        background: 'rgba(0, 0, 0, 0.9)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(0, 173, 181, 0.3)',
+        flexWrap: 'wrap'
+      }}>
+        {sections.map((section) => (
+          <a
+            key={section.id}
+            href={`#${section.id}`}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'rgba(0, 173, 181, 0.1)',
+              color: '#00adb5',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              border: '1px solid rgba(0, 173, 181, 0.3)',
+              transition: 'all 0.3s ease',
+              fontWeight: '500',
+              fontSize: '0.95rem',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = 'rgba(0, 173, 181, 0.2)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = 'rgba(0, 173, 181, 0.1)';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            {section.label}
+          </a>
+        ))}
+              </nav>
+        <div className="admin-dashboard" style={{ paddingTop: '120px' }}>
+          {/* Header with name and subtitle */}
         <header className="portfolio-header">
           <div className="header-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', marginTop: '2rem' }}>
             <div className="header-title" style={{ textAlign: 'center' }}>
@@ -4281,7 +4425,48 @@ const ReadOnlyPortfolio = () => {
           </div>
         </header>
 
-
+        {/* Portfolio Navigation Bar */}
+        <nav className="portfolio-navigation" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          margin: '2rem 0',
+          padding: '1rem',
+          background: 'rgba(0, 0, 0, 0.2)',
+          borderRadius: '12px',
+          border: '1px solid rgba(0, 173, 181, 0.3)',
+          flexWrap: 'wrap'
+        }}>
+          {sections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'rgba(0, 173, 181, 0.1)',
+                color: '#00adb5',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                border: '1px solid rgba(0, 173, 181, 0.3)',
+                transition: 'all 0.3s ease',
+                fontWeight: '500',
+                fontSize: '0.95rem',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.2)';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'rgba(0, 173, 181, 0.1)';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
 
         {/* Welcome Section (now just tagline/about) */}
         <section className="section" id="welcome">
@@ -4450,7 +4635,7 @@ const ReadOnlyPortfolio = () => {
                 {cert.imageUrl && (
                   <div className="certification-image-container">
                     <div className="certification-image">
-                    {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
+                                        {cert.imageUrl.toLowerCase().includes('pdf') || cert.imageUrl.toLowerCase().includes('raw') ? (
                         <div style={{
                         width: '100%',
                           height: '120px',
@@ -4458,26 +4643,28 @@ const ReadOnlyPortfolio = () => {
                         overflow: 'hidden',
                           position: 'relative',
                           background: 'white',
-                          border: '1px solid rgba(0, 173, 181, 0.3)'
+                          border: '1px solid rgba(0, 173, 181, 0.3)',
+                          cursor: 'pointer'
                       }}>
                         <iframe
-                            src={`${getFullUploadUrl(cert.imageUrl)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                            src={`${getFullUploadUrl(cert.imageUrl)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&page=1`}
                           style={{
                             width: '100%',
                             height: '100%',
                             border: 'none',
-                              borderRadius: '8px'
+                              borderRadius: '8px',
+                            pointerEvents: 'none'
                           }}
-                            title={`Certificate - ${cert.title}`}
+                            title={`Certificate Preview - ${cert.title}`}
                             onError={(e) => {
-                              console.error('PDF iframe failed to load:', e);
+                              console.error('PDF preview failed to load:', e);
                             }}
                         />
                         <div style={{
                           position: 'absolute',
                             top: '5px',
                             right: '5px',
-                            background: 'rgba(0, 173, 181, 0.9)',
+                          background: 'rgba(0, 173, 181, 0.9)',
                           color: 'white',
                             padding: '2px 6px',
                           borderRadius: '4px',
@@ -4485,6 +4672,18 @@ const ReadOnlyPortfolio = () => {
                           fontWeight: 'bold'
                         }}>
                           PDF
+                        </div>
+                        <div style={{
+                          position: 'absolute',
+                            bottom: '5px',
+                            left: '5px',
+                          background: 'rgba(0, 0, 0, 0.7)',
+                          color: 'white',
+                            padding: '2px 6px',
+                          borderRadius: '4px',
+                            fontSize: '10px'
+                        }}>
+                          Click to View Full
                         </div>
                       </div>
                     ) : (
@@ -4972,8 +5171,9 @@ const ReadOnlyPortfolio = () => {
                         position: 'relative',
                         background: 'white'
                       }}>
+                        {/* PDF Preview */}
                         <iframe
-                          src={`${selectedCertificate.imageUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                          src={`${getFullUploadUrl(selectedCertificate.imageUrl)}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
                           style={{
                             width: '100%',
                             height: '100%',
@@ -4984,6 +5184,9 @@ const ReadOnlyPortfolio = () => {
                           onError={(e) => {
                             console.error('PDF iframe failed to load:', e);
                           }}
+                          onLoad={() => {
+                            console.log('PDF iframe loaded successfully for:', selectedCertificate.title);
+                          }}
                         />
                         <div style={{
                           position: 'absolute',
@@ -4993,30 +5196,10 @@ const ReadOnlyPortfolio = () => {
                           color: 'white',
                           padding: '5px 10px',
                           borderRadius: '4px',
-                          fontSize: '12px'
+                          fontSize: '12px',
+                          fontWeight: 'bold'
                         }}>
                           PDF Document
-                        </div>
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '10px',
-                          background: 'rgba(0, 173, 181, 0.9)',
-                          color: 'white',
-                          padding: '8px 12px',
-                          borderRadius: '4px',
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          textDecoration: 'none'
-                        }}>
-                          <a 
-                            href={`${selectedCertificate.imageUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: 'white', textDecoration: 'none' }}
-                          >
-                            📄 Download PDF
-                          </a>
                         </div>
                       </div>
                     ) : (
