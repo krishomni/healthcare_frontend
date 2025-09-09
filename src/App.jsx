@@ -18,6 +18,7 @@ import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortf
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
 import Payment from "./components/Payment"; // Add this import
+import SuccessPage from "./components/SuccessPage.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -35,24 +36,18 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
-
         <Route
           path="/dashboard"
           element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
         />
-
         <Route path={"/signup"} element={<SignUp />} />
         <Route path="/occupations" element={<Occupations />} />
-
         <Route path="/resume" element={<ResumeUpload />} />
-
         <Route path="/portfolios" element={<ExamplePortfolios />} />
-
         <Route
           path="/portfolios/project-manager/:username/:id"
           element={<PortfolioPage />}
         />
-
         <Route path="/portfolios/software-engineer" />
         <Route
           path="/portfolios/data-scientist/*"
@@ -64,15 +59,17 @@ export default function App() {
           path="/portfolios/photographer/*"
           element={<PhotographerPage />}
         />
-
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
-
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
         <Route path="/portfolios/handyman/:id" element={<HandymanPage />} />
-
         {/* Route 3: The page where a logged-in user can edit their portfolio */}
-        <Route path="/portfolios/handyman/:id/edit" element={<EditHandymanPortfolio />} />
+        <Route
+          path="/portfolios/handyman/:id/edit"
+          element={<EditHandymanPortfolio />}
+        />
         <Route path="/payment" element={<Payment />} /> {/* Add this line */}
+        <Route path={"/success"} element={<SuccessPage />} />
+        {/*successfull subscription page} */}
       </Routes>
       {adminRequested && (
         <Tip message="Request received! Our admin team will contact you shortly." />
