@@ -17,7 +17,10 @@ import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortfolio.jsx";
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
-import Payment from "./components/Payment"; 
+import CookieConsent from "./components/CookieConsent";
+import CookieSettings from "./components/CookieSettings";
+import TelemetryVisit from "./components/TelemetryVisit";
+import Payment from "./components/Payment";
 import SuccessPage from "./components/SuccessPage.jsx";
 import FloatingHelpButton from "./components/FloatingHelpButton";
 import ITForm from "./components/ITForm"; // Make sure this import is present
@@ -80,6 +83,9 @@ export default function App() {
         <Tip message="Request received! Our admin team will contact you shortly." />
       )}
       <Footer />
+      <CookieConsent />
+      <CookieSettings />
+      <TelemetryVisit />
     </Layout>
   );
 }
