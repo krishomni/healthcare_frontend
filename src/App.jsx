@@ -17,6 +17,9 @@ import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortfolio.jsx";
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import CookieConsent from "./components/CookieConsent";
+import CookieSettings from "./components/CookieSettings";
+import TelemetryVisit from "./components/TelemetryVisit";
 import Payment from "./components/Payment"; // Add this import
 import SuccessPage from "./components/SuccessPage.jsx";
 
@@ -75,6 +78,9 @@ export default function App() {
         <Tip message="Request received! Our admin team will contact you shortly." />
       )}
       <Footer />
+      <CookieConsent />
+      <CookieSettings />
+      <TelemetryVisit />
     </Layout>
   );
 }
