@@ -15,6 +15,10 @@ import SignUp from "./pages/login/SignUp";
 import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import Occupations from "./components/Occupations";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import CookieConsent from "./components/CookieConsent";
+import CookieSettings from "./components/CookieSettings";
+import TelemetryVisit from "./components/TelemetryVisit";
+
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -68,6 +72,9 @@ export default function App() {
         <Tip message="Request received! Our admin team will contact you shortly." />
       )}
       <Footer />
+      <CookieConsent />
+      <CookieSettings />
+      <TelemetryVisit />
     </Layout>
   );
 }
