@@ -1,17 +1,34 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function FloatingHelpButton() {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   return (
-    <button
-      className="fixed bottom-6 right-6 z-50 bg-blue-300/40 text-slate-800 px-5 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors duration-300 overflow-hidden group"
-      onClick={() => navigate("/support")}
-      aria-label="Need Help?"
-      style={{ boxShadow: "0 4px 24px 0 rgb(30 64 175 / 12%)" }}
+    <div
+      className={`fixed top-20 right-0 z-50 flex flex-col items-end transition-all duration-300`}
+      style={{ minWidth: open ? 160 : 48 }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
     >
-      <span className="absolute inset-0 w-1/3 h-full bg-white/40 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"></span>
-      <span className="relative z-10 font-semibold">Need Help?</span>
-    </button>
+      <button
+        className={`flex items-center bg-blue-300/80 text-slate-800 px-3 py-3 rounded-l-2xl shadow-lg transition-all duration-300 group focus:outline-none`}
+        style={{ minWidth: open ? 120 : 28 }}
+        onClick={() => navigate("/support")}
+        aria-label="Need Help?"
+      >
+        {!open && (
+          <span className="material-icons mr-2">?</span>
+        )}
+        <span
+          className={`whitespace-nowrap transition-opacity duration-300 ${
+            open ? "opacity-100 mr-2" : "opacity-0 w-0"
+          }`}
+        >
+          Need Help?
+        </span>
+      </button>
+    </div>
   );
 }
