@@ -24,6 +24,7 @@ import Payment from "./components/Payment";
 import SuccessPage from "./components/SuccessPage.jsx";
 import FloatingHelpButton from "./components/FloatingHelpButton";
 import ITForm from "./components/ITForm"; // Make sure this import is present
+import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
 
 
 export default function App() {
@@ -77,6 +78,7 @@ export default function App() {
         <Route path={"/success"} element={<SuccessPage />} />
         {/*successfull subscription page} */}
        <Route path="/support" element={<ITForm />} />
+       <Route path="/onboarding" element={<OnboardingFlow />} />
       </Routes>
        <FloatingHelpButton />
       {adminRequested && (
