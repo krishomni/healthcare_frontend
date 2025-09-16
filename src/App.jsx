@@ -26,6 +26,7 @@ import FloatingHelpButton from "./components/FloatingHelpButton";
 import ITForm from "./components/ITForm"; // Make sure this import is present
 import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
 import UserProfile from "./components/UserProfile.jsx";
+import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -77,9 +78,10 @@ export default function App() {
         <Route path="/payment" element={<Payment />} /> {/* Add this line */}
         <Route path={"/success"} element={<SuccessPage />} />
         {/*successfull subscription page} */}
-       <Route path="/support" element={<ITForm />} />
-       <Route path="/onboarding" element={<OnboardingFlow />} />
-       <Route path="/profile" element={<UserProfile />} />
+        <Route path="/support" element={<ITForm />} />
+        <Route path="/onboarding" element={<OnboardingFlow />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/onboarding_info/:id" element={<OnboardingInfoPage />} />
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (
