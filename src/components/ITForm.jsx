@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect, useMemo } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
+import emailjs from '@emailjs/browser';
 import { toast } from "react-toastify"
 
 const API_BASE = import.meta.env.VITE_BACKEND_API
@@ -27,6 +28,7 @@ export default function ITForm() {
     }
   }, [contextLoggedIn]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -56,64 +58,71 @@ export default function ITForm() {
   const shouldShowEmail = !contextLoggedIn || !stored.email;
   const shouldShowPortfolioId = true;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit =async  (e) => {
     e.preventDefault();
-    // for now just shows an alert, need to implement backend
-    setErrMsg("");
+    setIsSubmitting(true);
 
-    const payload = {
-      name: contextLoggedIn ? (stored.name || form.name) : form.name,
-      email: contextLoggedIn ? (stored.email || form.email) : form.email,
-      phone: form.phone || "",
-      requestType: form.requestType,
-      portfolioId: contextLoggedIn ? (stored.portfolioId || form.portfolioId) : form.portfolioId,
-      message: form.message,
-    }
+try {
+   const serviceId = import.meta.env.VITE_FORM_SERVICE_ID;
+      const publicKey = import.meta.env.VITE_FORM_PUBLIC_KEY;
+      const companyTemplateId = import.meta.env.VITE_FORM_COMPANY_TID;
+      const userTemplateId = import.meta.env.VITE_FORM_USER_TID;
+  // Get user details 
+      const userName = contextLoggedIn ? user?.name || user?.email : form.name;
+      const userEmail = contextLoggedIn ? user?.email : form.email;
 
-    if (!payload.name || !payload.email || !payload.requestType || !payload.message) {
-      setErrMsg("Please complete all necessary fields.")
-      return
-    }
+  //template parameters for company email
+ const companyTemplateParams = {
+        user_name: userName,
+        user_email: userEmail,
+        request_type: form.requestType,
+        portfolio_id: form.portfolioId || 'Not specified',
+        message: form.message,
+        submission_date: new Date().toLocaleString(),
+        user_status: contextLoggedIn ? 'Logged In User' : 'Guest User'
+      };
+    //template parameters for user confirmation emao;
+    const userTemplateParams = {
+        user_name: userName,
+        user_email: userEmail,
+        request_type: form.requestType,
+        portfolio_id: form.portfolioId || 'Not specified',
+        message: form.message,
+        submission_date: new Date().toLocaleString(),
+        company_name: 'Surge Aina Support Team' // company name
+      };
+      // Send email to company
+      await emailjs.send(
+        serviceId,//EmailJS service ID
+        companyTemplateId, //  company template ID
+        companyTemplateParams,
+        publicKey // r EmailJS public key
+      );
 
-    setSubmitting(true)
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}/support-form`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
+      // Send confirmation email to user
+      await emailjs.send(
+         serviceId,//  EmailJS service ID
+        userTemplateId, //  user template ID
+        userTemplateParams,
+         publicKey//  EmailJS public key
+      );
+    alert("Request submitted successfully! You will receive a confirmation email shortly.");
+      
+      // Reset form
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        requestType: "",
+        portfolioId: "",
+        message: "",
       });
-      let data = null;
-      try {
-        data = await res.json();
-      } catch {
 
-      }
-      if (res.status === 201) {
-        toast.success("Request submitted!");
-        setForm({
-          name: contextLoggedIn ? (stored.name || "") : "",
-          email: contextLoggedIn ? (stored.email || "") : "",
-          phone: "",
-          requestType: "",
-          portfolioId: contextLoggedIn ? (stored.portfolioId || "") : "",
-          message: "",
-        });
-      } else if (res.status === 400) {
-        setErrMsg(data?.error || "Failed to submit. Please check and try again.");
-        toast.error(data?.error || "Failed to submit.");
-      } else {
-        setErrMsg(`Unexpected error (${res.status}). Please try again later.`)
-        toast.error(`Unexpected error (${res.status}).`);
-      }
-    } catch (err) {
-      setErrMsg("Network error. Please check your connection.");
-      toast.error("Network error.")
+    } catch (error) {
+      console.error('Error sending emails:', error);
+      alert("There was an error submitting your request. Please try again.");
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
