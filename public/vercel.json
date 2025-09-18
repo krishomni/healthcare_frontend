@@ -1,3 +1,4 @@
+git remote add origin [your-github-repo-url]
 {
   "functions": {
     "pages/api/contact.js": {
