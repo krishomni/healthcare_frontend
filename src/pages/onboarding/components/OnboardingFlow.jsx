@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ProgressBar from "./ProgressBar";
 import GoalSelection from "./GoalSelection";
 import IndustrySelection from "./IndustrySelection";
@@ -8,9 +8,10 @@ import UserInfoForm from "./UserInfoForm";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import loadingGif from "../../../assets/images/loading-gif.gif";
+import { AuthContext } from "../../../context/AuthContext";
 
 // main onboarding flow component
-// NOT CONNECTED TO BACKEND YET
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 export default function OnboardingFlow() {
   const navigate = useNavigate();
@@ -118,7 +119,7 @@ export default function OnboardingFlow() {
   };
 
   //send data to backend when they finish onboarding
-
+  const { login } = useContext(AuthContext);
   useEffect(() => {
     if (data.goal !== "grow-business" && currentStep === "complete") {
       setError("");
@@ -127,15 +128,15 @@ export default function OnboardingFlow() {
       const sendData = async () => {
         let userId;
         try {
-          console.log("Sending onboarding data:", data);
-          const res = await axios.post(`${backendUrl}/onboarding/addUser`, {
+          const res = await axios.post(`${backendUrl}/user/addUser`, {
             data,
           });
-          console.log("Created user:", res.data);
-          userId = res.data.user._id;
+          login(res.data.user.email, data.userInfo.password);
+          //userId = res.data.user._id;---------------
           // wait before redirect
           const timer = setTimeout(() => {
-            navigate(`/onboarding_info/${userId}`);
+            //navigate(`/onboarding_info/${userId}`);------------
+            navigate("/onboarding_info");
           }, 4000);
           return () => clearTimeout(timer);
         } catch (error) {
@@ -191,6 +192,7 @@ export default function OnboardingFlow() {
                   />
                 </svg>
               </div>
+              <img src={loadingGif} alt="loading..." />
               <h1 className="mb-4 text-gray-900">Welcome to FindVirtual.me!</h1>
               <p className="text-gray-600 mb-8">
                 {data.goal === "grow-business"
