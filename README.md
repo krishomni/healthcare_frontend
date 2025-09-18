@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Healthcare Website Frontend
 
-## Getting Started
+A modern, responsive healthcare website built with Next.js and Tailwind CSS, optimized for deployment on Vercel.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🏥 **Healthcare-focused design** inspired by Austin Oral Surgery
+- 📱 **Mobile-first responsive design** using Tailwind CSS
+- ⚡ **Fast loading** with Next.js optimization
+- 🎨 **Customizable content** - all text and data are placeholder-based
+- 🔧 **Easy deployment** on Vercel
+- ♿ **Accessible** with proper ARIA labels and keyboard navigation
+- 🌐 **SEO optimized** with proper meta tags and structure
+
+## Quick Start
+
+1. **Clone and Install**
+   ```bash
+   git clone [your-repo-url]
+   cd healthcare-frontend
+   npm install
+   ```
+
+2. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+3. **Customize Content**
+   - Edit the `practiceData` object in `pages/index.js`
+   - Replace all `[placeholder]` text with your actual content
+   - Add your images to the `public/` folder
+   - Update contact information in components
+
+4. **Deploy to Vercel**
+   ```bash
+   npm run build
+   vercel --prod
+   ```
+
+## File Structure
+
+```
+healthcare-frontend/
+├── components/           # React components
+│   ├── Header.js        # Navigation header
+│   ├── Hero.js          # Hero section
+│   ├── Stats.js         # Statistics section
+│   ├── Services.js      # Services grid
+│   ├── Team.js          # Doctor profiles
+│   ├── Gallery.js       # Photo gallery
+│   ├── Contact.js       # Contact form
+│   └── Footer.js        # Footer section
+├── pages/               # Next.js pages
+│   ├── _app.js         # App configuration
+│   ├── _document.js    # Document structure
+│   └── index.js        # Home page
+├── styles/              # CSS styles
+│   └── globals.css     # Global styles
+├── public/              # Static assets
+└── package.json        # Dependencies
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Customization Guide
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Practice Information
+Update the `practiceData` object in `pages/index.js`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```javascript
+const [practiceData, setPracticeData] = useState({
+  name: 'Your Practice Name',
+  tagline: 'Your Headline Here',
+  description: 'Your practice description',
+  stats: {
+    years: '15',
+    patients: '5000',
+    successRate: '95',
+    doctors: '8'
+  }
+})
+```
 
-## Learn More
+### 2. Services
+Edit the services array in `components/Services.js`:
 
-To learn more about Next.js, take a look at the following resources:
+```javascript
+const services = [
+  {
+    icon: FaUserMd,
+    title: 'Primary Care',
+    description: 'Comprehensive primary healthcare services...'
+  },
+  // Add more services
+]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Team Members
+Update doctor information in `components/Team.js`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```javascript
+const doctors = [
+  {
+    name: 'Dr. John Smith',
+    specialty: 'Cardiologist',
+    credentials: 'MD, FACC',
+    bio: 'Board-certified cardiologist with 15 years...',
+    // Add more details
+  }
+]
+```
 
-## Deploy on Vercel
+### 4. Contact Information
+Update contact details in `components/Contact.js` and `components/Footer.js`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 5. Colors and Styling
+Modify the color scheme in `tailwind.config.js`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```javascript
+colors: {
+  primary: '#1e40af',      // Main brand color
+  secondary: '#64748b',    // Secondary text
+  accent: '#f59e0b',       // Accent color
+  dark: '#1e293b',         // Dark text
+  light: '#f8fafc'         // Light background
+}
+```
+
+## Deployment
+
+### Vercel (Recommended)
+1. Push your code to GitHub
+2. Connect your GitHub repo to Vercel
+3. Vercel will automatically build and deploy your site
+4. Custom domain can be added in Vercel dashboard
+
+### Other Platforms
+- **Netlify**: Drag and drop the `build` folder after running `npm run build`
+- **AWS S3**: Upload build files to S3 bucket with static hosting enabled
+- **Any hosting provider**: Upload the contents of `.next/out/` after running `npm run build && npm run export`
+
+## Environment Variables
+
+For production, you may want to add environment variables:
+
+Create `.env.local`:
+```
+NEXT_PUBLIC_SITE_NAME=Your Practice Name
+NEXT_PUBLIC_CONTACT_EMAIL=info@yourpractice.com
+NEXT_PUBLIC_PHONE=+1234567890
+```
+
+## Performance Optimization
+
+- Images are optimized with Next.js Image component
+- CSS is purged automatically by Tailwind
+- JavaScript is split into chunks for faster loading
+- Components are lazy-loaded where appropriate
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## Support
+
+For support or questions:
+- Create an issue on GitHub
+- Check the documentation
+- Review the code comments
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
