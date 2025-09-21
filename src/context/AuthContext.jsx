@@ -24,8 +24,9 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const backendUrl = import.meta.env.VITE_BACKEND_API;
 
-  //auto login if token is present when loading into FindVirtual.me
+  //auto login attempt if token is present when loading into FindVirtual.me
   useEffect(() => {
+    if (!token) return;
     if (token) {
       axios
         .get(`${backendUrl}/user/me`, {
@@ -34,6 +35,7 @@ export function AuthProvider({ children }) {
         .then((res) => setUser(res.data))
         .catch(() => {
           setToken(null);
+          setUser(null);
           localStorage.removeItem("token");
         });
     }
@@ -53,7 +55,6 @@ export function AuthProvider({ children }) {
     } catch (err) {
       toast.error("Login failed");
       console.log("Login failed", err);
-      console.log("Data sent", email, password);
       throw err;
     }
   };

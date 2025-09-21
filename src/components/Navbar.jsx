@@ -1,24 +1,20 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Auth from "../pages/login/Auth.jsx";
 import SignUp from "../pages/login/SignUp.jsx";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext.jsx";
-import { Menu, X, User } from "lucide-react"; 
+import { Menu, X, User } from "lucide-react";
 
 export default function Navbar() {
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { contextLoggedIn, contextLogout } = useContext(AuthContext);
+  // const { contextLoggedIn, contextLogout } = useContext(AuthContext);
+  const { login, logout, user } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const navigateHome = () => {
-    navigate("/");
-  };
-
-  const logout = () => {
-    contextLogout();
     navigate("/");
   };
 
@@ -77,13 +73,17 @@ export default function Navbar() {
               className="p-2 rounded-lg focus:outline-none"
               aria-label="Open menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
 
           {/* Auth buttons */}
           <div className="flex items-center space-x-3">
-            {contextLoggedIn ? (
+            {user ? (
               <>
                 {/* Profile button */}
                 <button
@@ -97,10 +97,23 @@ export default function Navbar() {
                 {/* Logout button */}
                 <button
                   className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-slate-800 hover:bg-gray-100 transition shadow-sm"
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"
+                    />
                   </svg>
                   <span>Logout</span>
                 </button>
@@ -200,7 +213,7 @@ export default function Navbar() {
               >
                 Dashboard
               </button>
-              {contextLoggedIn && (
+              {user && (
                 <button
                   className="w-full text-left px-6 py-3 text-slate-800 hover:bg-blue-100 rounded-lg flex items-center"
                   onClick={() => {
