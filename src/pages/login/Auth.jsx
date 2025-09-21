@@ -10,25 +10,12 @@ const Auth = ({ onClose }) => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  const { contextLogin } = useContext(AuthContext);
+  const { login, logout, user } = useContext(AuthContext);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const portfolioId = localStorage.getItem("portfolioId");
-    if (token) {
-      // navigate(`/portfolio/${portfolioId}`);
-      contextLogin();
-      navigate("/dashboard");
-      if (onClose) onClose();
-    }
-    setLoggedIn(!!token);
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,46 +23,21 @@ const Auth = ({ onClose }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${apiUrl}/user/login`, {
-        email: form.email,
-        password: form.password,
-      });
-
-      const portfolioId = res.data.portfolioIds && res.data.portfolioIds[0];
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("email", form.email);
-      localStorage.setItem("userId", res.data.userId);
-      if (portfolioId) {
-        localStorage.setItem("portfolioId", portfolioId);
-        setLoggedIn(true);
-        toast.success("Login successful!");
-        contextLogin(res.data.token);
-        //navigate(`/portfolio/${portfolioId}`);
-        window.location.reload(); // 
-        navigate("/dashboard");
-        if (onClose) onClose();
-      } else {
-        setLoggedIn(true);
-        toast.success("Login successful, but no portfolio found!");
-        window.location.reload();
-        navigate("/dashboard");
-        if (onClose) onClose();
-      }
+      await login(form.email, form.password);
+      if (onClose) onClose();
+      navigate("/profile");
     } catch (err) {
-      setError("Invalid credentials");
-      toast.error("Login failed");
+      setError("Invalid Credentials");
+      console.log("error logging in Auth.jsx", err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
-    localStorage.removeItem("portfolioId");
-    setLoggedIn(false);
+    logout();
     setForm({ email: "", password: "" });
-    toast.success("Logged out!");
+    navigate("/");
   };
 
   return (
@@ -104,7 +66,7 @@ const Auth = ({ onClose }) => {
           Welcome
         </h1>
         <p className="text-center text-slate-600 mb-8">
-          {loggedIn ? "Hello" : "Sign in to manage your portfolio"}
+          {user ? "Hello" : "Sign in to manage your portfolio"}
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="relative">
@@ -168,7 +130,7 @@ const Auth = ({ onClose }) => {
             <span className="absolute inset-0 w-1/3 h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
           </button>
 
-          {loggedIn && (
+          {user && (
             <button
               type="button"
               onClick={handleLogout}

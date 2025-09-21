@@ -1,32 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 const backendUrl = import.meta.env.VITE_BACKEND_API;
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function OnboardingInfoPage() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { id } = useParams();
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get(`${backendUrl}/onboarding/getUser/${id}`);
-        setUser(res.data.user);
-        console.log("user: ", res.data.user);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   const handleCardClick = async (index) => {
-    console.log(index);
     switch (index) {
       case 0:
         try {
@@ -34,7 +18,9 @@ export default function OnboardingInfoPage() {
           const res = await axios.post(`${backendUrl}/portfolio/add`, {
             portfolio,
           });
-          console.log("response: ", res.data);
+          const username = res.data.username;
+          const id = res.data._id;
+          navigate(`/portfolios/project-manager/${username}/${id}`); //navigate to newly created portfolio -- will be changed later on to navigate(`/${username}/${portfolioName}`) or navigate(`/${portfolioName}`)
         } catch (error) {
           console.log("error creating portfolio: ", error);
         }
@@ -81,8 +67,6 @@ export default function OnboardingInfoPage() {
         "Demonstrate your skills, previous jobs, and customer testimonials.",
     },
   ];
-
-  if (loading) return <p className="text-gray-600">Loading users...</p>;
 
   if (user === null) return <p className="text-gray-600">No user found.</p>;
 
