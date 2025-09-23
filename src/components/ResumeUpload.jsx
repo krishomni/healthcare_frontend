@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
+import { v4 as uuidv4 } from "uuid";
 
 export default function ResumeUpload() {
   const apiUrl = import.meta.env.VITE_BACKEND_API;
@@ -43,6 +44,15 @@ export default function ResumeUpload() {
       formData.append("email", email);
     }
 
+    /* creates resume token to track uploaded resume prior to sign up
+    let resumeToken = localStorage.getItem("resumeToken");
+    if (!resumeToken) {
+      resumeToken = uuidv4();
+      localStorage.setItem("resumeToken", resumeToken);
+    }
+    formData.append("resumeToken", resumeToken);
+    */
+
     try {
       const res = await axios.post(`${apiUrl}/portfolio/upload-pdf`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -59,6 +69,15 @@ export default function ResumeUpload() {
     }
   };
 
+  /*/ attach resume to user after signup
+  const claimResumeToken = async (userEmail) => {
+    const resumeToken = localStorage.getItem("resumeToken");
+    if (resumeToken) {
+      await axios.post("/api/portfolio/claim", { email: userEmail, resumeToken });
+      localStorage.removeItem("resumeToken");
+    }
+  };
+*/
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
       <div className="w-full max-w-xl p-5">

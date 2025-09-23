@@ -60,6 +60,30 @@ const PortfolioPage = () => {
     }
   };
 
+  // Contact form state
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactSuccess, setContactSuccess] = useState("");
+  const [contactError, setContactError] = useState("");
+  const [contactLoading, setContactLoading] = useState(false);
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    setContactSuccess("");
+    setContactError("");
+    setContactLoading(true);
+
+    // Simulate async send
+    setTimeout(() => {
+      setContactLoading(false);
+      setContactSuccess("Your message has been sent!");
+      setContactName("");
+      setContactEmail("");
+      setContactMessage("");
+    }, 1200);
+  };
+
   if (isLoading)
     return (
       <div className="projectManagerStyles">
@@ -323,10 +347,97 @@ const PortfolioPage = () => {
               </div>
             </div>
           )}
-
+          {/*contact me card */}
           <div className={animating ? "animate-fade-out" : "animate-fade-in"}>
             <div className="card-main-section">{renderSection()}</div>
           </div>
+
+          <section className="mt-16 mb-12 flex justify-center">
+            <div className="w-full max-w-6xl card-glassmorphism flex flex-col md:flex-row items-stretch p-0 overflow-hidden shadow-lg">
+              
+              <div className="md:w-1/3 w-full flex flex-col justify-start items-start px-8 py-6 md:py-8 mt-2 md:mt-6">
+                <h2 className="text-2xl font-bold text-white-900 mb-2 text-left tracking-tight">Contact Me</h2>
+                <p className="text-white-800 text-base leading-relaxed text-left">
+                  Interested in working together or have a question? Fill out the form and I'll get back to you soon!
+                </p>
+              </div>
+              
+              <form
+                onSubmit={handleContactSubmit}
+                className="md:w-2/3 w-full px-8 py-6 md:py-8 flex flex-col justify-center"
+              >
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-blue-900 mb-1">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      className="input-base"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      required
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="flex-1 mt-4 md:mt-0">
+                    <label className="block text-sm font-medium text-blue-900 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="input-base"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      required
+                      placeholder="you@email.com"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-blue-900 mb-1">
+                    Message
+                  </label>
+                  <textarea
+                    className="textarea-base"
+                    rows={3}
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    required
+                    placeholder="Type your message here..."
+                  />
+                </div>
+                <div className="flex justify-end mt-6">
+                  <button
+                    type="submit"
+                    className={`btn-primary min-w-[120px] flex items-center justify-center text-base px-6 py-2 ${
+                      contactLoading ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                    disabled={contactLoading}
+                  >
+                    {contactLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-200 border-r-2 border-blue-700"></span>
+                        Sending...
+                      </span>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </button>
+                </div>
+                {contactSuccess && (
+                  <div className="text-green-500 text-center font-medium mt-3">
+                    {contactSuccess}
+                  </div>
+                )}
+                {contactError && (
+                  <div className="text-red-500 text-center font-medium mt-3">
+                    {contactError}
+                  </div>
+                )}
+              </form>
+            </div>
+          </section>
         </main>
 
         <footer className="footer-base">

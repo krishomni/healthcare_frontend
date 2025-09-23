@@ -102,7 +102,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
               {/* Only render actual portfolios, no empty card */}
               {otherPortfolios
-                .filter((p) => p.title && p.summary) // filter out any empty/invalid portfolios
+                .filter((p) => p.title && p.name) // filter out any empty/invalid portfolios
                 .map((p, i) => (
                   <div
                     key={p._id || i}
