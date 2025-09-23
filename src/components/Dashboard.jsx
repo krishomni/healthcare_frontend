@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import { useState, useEffect, useContext } from "react";
-import { toast } from "react-toastify";
 import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext.jsx";
+import KebabMenu from "./KebabMenu.jsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -24,6 +24,7 @@ export default function Dashboard() {
     try {
       const res = await axios.get(`${backendUrl}/portfolio/all-portfolios`);
       const all = res.data;
+      console.log("Raw API response:", res.data);
 
       const mine = all.filter((p) => p.email === loggedInEmail);
       const others = all.filter((p) => p.email !== loggedInEmail);
@@ -47,9 +48,14 @@ export default function Dashboard() {
     navigate("/resume");
   };
 
+  // reminder: change this aswell in KebabMenu.jsx if you change this
   const handleCardClick = (portfolio) => {
     const username = portfolio.email.split("@")[0];
     navigate(`/portfolios/project-manager/${username}/${portfolio._id}`);
+  };
+
+  const handleKebabMenu = (portfolioId, portfolio) => {
+    console.log("Kebab menu clicked");
   };
 
   return (
@@ -102,16 +108,21 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
               {/* Only render actual portfolios, no empty card */}
               {otherPortfolios
+
                 .filter((p) => p.title && p.summary) // filter out any empty/invalid portfolios
                 .map((p, i) => (
                   <div
                     key={p._id || i}
-                    className="bg-white rounded-xl shadow-md p-6"
+                    className="bg-white rounded-xl shadow-md p-6 relative"
                     onClick={() => handleCardClick(p)}
                   >
-                    <div className="font-semibold text-slate-800 mb-2">
+                    <div className="absolute top-3  right-2">
+                      <KebabMenu portfolio={p} />
+                    </div>
+                    <div className="font-semibold text-slate-800 mb-2 mt-3">
                       {p.title}
                     </div>
+
                     <div className="text-slate-600">
                       {/* {p.summary && p.summary.length > 240
                         ? p.summary.slice(0, 240) + "…"
