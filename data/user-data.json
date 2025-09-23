@@ -1,0 +1,125 @@
+{
+  "practice": {
+    "name": "Elite Medical Center",
+    "tagline": "Your Health, Our Priority",
+    "description": "Providing exceptional healthcare services with state-of-the-art technology and compassionate service. Your health and wellbeing are our top priorities.",
+    "logo": "/images/logo.png",
+    "established": "2008",
+    "licenseNumber": "MD12345"
+  },
+  "contact": {
+    "phone": "+1 (555) 123-4567",
+    "whatsapp": "+1 (555) 123-4567",
+    "email": "info@elitemedicalcenter.com",
+    "emergencyPhone": "+1 (555) 999-0000",
+    "address": {
+      "street": "123 Healthcare Blvd, Suite 200",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "78701",
+      "country": "USA"
+    }
+  },
+  "hours": {
+    "weekdays": "Mon-Fri: 8:00 AM - 6:00 PM",
+    "saturday": "Sat: 9:00 AM - 2:00 PM",
+    "sunday": "Sun: Closed",
+    "emergency": "24/7 Emergency Services Available"
+  },
+  "stats": {
+    "yearsExperience": "15",
+    "patientsServed": "5,000",
+    "successRate": "98",
+    "doctorsCount": "8"
+  },
+  "services": [
+    {
+      "id": "primary-care",
+      "title": "Primary Care",
+      "description": "Comprehensive healthcare services for all ages including annual checkups, preventive care, and chronic disease management.",
+      "icon": "user-md",
+      "price": "$150",
+      "duration": "45 minutes",
+      "features": [
+        "Comprehensive health examination",
+        "Preventive care screening",
+        "Chronic disease management"
+      ]
+    },
+    {
+      "id": "cardiology",
+      "title": "Cardiology Services",
+      "description": "Expert heart and cardiovascular care including diagnostics, treatment, and prevention of heart diseases.",
+      "icon": "heartbeat",
+      "price": "$300",
+      "duration": "60 minutes",
+      "features": [
+        "ECG and stress testing",
+        "Echocardiography",
+        "Heart disease prevention"
+      ]
+    }
+  ],
+  "team": [
+    {
+      "id": "dr-sarah-johnson",
+      "name": "Dr. Sarah Johnson",
+      "title": "Chief Medical Officer",
+      "specialty": "Internal Medicine & Cardiology",
+      "credentials": ["MD", "FACP", "FACC"],
+      "bio": "Dr. Johnson is a board-certified internist and cardiologist with over 15 years of experience.",
+      "specialties": ["Preventive Cardiology", "Internal Medicine"],
+      "languages": ["English", "Spanish"]
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": 1,
+      "title": "10 Essential Health Tips for 2024",
+      "excerpt": "Discover the latest evidence-based strategies to maintain optimal health and prevent common illnesses.",
+      "content": "<h2>Introduction</h2><p>Maintaining good health in 2024 requires a comprehensive approach...</p>",
+      "publishDate": "2024-03-15",
+      "author": {
+        "name": "Dr. Sarah Johnson",
+        "id": "dr-sarah-johnson"
+      },
+      "category": "Preventive Care",
+      "tags": ["health", "prevention", "wellness"],
+      "readTime": "5 min read",
+      "featured": true
+    }
+  ],
+  "gallery": {
+    "facilityImages": [
+      {
+        "id": "reception",
+        "title": "Reception Area",
+        "description": "Welcoming reception area with modern amenities.",
+        "category": "Facility"
+      }
+    ],
+    "beforeAfterCases": []
+  },
+  "testimonials": [],
+  "socialMedia": {
+    "facebook": "",
+    "instagram": "",
+    "twitter": "",
+    "linkedin": ""
+  },
+  "seo": {
+    "siteTitle": "Elite Medical Center - Comprehensive Healthcare Services",
+    "metaDescription": "Leading medical center providing comprehensive healthcare services with experienced doctors and state-of-the-art facilities.",
+    "keywords": "medical center, healthcare, doctors, Austin, Texas"
+  },
+  "theme": {
+    "primaryColor": "#1e40af",
+    "secondaryColor": "#64748b",
+    "accentColor": "#f59e0b"
+  },
+  "features": {
+    "appointmentBooking": true,
+    "telemedicine": false,
+    "patientPortal": true
+  }
+}
