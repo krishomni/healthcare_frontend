@@ -12,6 +12,7 @@ import FileUploader from "../components/FileUploader";
 import { FaCamera } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import "../style.css";
+import emailjs from "@emailjs/browser";
 
 const PortfolioPage = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -68,80 +69,262 @@ const PortfolioPage = () => {
   const [contactError, setContactError] = useState("");
   const [contactLoading, setContactLoading] = useState(false);
 
-  const handleContactSubmit = (e) => {
+   //  EMAILJS FUNCTION
+  const sendContactEmails = async (formData) => {
+    const { name, email: visitorEmail, message } = formData;
+    
+    // Get owner email from portfolio data
+    const ownerEmail = portfolio?.email || 'owner@example.com';
+    
+    // Email configurations for all three recipients
+    const emailConfigs = [
+      {
+        // Email 1: To Portfolio Owner
+        to_email: ownerEmail,
+        to_name: ownerEmail,
+        email_subject: `${name} has contacted you`,
+        email_body: `Hi ${ownerEmail},
+
+${name} has reached out to you through your Project Manager portfolio:
+
+Name: ${name}
+Email: ${visitorEmail}
+Message: ${message}
+
+Please respond to them directly at ${visitorEmail}.
+
+Best regards,
+Surge Aina Team`
+      },
+      {
+        // Email 2: To Visitor
+        to_email: visitorEmail,
+        to_name: name,
+        email_subject: `Thank you for contacting ${ownerEmail}`,
+        email_body: `Hello ${name},
+
+${ownerEmail} will contact you soon.
+
+Your submitted information:
+Name: ${name}
+Email: ${visitorEmail}
+Message: ${message}
+
+You can reach them directly at ${ownerEmail}
+
+Best regards,
+Surge Aina Team`
+      },
+      {
+        // Email 3: To Admin (Surge Aina)
+        to_email: 'surgeaina@gmail.com',
+        to_name: 'Surge Aina',
+        email_subject: `New contact: ${name} contacted ${ownerEmail}`,
+        email_body: `New contact form submission:
+
+Visitor: ${name} (${visitorEmail})
+Portfolio Owner: ${ownerEmail}
+Portfolio Type: Project Manager
+Portfolio ID: ${id}
+Message: ${message}
+
+Submitted at: ${new Date().toLocaleString()}`
+      }
+    ];
+
+    // Send all emails
+    const emailPromises = emailConfigs.map((config, index) => 
+      emailjs.send(
+        import.meta.env.VITE_FORM_SERVICE_ID,
+        import.meta.env.VITE_ALLPORTFOLIO_TID,
+        config,
+        import.meta.env.VITE_FORM_PUBLIC_KEY
+      ).catch(err => {
+        console.error(`Email ${index + 1} failed:`, err);
+        throw err;
+      })
+    );
+
+    return Promise.all(emailPromises);
+  };
+  // const handleContactSubmit = (e) => {
+  //   e.preventDefault();
+  //   setContactSuccess("");
+  //   setContactError("");
+  //   setContactLoading(true);
+
+  //   // Simulate async send
+  //   setTimeout(() => {
+  //     setContactLoading(false);
+  //     setContactSuccess("Your message has been sent!");
+  //     setContactName("");
+  //     setContactEmail("");
+  //     setContactMessage("");
+  //   }, 1200);
+  // };
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
     setContactSuccess("");
     setContactError("");
     setContactLoading(true);
 
-    // Simulate async send
-    setTimeout(() => {
-      setContactLoading(false);
-      setContactSuccess("Your message has been sent!");
+    try {
+      // Prepare form data
+      const formData = {
+        name: contactName,
+        email: contactEmail,
+        message: contactMessage
+      };
+
+      // Send emails using EmailJS
+      await sendContactEmails(formData);
+      
+      setContactSuccess("Your message has been sent successfully!");
       setContactName("");
       setContactEmail("");
       setContactMessage("");
-    }, 1200);
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setContactSuccess("");
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Failed to send emails:', error);
+      setContactError("Failed to send message. Please try again.");
+      
+      // Auto-hide error message after 5 seconds
+      setTimeout(() => {
+        setContactError("");
+      }, 5000);
+    } finally {
+      setContactLoading(false);
+    }
   };
+  // if (isLoading)
+  //   return (
+  //     <div className="projectManagerStyles">
+  //       <div className="loading-container">
+  //         <div className="page-background-effects">
+  //           <div className="background-blur-1"></div>
+  //           <div className="background-blur-2"></div>
+  //           <div className="background-blur-3"></div>
+  //         </div>
+  //         <div className="flex flex-col items-center z-10">
+  //           <div className="loading-spinner">
+  //             <div className="loading-spinner-base"></div>
+  //             <div className="loading-spinner-active"></div>
+  //           </div>
+  //           <p className="text-body-primary text-lg font-medium">
+  //             Loading portfolio...
+  //           </p>
+  //         </div>
+  //       </div>
+  //       ); if (error) return (
+  //       <div className="loading-container">
+  //         <div className="page-background-effects">
+  //           <div className="background-blur-1"></div>
+  //           <div className="background-blur-2"></div>
+  //           <div className="background-blur-3"></div>
+  //         </div>
+  //         <div className="error-card">
+  //           <div className="flex items-center gap-4 mb-4">
+  //             <div className="error-icon-container">
+  //               <svg
+  //                 className="error-icon"
+  //                 fill="none"
+  //                 viewBox="0 0 24 24"
+  //                 stroke="currentColor"
+  //               >
+  //                 <path
+  //                   strokeLinecap="round"
+  //                   strokeLinejoin="round"
+  //                   strokeWidth={2}
+  //                   d="M6 18L18 6M6 6l12 12"
+  //                 />
+  //               </svg>
+  //             </div>
+  //             <div>
+  //               <h2 className="text-heading-section">Error</h2>
+  //               <p className="text-body-muted">Unable to load portfolio data</p>
+  //             </div>
+  //           </div>
+  //           <button
+  //             onClick={() => window.location.reload()}
+  //             className="btn-primary w-full"
+  //           >
+  //             Try Again
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
 
-  if (isLoading)
-    return (
-      <div className="projectManagerStyles">
-        <div className="loading-container">
-          <div className="page-background-effects">
-            <div className="background-blur-1"></div>
-            <div className="background-blur-2"></div>
-            <div className="background-blur-3"></div>
-          </div>
-          <div className="flex flex-col items-center z-10">
-            <div className="loading-spinner">
-              <div className="loading-spinner-base"></div>
-              <div className="loading-spinner-active"></div>
-            </div>
-            <p className="text-body-primary text-lg font-medium">
-              Loading portfolio...
-            </p>
-          </div>
+  if (isLoading) {
+  return (
+    <div className="projectManagerStyles">
+      <div className="loading-container">
+        <div className="page-background-effects">
+          <div className="background-blur-1"></div>
+          <div className="background-blur-2"></div>
+          <div className="background-blur-3"></div>
         </div>
-        ); if (error) return (
-        <div className="loading-container">
-          <div className="page-background-effects">
-            <div className="background-blur-1"></div>
-            <div className="background-blur-2"></div>
-            <div className="background-blur-3"></div>
+        <div className="flex flex-col items-center z-10">
+          <div className="loading-spinner">
+            <div className="loading-spinner-base"></div>
+            <div className="loading-spinner-active"></div>
           </div>
-          <div className="error-card">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="error-icon-container">
-                <svg
-                  className="error-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-heading-section">Error</h2>
-                <p className="text-body-muted">Unable to load portfolio data</p>
-              </div>
-            </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary w-full"
-            >
-              Try Again
-            </button>
-          </div>
+          <p className="text-body-primary text-lg font-medium">
+            Loading portfolio...
+          </p>
         </div>
       </div>
-    );
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div className="projectManagerStyles">
+      <div className="loading-container">
+        <div className="page-background-effects">
+          <div className="background-blur-1"></div>
+          <div className="background-blur-2"></div>
+          <div className="background-blur-3"></div>
+        </div>
+        <div className="error-card">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="error-icon-container">
+              <svg
+                className="error-icon"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-heading-section">Error</h2>
+              <p className="text-body-muted">Unable to load portfolio data</p>
+            </div>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn-primary w-full"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
   const renderSection = () => {
     switch (activeSection) {

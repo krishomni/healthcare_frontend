@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
-import { v4 as uuidv4 } from "uuid";
 
 export default function ResumeUpload() {
   const apiUrl = import.meta.env.VITE_BACKEND_API;

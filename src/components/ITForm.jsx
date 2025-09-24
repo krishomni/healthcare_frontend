@@ -68,29 +68,53 @@ try {
       const companyTemplateId = import.meta.env.VITE_FORM_COMPANY_TID;
       const userTemplateId = import.meta.env.VITE_FORM_USER_TID;
   // Get user details 
-      const userName = contextLoggedIn ? user?.name || user?.email : form.name;
-      const userEmail = contextLoggedIn ? user?.email : form.email;
+      const userName = contextLoggedIn ? stored.name || stored.email : form.name;
+const userEmail = contextLoggedIn ? stored.email : form.email;
 
   //template parameters for company email
  const companyTemplateParams = {
-        user_name: userName,
-        user_email: userEmail,
-        request_type: form.requestType,
-        portfolio_id: form.portfolioId || 'Not specified',
-        message: form.message,
-        submission_date: new Date().toLocaleString(),
-        user_status: contextLoggedIn ? 'Logged In User' : 'Guest User'
-      };
+  user_name: userName,
+  user_email: userEmail,
+  request_type: form.requestType,
+  portfolio_id: form.portfolioId || 'Not specified',
+  message: form.message,
+  submission_date: new Date().toLocaleString(),
+  user_status: contextLoggedIn ? 'Logged In User' : 'Guest User',
+  company_message: `New support request received:
+
+User Details:
+- Name: ${userName}
+- Email: ${userEmail}
+- Status: ${contextLoggedIn ? 'Logged In User' : 'Guest User'}
+
+Request Details:
+- Type: ${form.requestType}
+- Portfolio ID: ${form.portfolioId || 'Not specified'}
+- Submitted: ${new Date().toLocaleString()}
+
+Message:
+${form.message}
+
+---
+This is an automated message from your support system.`
+};
     //template parameters for user confirmation emao;
-    const userTemplateParams = {
-        user_name: userName,
-        user_email: userEmail,
-        request_type: form.requestType,
-        portfolio_id: form.portfolioId || 'Not specified',
-        message: form.message,
-        submission_date: new Date().toLocaleString(),
-        company_name: 'Surge Aina Support Team' // company name
-      };
+   const userTemplateParams = {
+  name: userName,
+  user_email: userEmail,
+  team_name: "Find Virtual Me Support Team",
+  custom_message: `Thank you for contacting Find Virtual Me Support Team! We have received your support request and will get back to you soon.
+
+Here are the details of your submission:
+Request Type: ${form.requestType}
+Portfolio ID: ${form.portfolioId || 'Not specified'}
+Submitted: ${new Date().toLocaleString()}
+
+Your Message:
+${form.message}
+
+Our team will review your request and respond within 24-48 hours.`
+};
       // Send email to company
       await emailjs.send(
         serviceId,//EmailJS service ID
