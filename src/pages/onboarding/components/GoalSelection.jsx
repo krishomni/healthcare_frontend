@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Search, TrendingUp, Briefcase, Users, ChevronRight } from "lucide-react";
+import axios from "axios";
 
-export const goals = [
+const goals = [
   {
     id: "find-job",
     title: "Find a job",
@@ -41,6 +42,50 @@ export const goals = [
 ];
 
 export default function GoalSelection({ onSelect }) {
+  const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+
+  const handleResumeChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    setFile(selectedFile);
+    setResumeFileName(selectedFile.name);
+    setResumeUploaded(false);
+    setUploadError("");
+    handleResumeUpload(selectedFile);
+  };
+
+  const handleResumeUpload = async (selectedFile) => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("resume", selectedFile);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_API}/portfolio/upload-pdf`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+      );
+      if (res.status !== 200 && res.status !== 201) throw new Error("Upload failed");
+      setResumeUploaded(true);
+    } catch (err) {
+      setResumeUploaded(false);
+      setUploadError(
+        err?.response?.data?.message ||
+        err?.message ||
+        "Resume upload failed. Please try again."
+      );
+      console.log("Resume upload error:", err?.response?.data || err.message || err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* fade-in animation for header */}
@@ -94,11 +139,37 @@ export default function GoalSelection({ onSelect }) {
             type="file"
             accept="application/pdf"
             className="hidden"
+            onChange={handleResumeChange}
+            disabled={loading}
           />
-          <span className="px-6 py-2 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 cursor-pointer font-mono text-base font-semibold inline-block transition-all">
-            Choose PDF File
+          <span className={`px-6 py-2 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 cursor-pointer font-mono text-base font-semibold inline-block transition-all ${loading ? "opacity-70 cursor-not-allowed" : ""}`}>
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-400 border-r-2 border-blue-800"></span>
+                <span className="text-blue-200 font-semibold animate-pulse">
+                  Uploading...
+                </span>
+              </span>
+            ) : (
+              "Choose PDF File"
+            )}
           </span>
         </label>
+        {resumeUploaded && (
+          <>
+            <div className="mt-4 text-green-600 font-semibold">
+              Resume "{resumeFileName}" uploaded successfully!
+            </div>
+            <div className="mt-2 text-blue-700 text-sm font-medium">
+              You can continue with onboarding while we process your resume in the background.
+            </div>
+          </>
+        )}
+        {uploadError && (
+          <div className="mt-4 text-red-600 font-semibold">
+            {uploadError}
+          </div>
+        )}
       </div>
       {/* tailwind animation */}
       <style>
