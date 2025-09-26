@@ -219,14 +219,6 @@ export default function Home() {
           Admin
         </Link>
 
-        {/* Search Button */}
-        <button
-          onClick={() => setShowSearch(!showSearch)}
-          className="fixed top-24 right-4 z-50 bg-green-500 text-white p-3 rounded-full shadow-lg transition-colors hover:bg-green-600"
-          title="Search"
-        >
-          <FaSearch />
-        </button>
 
 
         {/* Debug Info - Only in Development */}
