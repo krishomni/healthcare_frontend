@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaUser, FaCalendarAlt, FaComment } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
+import { api } from '../lib/api'
+
 
 export default function Contact() {
   const [userData, setUserData] = useState(null)
@@ -152,19 +154,21 @@ export default function Contact() {
 
                   {/* Address */}
                   {userData.contact?.address && (
-  <div className="flex items-start">
-    <div className="bg-blue-100 rounded-lg p-3 mr-4">
-      <FaMapMarkerAlt className="text-blue-600 text-xl" />
-    </div>
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-1">Address</h3>
-      <p className="text-gray-700">
-        {userData.contact.address.street}<br />
-        {userData.contact.address.city}, {userData.contact.address.state} {userData.contact.address.zip}
-      </p>
-    </div>
-  </div>
-)}
+                    <div className="flex items-start">
+                      <div className="bg-blue-100 rounded-lg p-3 mr-4">
+                        <FaMapMarkerAlt className="text-blue-600 text-xl" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">Address</h3>
+                        <p className="text-gray-700">
+                          {userData.contact.address.street}<br />
+                          {userData.contact.address.city}, {userData.contact.address.state} {userData.contact.address.zip}
+                        </p>
+                        <p className="text-gray-600 text-sm mt-1">Visit us in person</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Hours */}
                   <div className="flex items-start">
                     <div className="bg-blue-100 rounded-lg p-3 mr-4">

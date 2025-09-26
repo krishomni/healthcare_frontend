@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { FaImage, FaCalendarAlt, FaClock, FaUser } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
+import { api } from '../lib/api'
+
 
 export default function Blog() {
   const [userData, setUserData] = useState(null)
@@ -16,17 +18,17 @@ export default function Blog() {
     loadData()
   }, [])
 
-  const loadData = async () => {
-    try {
-      const response = await fetch('/api/user-data')
-      const data = await response.json()
-      setUserData(data)
-    } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setLoading(false)
-    }
+
+const loadData = async () => {
+  try {
+    const data = await api.getUserData()
+    setUserData(data)
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   if (loading) {
     return (
