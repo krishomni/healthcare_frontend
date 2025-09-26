@@ -1,5 +1,5 @@
-import Gallery from '@/components/admin/GalleryEditor'
-import { getData } from '@/lib/data'
+import Gallery from '../components/admin/GalleryEditor'
+import { getData } from '../lib/data'
 
 export default function GalleryPage({ galleryData }) {
   return (
