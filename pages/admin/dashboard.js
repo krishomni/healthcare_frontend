@@ -16,7 +16,7 @@ const tabs = [
   { id: 'services', label: 'Services', icon: FaCog },
   { id: 'blog', label: 'Blog Posts', icon: FaFileAlt },
   { id: 'gallery', label: 'Gallery', icon: FaImages },
-  { id: 'ui', label: 'Buttons & Links', icon: FaEdit }, // ADD THIS
+  { id: 'ui', label: 'Buttons & Links', icon: FaEdit },
   { id: 'seo', label: 'SEO Settings', icon: FaSearch }
 ]
 export default function AdminDashboard() {
@@ -363,7 +363,7 @@ export default function AdminDashboard() {
 
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Description *
+        Description 
       </label>
       <textarea
         value={userData?.practice?.description || ''}
@@ -424,7 +424,6 @@ export default function AdminDashboard() {
   </div>
 )}
 
-                {/* Contact & Hours Tab */}
                 {/* Contact & Hours Tab */}
 {activeTab === 'contact' && (
   <div className="space-y-6">
