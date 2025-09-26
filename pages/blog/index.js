@@ -1,5 +1,5 @@
-import Blog from '@/components/Blog'
-import { getData } from '@/lib/data'
+import Blog from '../../components/Blog'
+import { getData } from '../../lib/data'
 
 export default function BlogPage({ blogData }) {
   return (
