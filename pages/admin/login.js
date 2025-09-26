@@ -11,25 +11,24 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
+const handleLogin = async (e) => {
+  e.preventDefault()
+  setLoading(true)
   try {
     const result = await api.adminLogin(credentials)
     if (result.success) {
       localStorage.setItem('adminToken', result.token)
       router.push('/admin/dashboard')
     } else {
-      setError(result.message)
+      setError('Invalid credentials')
     }
-  } catch (err) {
-    setError('Login failed. Please try again.')
+  } catch (error) {
+    setError('Login failed')
   } finally {
     setLoading(false)
   }
 }
+
 
   // Auto-fill for testing
   const handleQuickFill = () => {

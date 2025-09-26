@@ -15,7 +15,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [dataSource, setDataSource] = useState(null)
 
-  // Load data from API or fallback to localStorage/default
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -67,7 +66,46 @@ export default function Home() {
     }
     return icons[iconName] || FaUserMd
   }
-
+  const loadData = async () => {
+  try {
+    console.log('Loading homepage data...')
+    setLoading(true)
+    
+    // Use local Vercel API route (not external URL)
+    const response = await fetch('/api/user-data')
+    
+    if (response.ok) {
+      const data = await response.json()
+      console.log('Data loaded:', {
+        practice: data.practice?.name,
+        services: data.services?.length || 0,
+        gallery: data.gallery ? 'EXISTS' : 'MISSING'
+      })
+      setUserData(data)
+      setDataSource('API')
+    } else {
+      throw new Error('API call failed')
+    }
+  } catch (error) {
+    console.error('Error loading data:', error)
+    
+    // Set default data if API fails
+    setUserData({
+      practice: { name: 'Healthcare Practice', tagline: 'Loading...', description: 'Please refresh the page.' },
+      stats: { yearsExperience: '0', patientsServed: '0', successRate: '0', doctorsCount: '0' },
+      services: [], 
+      gallery: { facilityImages: [], beforeAfterCases: [] },
+      ui: {
+        homepage: { primaryButtonText: 'Get Started', secondaryButtonText: 'Learn More' },
+        services: { consultationButtonText: 'Schedule Consultation' },
+        blog: { readMoreText: 'Read More', linkTarget: '_self' }
+      }
+    })
+    setDataSource('Default')
+  } finally {
+    setLoading(false)
+  }
+}
   const statsData = [
     { icon: FaCalendarCheck, value: userData?.stats?.yearsExperience || 0, label: 'Years Experience' },
     { icon: FaUsers, value: userData?.stats?.patientsServed || 0, label: 'Patients Served' },
