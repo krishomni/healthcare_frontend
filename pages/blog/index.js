@@ -1,104 +1,122 @@
-import { useState } from 'react'
+// pages/blog/index.js - Fixed to load from your MongoDB backend
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { FaSearch, FaFilter, FaImage } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaImage, FaCalendar, FaUser, FaClock, FaTag } from 'react-icons/fa'
 import Navbar from '../../components/Navbar'
 import ScrollToTop from '../../components/ScrollToTop'
-import siteConfig from '../../config/site-config'
 
 export default function BlogIndex() {
+  const [userData, setUserData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: "10 Essential Health Tips for 2024",
-      excerpt: "Discover the latest evidence-based strategies to maintain optimal health and prevent common illnesses throughout the year.",
-      date: "2024-03-15",
-      category: "Preventive Care",
-      author: "Dr. Sarah Johnson",
-      image: "/images/blog1.jpg",
-      readTime: "5 min read",
-      tags: ["health", "prevention", "wellness"]
-    },
-    {
-      id: 2,
-      title: "Understanding Heart Health: A Comprehensive Guide",
-      excerpt: "Learn about cardiovascular health, risk factors, symptoms to watch for, and evidence-based strategies to keep your heart strong.",
-      date: "2024-03-10",
-      category: "Cardiology",
-      author: "Dr. Michael Chen",
-      image: "/images/blog2.jpg",
-      readTime: "7 min read",
-      tags: ["heart", "cardiology", "health"]
-    },
-    {
-      id: 3,
-      title: "Mental Health Awareness: Breaking the Stigma",
-      excerpt: "Understanding mental health, recognizing signs of common conditions, and finding resources for emotional wellbeing and support.",
-      date: "2024-03-05",
-      category: "Mental Health",
-      author: "Dr. Emily Rodriguez",
-      image: "/images/blog3.jpg",
-      readTime: "6 min read",
-      tags: ["mental health", "wellness", "support"]
-    },
-    {
-      id: 4,
-      title: "Nutrition Myths Debunked by Science",
-      excerpt: "Separating fact from fiction in nutrition science. Learn what current research really says about popular diet trends.",
-      date: "2024-02-28",
-      category: "Nutrition",
-      author: "Dr. Sarah Johnson",
-      image: "/images/blog4.jpg",
-      readTime: "8 min read",
-      tags: ["nutrition", "diet", "science"]
-    },
-    {
-      id: 5,
-      title: "Exercise and Aging: Staying Active After 50",
-      excerpt: "How to maintain fitness, prevent injury, and enjoy an active lifestyle as you age. Evidence-based exercise recommendations.",
-      date: "2024-02-20",
-      category: "Fitness",
-      author: "Dr. Michael Chen",
-      image: "/images/blog5.jpg",
-      readTime: "6 min read",
-      tags: ["exercise", "aging", "fitness"]
-    },
-    {
-      id: 6,
-      title: "Sleep Health: The Foundation of Wellness",
-      excerpt: "Understanding sleep science, common sleep disorders, and practical strategies to improve your sleep quality and duration.",
-      date: "2024-02-15",
-      category: "Sleep Health",
-      author: "Dr. Emily Rodriguez",
-      image: "/images/blog6.jpg",
-      readTime: "7 min read",
-      tags: ["sleep", "wellness", "health"]
-    }
-  ]
+  useEffect(() => {
+    loadData()
+  }, [])
 
-  const categories = ['All', ...new Set(blogPosts.map(post => post.category))]
+  const loadData = async () => {
+    try {
+      console.log('📚 Loading blog data from API...')
+      const response = await fetch('/api/user-data')
+      
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ Blog data loaded:', {
+        totalPosts: data.blogPosts?.length || 0,
+        posts: data.blogPosts?.map(p => p.title)
+      })
+      
+      setUserData(data)
+      setError(null)
+    } catch (err) {
+      console.error('❌ Error loading blog data:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading blog posts...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Blog</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={loadData}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!userData || !userData.blogPosts || userData.blogPosts.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar userData={userData} />
+        <div className="pt-32 pb-16 max-w-4xl mx-auto px-4 text-center">
+          <div className="bg-white rounded-xl shadow-lg p-12">
+            <FaFileAlt className="text-6xl text-gray-300 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">No Blog Posts Yet</h1>
+            <p className="text-gray-600 mb-8">
+              Start sharing your expertise by creating your first blog post in the admin panel.
+            </p>
+            <Link 
+              href="/admin/dashboard" 
+              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold"
+            >
+              Go to Admin Panel
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const blogPosts = userData.blogPosts || []
+  const categories = ['All', ...new Set(blogPosts.map(post => post.category).filter(Boolean))]
 
   const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchesSearch = 
+      post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    
     const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory
+    
     return matchesSearch && matchesCategory
   })
 
   return (
     <>
       <Head>
-        <title>Health Blog - {siteConfig.practice.name}</title>
+        <title>Health Blog - {userData.practice?.name || 'Healthcare Practice'}</title>
         <meta name="description" content="Expert health advice, medical insights, and wellness tips from our healthcare professionals." />
       </Head>
 
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
+        <Navbar userData={userData} />
         
         {/* Hero Section */}
         <motion.section 
@@ -116,7 +134,7 @@ export default function BlogIndex() {
             >
               <h1 className="text-4xl lg:text-6xl font-bold mb-6">Health & Wellness Blog</h1>
               <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-                Expert medical advice, health tips, and the latest healthcare insights from our team of professionals
+                Expert medical advice, health tips, and the latest healthcare insights
               </p>
             </motion.div>
           </div>
@@ -132,7 +150,7 @@ export default function BlogIndex() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1 max-w-md w-full">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
@@ -144,7 +162,7 @@ export default function BlogIndex() {
               </div>
 
               {/* Category Filter */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap justify-center">
                 <FaFilter className="text-gray-500" />
                 <span className="text-gray-700 font-medium">Filter:</span>
                 {categories.map(category => (
@@ -168,61 +186,7 @@ export default function BlogIndex() {
         {/* Blog Posts Grid */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-            >
-              {filteredPosts.map((post, index) => (
-                <motion.article 
-                  key={post.id}
-                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    <FaImage className="text-4xl text-blue-600 opacity-50" />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
-                        {post.category}
-                      </span>
-                      <span className="text-gray-500 text-sm">{post.readTime}</span>
-                    </div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                      {post.title}
-                    </h2>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-gray-500 text-sm">By {post.author}</span>
-                      <span className="text-gray-500 text-sm">{post.date}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.map(tag => (
-                        <span key={tag} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                    <Link
-                      href={`/blog/${post.id}`}
-                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-                    >
-                      Read Full Article →
-                    </Link>
-                  </div>
-                </motion.article>
-              ))}
-            </motion.div>
-
-            {/* No Results */}
-            {filteredPosts.length === 0 && (
+            {filteredPosts.length === 0 ? (
               <motion.div 
                 className="text-center py-16"
                 initial={{ opacity: 0 }}
@@ -240,6 +204,79 @@ export default function BlogIndex() {
                 >
                   Clear Filters
                 </button>
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
+                {filteredPosts.map((post, index) => (
+                  <motion.article 
+                    key={post.id}
+                    className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                      <FaImage className="text-4xl text-blue-600 opacity-50" />
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        {post.category && (
+                          <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                            {post.category}
+                          </span>
+                        )}
+                        {post.readTime && (
+                          <span className="text-gray-500 text-sm flex items-center">
+                            <FaClock className="mr-1" />
+                            {post.readTime}
+                          </span>
+                        )}
+                      </div>
+                      <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </h2>
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
+                        {post.author?.name && (
+                          <span className="flex items-center">
+                            <FaUser className="mr-1" />
+                            {post.author.name}
+                          </span>
+                        )}
+                        {post.publishDate && (
+                          <span className="flex items-center">
+                            <FaCalendar className="mr-1" />
+                            {new Date(post.publishDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {post.tags.slice(0, 3).map((tag, idx) => (
+                            <span key={idx} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs flex items-center">
+                              <FaTag className="mr-1" />
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <Link
+                        href={`/blog/${post.slug || post.id}`}
+                        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                      >
+                        Read Full Article →
+                      </Link>
+                    </div>
+                  </motion.article>
+                ))}
               </motion.div>
             )}
           </div>
