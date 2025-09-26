@@ -6,6 +6,7 @@ import { FaPhone, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaClock, FaCheck, FaAr
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
 import siteConfig from '../config/site-config'
+import { api } from '../lib/api'
 
 export default function Contact() {
   const [formData, setFormData] = useState({

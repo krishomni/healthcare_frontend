@@ -17,27 +17,15 @@ export default function Services() {
   }, [])
 
   const loadData = async () => {
-    try {
-      const data = await api.getUserData()
-      setUserData(data)
-    } catch (error) {
-      console.error('Error loading data:', error)
-      // Set fallback data
-      setUserData({
-        practice: { name: 'Healthcare Practice' },
-        contact: { phone: '+1234567890', email: 'info@practice.com' },
-        services: [],
-        ui: {
-          services: {
-            consultationButtonText: 'Schedule Consultation',
-            consultationAction: 'phone'
-          }
-        }
-      })
-    } finally {
-      setLoading(false)
-    }
+  try {
+    const data = await api.getUserData()
+    setUserData(data)
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const getServiceIcon = (iconName) => {
     const icons = {

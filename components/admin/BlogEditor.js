@@ -1,4 +1,3 @@
-// components/admin/BlogEditor.js - FIXED VERSION
 import { useState } from 'react'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaEye } from 'react-icons/fa'
 
