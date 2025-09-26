@@ -5,11 +5,82 @@ import { motion } from 'framer-motion'
 import { FaSearch, FaFilter, FaImage } from 'react-icons/fa'
 import Navbar from '../../components/Navbar'
 import ScrollToTop from '../../components/ScrollToTop'
-import { getUserData, getBlogPosts, getBlogCategories } from '../../lib/data'
+import siteConfig from '../../config/site-config'
 
-export default function BlogIndex({ userData, blogPosts, categories }) {
+export default function BlogIndex() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
+
+  const blogPosts = [
+    {
+      id: 1,
+      title: "10 Essential Health Tips for 2024",
+      excerpt: "Discover the latest evidence-based strategies to maintain optimal health and prevent common illnesses throughout the year.",
+      date: "2024-03-15",
+      category: "Preventive Care",
+      author: "Dr. Sarah Johnson",
+      image: "/images/blog1.jpg",
+      readTime: "5 min read",
+      tags: ["health", "prevention", "wellness"]
+    },
+    {
+      id: 2,
+      title: "Understanding Heart Health: A Comprehensive Guide",
+      excerpt: "Learn about cardiovascular health, risk factors, symptoms to watch for, and evidence-based strategies to keep your heart strong.",
+      date: "2024-03-10",
+      category: "Cardiology",
+      author: "Dr. Michael Chen",
+      image: "/images/blog2.jpg",
+      readTime: "7 min read",
+      tags: ["heart", "cardiology", "health"]
+    },
+    {
+      id: 3,
+      title: "Mental Health Awareness: Breaking the Stigma",
+      excerpt: "Understanding mental health, recognizing signs of common conditions, and finding resources for emotional wellbeing and support.",
+      date: "2024-03-05",
+      category: "Mental Health",
+      author: "Dr. Emily Rodriguez",
+      image: "/images/blog3.jpg",
+      readTime: "6 min read",
+      tags: ["mental health", "wellness", "support"]
+    },
+    {
+      id: 4,
+      title: "Nutrition Myths Debunked by Science",
+      excerpt: "Separating fact from fiction in nutrition science. Learn what current research really says about popular diet trends.",
+      date: "2024-02-28",
+      category: "Nutrition",
+      author: "Dr. Sarah Johnson",
+      image: "/images/blog4.jpg",
+      readTime: "8 min read",
+      tags: ["nutrition", "diet", "science"]
+    },
+    {
+      id: 5,
+      title: "Exercise and Aging: Staying Active After 50",
+      excerpt: "How to maintain fitness, prevent injury, and enjoy an active lifestyle as you age. Evidence-based exercise recommendations.",
+      date: "2024-02-20",
+      category: "Fitness",
+      author: "Dr. Michael Chen",
+      image: "/images/blog5.jpg",
+      readTime: "6 min read",
+      tags: ["exercise", "aging", "fitness"]
+    },
+    {
+      id: 6,
+      title: "Sleep Health: The Foundation of Wellness",
+      excerpt: "Understanding sleep science, common sleep disorders, and practical strategies to improve your sleep quality and duration.",
+      date: "2024-02-15",
+      category: "Sleep Health",
+      author: "Dr. Emily Rodriguez",
+      image: "/images/blog6.jpg",
+      readTime: "7 min read",
+      tags: ["sleep", "wellness", "health"]
+    }
+  ]
+
+  const categories = ['All', ...new Set(blogPosts.map(post => post.category))]
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -22,12 +93,12 @@ export default function BlogIndex({ userData, blogPosts, categories }) {
   return (
     <>
       <Head>
-        <title>Health Blog - {userData.practice.name}</title>
+        <title>Health Blog - {siteConfig.practice.name}</title>
         <meta name="description" content="Expert health advice, medical insights, and wellness tips from our healthcare professionals." />
       </Head>
 
       <div className="min-h-screen bg-gray-50">
-        <Navbar userData={userData} />
+        <Navbar />
         
         {/* Hero Section */}
         <motion.section 
@@ -129,8 +200,8 @@ export default function BlogIndex({ userData, blogPosts, categories }) {
                       {post.excerpt}
                     </p>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-gray-500 text-sm">By {post.author.name}</span>
-                      <span className="text-gray-500 text-sm">{post.publishDate}</span>
+                      <span className="text-gray-500 text-sm">By {post.author}</span>
+                      <span className="text-gray-500 text-sm">{post.date}</span>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {post.tags.map(tag => (
@@ -178,19 +249,4 @@ export default function BlogIndex({ userData, blogPosts, categories }) {
       </div>
     </>
   )
-}
-
-// Get data at build time
-export async function getStaticProps() {
-  const userData = getUserData()
-  const blogPosts = getBlogPosts()
-  const categories = getBlogCategories()
-
-  return {
-    props: {
-      userData,
-      blogPosts,
-      categories
-    }
-  }
 }

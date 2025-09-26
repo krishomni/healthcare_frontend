@@ -70,40 +70,6 @@ const siteConfig = {
     }
   ],
 
-  // TEAM MEMBERS - Add your doctors/staff
-  team: [
-    {
-      name: "Dr. [Your Name]", // Doctor's name
-      specialty: "Chief Medical Officer", // Their title/specialty
-      credentials: "MD, Board Certified", // Their credentials
-      bio: "Board-certified physician with over 15 years of experience providing comprehensive healthcare. Graduated from [Medical School] and specializes in [your specialties].", // Doctor's bio
-      specialties: ["Internal Medicine", "Preventive Care"], // List of specialties
-      availability: "Mon-Fri: 8:00 AM - 5:00 PM", // When they're available
-      languages: "English, Spanish", // Languages they speak
-      image: "/images/doctor1.jpg" // Add doctor's photo to public/images/
-    },
-    {
-      name: "Dr. [Second Doctor Name]",
-      specialty: "Specialist", 
-      credentials: "MD, Fellowship Trained",
-      bio: "Experienced specialist with expertise in [specialty area]. Dedicated to providing personalized, compassionate care.",
-      specialties: ["Specialty 1", "Specialty 2"],
-      availability: "Mon-Thu: 9:00 AM - 6:00 PM", 
-      languages: "English",
-      image: "/images/doctor2.jpg"
-    },
-    {
-      name: "Dr. [Third Doctor Name]",
-      specialty: "Another Specialty",
-      credentials: "MD, Board Certified", 
-      bio: "Dedicated healthcare professional committed to excellent patient care and the latest medical treatments.",
-      specialties: ["Specialty A", "Specialty B"],
-      availability: "Tue-Sat: 8:00 AM - 4:00 PM",
-      languages: "English, [Other Language]",
-      image: "/images/doctor3.jpg"
-    }
-  ],
-
   // THEME COLORS - Customize your website colors
   theme: {
     primary: "#1e40af", // Main blue color (or change to your brand color)

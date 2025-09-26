@@ -1,36 +1,30 @@
 {
   "practice": {
-    "name": "Elite Medical Center",
-    "tagline": "Your Health, Our Priority",
-    "description": "Providing exceptional healthcare services with state-of-the-art technology and compassionate service. Your health and wellbeing are our top priorities.",
-    "logo": "/images/logo.png",
-    "established": "2008",
-    "licenseNumber": "MD12345"
+    "name": "Surge Aina medical ",
+    "tagline": "Health is precious",
+    "description": "Providing exceptional healthcare services with state-of-the-art technology and compassionate care!"
   },
   "contact": {
-    "phone": "+1 (555) 123-4567",
+    "phone": "5554321789",
     "whatsapp": "+1 (555) 123-4567",
-    "email": "info@elitemedicalcenter.com",
-    "emergencyPhone": "+1 (555) 999-0000",
+    "email": "surgeaina@yahoo.com",
     "address": {
       "street": "123 Healthcare Blvd, Suite 200",
       "city": "Austin",
       "state": "TX",
-      "zip": "78701",
-      "country": "USA"
+      "zip": "78701"
     }
   },
   "hours": {
-    "weekdays": "Mon-Fri: 8:00 AM - 6:00 PM",
-    "saturday": "Sat: 9:00 AM - 2:00 PM",
-    "sunday": "Sun: Closed",
-    "emergency": "24/7 Emergency Services Available"
+    "weekdays": "Mon-Fri: 9:00 AM - 6:00 PM",
+    "saturday": "Sat: 10:00 AM - 6:00 PM",
+    "sunday": "Sun: Closed"
   },
   "stats": {
-    "yearsExperience": "15",
-    "patientsServed": "5,000",
-    "successRate": "98",
-    "doctorsCount": "8"
+    "yearsExperience": "10",
+    "patientsServed": "100",
+    "successRate": "96",
+    "doctorsCount": "30"
   },
   "services": [
     {
@@ -43,83 +37,138 @@
       "features": [
         "Comprehensive health examination",
         "Preventive care screening",
-        "Chronic disease management"
+        "Chronic disease management",
+        "Health education and counseling"
       ]
     },
     {
-      "id": "cardiology",
-      "title": "Cardiology Services",
-      "description": "Expert heart and cardiovascular care including diagnostics, treatment, and prevention of heart diseases.",
-      "icon": "heartbeat",
-      "price": "$300",
+      "id": "dental-care",
+      "title": "Dental Care",
+      "description": "Complete dental services including cleanings, fillings, crowns, and cosmetic procedures.",
+      "icon": "tooth",
+      "price": "$200",
       "duration": "60 minutes",
       "features": [
-        "ECG and stress testing",
-        "Echocardiography",
-        "Heart disease prevention"
+        "Regular dental cleanings",
+        "Cavity treatments and fillings",
+        "Cosmetic dental procedures",
+        "Dental implants and crowns"
       ]
-    }
-  ],
-  "team": [
+    },
     {
-      "id": "dr-sarah-johnson",
-      "name": "Dr. Sarah Johnson",
-      "title": "Chief Medical Officer",
-      "specialty": "Internal Medicine & Cardiology",
-      "credentials": ["MD", "FACP", "FACC"],
-      "bio": "Dr. Johnson is a board-certified internist and cardiologist with over 15 years of experience.",
-      "specialties": ["Preventive Cardiology", "Internal Medicine"],
-      "languages": ["English", "Spanish"]
+      "id": "service-1758846796704",
+      "title": "Emergency Services",
+      "description": "ER",
+      "icon": "user-md",
+      "price": "",
+      "duration": "",
+      "features": []
     }
   ],
   "blogPosts": [
     {
       "id": 1,
       "title": "10 Essential Health Tips for 2024",
+      "slug": "health-tips-2024",
       "excerpt": "Discover the latest evidence-based strategies to maintain optimal health and prevent common illnesses.",
-      "content": "<h2>Introduction</h2><p>Maintaining good health in 2024 requires a comprehensive approach...</p>",
+      "content": "<h2>Introduction</h2><p>Maintaining good health requires a comprehensive approach that includes regular exercise, proper nutrition, adequate sleep, and preventive care...</p>",
       "publishDate": "2024-03-15",
       "author": {
-        "name": "Dr. Sarah Johnson",
-        "id": "dr-sarah-johnson"
+        "name": "Dr. Sarah Johnson"
       },
-      "category": "Preventive Care",
-      "tags": ["health", "prevention", "wellness"],
+      "category": "Health Tips",
+      "tags": [
+        "health",
+        "prevention",
+        "wellness"
+      ],
       "readTime": "5 min read",
       "featured": true
+    },
+    {
+      "id": 2,
+      "title": "The Importance of Regular Dental Checkups",
+      "slug": "dental-checkups-importance",
+      "excerpt": "Learn why regular dental visits are crucial for maintaining overall health and preventing serious dental issues.",
+      "content": "<h2>Why Regular Checkups Matter</h2><p>Regular dental checkups are essential for maintaining good oral health and can help prevent serious dental problems...</p>",
+      "publishDate": "2024-03-10",
+      "author": {
+        "name": "Dr. Michael Chen"
+      },
+      "category": "Dental Health",
+      "tags": [
+        "dental",
+        "preventive care",
+        "oral health"
+      ],
+      "readTime": "4 min read",
+      "featured": true
+    },
+    {
+      "id": 1758846811688,
+      "title": "",
+      "slug": "k",
+      "excerpt": "Our success stories",
+      "content": "",
+      "publishDate": "2025-09-26",
+      "author": {
+        "name": ""
+      },
+      "category": "",
+      "tags": [],
+      "readTime": "5 min read",
+      "featured": false
     }
   ],
   "gallery": {
     "facilityImages": [
       {
-        "id": "reception",
-        "title": "Reception Area",
-        "description": "Welcoming reception area with modern amenities.",
-        "category": "Facility"
+        "url": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800",
+        "caption": "Modern Reception Area",
+        "description": "Our welcoming reception area designed for patient comfort and privacy"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
+        "caption": "Advanced Equipment Room",
+        "description": "State-of-the-art medical technology for precise diagnostics and treatment"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800",
+        "caption": "Private Consultation Room",
+        "description": "Comfortable and confidential spaces for patient consultations"
       }
     ],
-    "beforeAfterCases": []
-  },
-  "testimonials": [],
-  "socialMedia": {
-    "facebook": "",
-    "instagram": "",
-    "twitter": "",
-    "linkedin": ""
+    "beforeAfterCases": [
+      {
+        "title": "Complete Smile Makeover",
+        "treatment": "Dental Veneers & Whitening",
+        "duration": "6 weeks",
+        "description": "Patient received comprehensive cosmetic dental treatment including porcelain veneers and professional whitening for a complete smile transformation.",
+        "beforeImage": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=400"
+      },
+      {
+        "title": "Orthodontic Treatment Success",
+        "treatment": "Clear Aligners",
+        "duration": "12 months",
+        "description": "Complete teeth alignment achieved using modern clear aligner technology with excellent patient compliance.",
+        "beforeImage": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400"
+      },
+      {
+        "title": "Dental Restoration",
+        "treatment": "Implants & Crowns",
+        "duration": "4 months",
+        "description": "Multiple missing teeth restored with dental implants and custom crowns for full functionality and aesthetics.",
+        "beforeImage": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400"
+      }
+    ]
   },
   "seo": {
-    "siteTitle": "Elite Medical Center - Comprehensive Healthcare Services",
+    "siteTitle": "Omni Medical Center",
     "metaDescription": "Leading medical center providing comprehensive healthcare services with experienced doctors and state-of-the-art facilities.",
-    "keywords": "medical center, healthcare, doctors, Austin, Texas"
+    "keywords": "medical center, healthcare, doctors, dental care, primary care"
   },
-  "theme": {
-    "primaryColor": "#1e40af",
-    "secondaryColor": "#64748b",
-    "accentColor": "#f59e0b"
-  },
-  "features": {
-    "appointmentBooking": true,
-    "telemedicine": false,
-    "patientPortal": true
-  }
+  "lastModified": "2025-09-26T00:34:04.627Z"
 }
