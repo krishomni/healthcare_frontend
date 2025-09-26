@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router-dom";
+import handymanAPI from "../../pages/portfolios/handyman/api.js"
+
 const backendUrl = import.meta.env.VITE_BACKEND_API;
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function OnboardingInfoPage() {
@@ -25,6 +26,21 @@ export default function OnboardingInfoPage() {
           console.log("error creating portfolio: ", error);
         }
         break;
+
+        case 5:
+        try {
+          const handyman_portfolio = user;
+          const res = await handymanAPI.post(`/api/handyman-template`, {
+              hero: { phoneNumber: user?.phone ?? user?.hero?.phoneNumber ?? "" }
+            });
+          console.log("response: ", res.data);
+          const id = res.data._id;
+          navigate(`/portfolios/handyman/${id}`)
+        } catch (error) {
+          console.log("error creating portfolio: ", error);
+        }
+        break;
+
       default:
         toast.info("Template comming soon!");
     }
