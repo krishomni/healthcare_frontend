@@ -1,4 +1,4 @@
-import Gallery from '@/components/Gallery'
+import Gallery from '@/components/admin/GalleryEditor'
 import { getData } from '@/lib/data'
 
 export default function GalleryPage({ galleryData }) {
