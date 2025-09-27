@@ -8,7 +8,6 @@ import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
 import { api } from '../lib/api'
 
-// API Base URL - uses environment variable or falls back to relative paths
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
 export default function Home() {

@@ -27,16 +27,16 @@ export default function Contact() {
   }, [])
 
   const loadData = async () => {
-    try {
-      const response = await fetch('/api/user-data')
-      const data = await response.json()
-      setUserData(data)
-    } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setLoading(false)
-    }
+  try {
+    const data = await api.getUserData()
+    console.log('Contact page data loaded:', data.contact) // Check this in console
+    setUserData(data)
+  } catch (error) {
+    console.error('Error loading contact data:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const handleSubmit = async (e) => {
     e.preventDefault()
