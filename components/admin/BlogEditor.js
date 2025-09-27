@@ -103,13 +103,13 @@ export default function BlogEditor({ blogPosts, onUpdate }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Title *
+                        Title 
                       </label>
                       <input
                         type="text"
                         value={post.title}
+                        onChange={(e) => updatePost(index, 'title', e.target.value)}  // Make sure this exists
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter blog post title"
                       />
                     </div>
                     <div>
