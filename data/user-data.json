@@ -1,0 +1,174 @@
+{
+  "practice": {
+    "name": "Surge Aina medical ",
+    "tagline": "Health is precious",
+    "description": "Providing exceptional healthcare services with state-of-the-art technology and compassionate care!"
+  },
+  "contact": {
+    "phone": "5554321789",
+    "whatsapp": "+1 (555) 123-4567",
+    "email": "surgeaina@yahoo.com",
+    "address": {
+      "street": "123 Healthcare Blvd, Suite 200",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "78701"
+    }
+  },
+  "hours": {
+    "weekdays": "Mon-Fri: 9:00 AM - 6:00 PM",
+    "saturday": "Sat: 10:00 AM - 6:00 PM",
+    "sunday": "Sun: Closed"
+  },
+  "stats": {
+    "yearsExperience": "10",
+    "patientsServed": "100",
+    "successRate": "96",
+    "doctorsCount": "30"
+  },
+  "services": [
+    {
+      "id": "primary-care",
+      "title": "Primary Care",
+      "description": "Comprehensive healthcare services for all ages including annual checkups, preventive care, and chronic disease management.",
+      "icon": "user-md",
+      "price": "$150",
+      "duration": "45 minutes",
+      "features": [
+        "Comprehensive health examination",
+        "Preventive care screening",
+        "Chronic disease management",
+        "Health education and counseling"
+      ]
+    },
+    {
+      "id": "dental-care",
+      "title": "Dental Care",
+      "description": "Complete dental services including cleanings, fillings, crowns, and cosmetic procedures.",
+      "icon": "tooth",
+      "price": "$200",
+      "duration": "60 minutes",
+      "features": [
+        "Regular dental cleanings",
+        "Cavity treatments and fillings",
+        "Cosmetic dental procedures",
+        "Dental implants and crowns"
+      ]
+    },
+    {
+      "id": "service-1758846796704",
+      "title": "Emergency Services",
+      "description": "ER",
+      "icon": "user-md",
+      "price": "",
+      "duration": "",
+      "features": []
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": 1,
+      "title": "10 Essential Health Tips for 2024",
+      "slug": "health-tips-2024",
+      "excerpt": "Discover the latest evidence-based strategies to maintain optimal health and prevent common illnesses.",
+      "content": "<h2>Introduction</h2><p>Maintaining good health requires a comprehensive approach that includes regular exercise, proper nutrition, adequate sleep, and preventive care...</p>",
+      "publishDate": "2024-03-15",
+      "author": {
+        "name": "Dr. Sarah Johnson"
+      },
+      "category": "Health Tips",
+      "tags": [
+        "health",
+        "prevention",
+        "wellness"
+      ],
+      "readTime": "5 min read",
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "The Importance of Regular Dental Checkups",
+      "slug": "dental-checkups-importance",
+      "excerpt": "Learn why regular dental visits are crucial for maintaining overall health and preventing serious dental issues.",
+      "content": "<h2>Why Regular Checkups Matter</h2><p>Regular dental checkups are essential for maintaining good oral health and can help prevent serious dental problems...</p>",
+      "publishDate": "2024-03-10",
+      "author": {
+        "name": "Dr. Michael Chen"
+      },
+      "category": "Dental Health",
+      "tags": [
+        "dental",
+        "preventive care",
+        "oral health"
+      ],
+      "readTime": "4 min read",
+      "featured": true
+    },
+    {
+      "id": 1758846811688,
+      "title": "",
+      "slug": "k",
+      "excerpt": "Our success stories",
+      "content": "",
+      "publishDate": "2025-09-26",
+      "author": {
+        "name": ""
+      },
+      "category": "",
+      "tags": [],
+      "readTime": "5 min read",
+      "featured": false
+    }
+  ],
+  "gallery": {
+    "facilityImages": [
+      {
+        "url": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800",
+        "caption": "Modern Reception Area",
+        "description": "Our welcoming reception area designed for patient comfort and privacy"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
+        "caption": "Advanced Equipment Room",
+        "description": "State-of-the-art medical technology for precise diagnostics and treatment"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800",
+        "caption": "Private Consultation Room",
+        "description": "Comfortable and confidential spaces for patient consultations"
+      }
+    ],
+    "beforeAfterCases": [
+      {
+        "title": "Complete Smile Makeover",
+        "treatment": "Dental Veneers & Whitening",
+        "duration": "6 weeks",
+        "description": "Patient received comprehensive cosmetic dental treatment including porcelain veneers and professional whitening for a complete smile transformation.",
+        "beforeImage": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=400"
+      },
+      {
+        "title": "Orthodontic Treatment Success",
+        "treatment": "Clear Aligners",
+        "duration": "12 months",
+        "description": "Complete teeth alignment achieved using modern clear aligner technology with excellent patient compliance.",
+        "beforeImage": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400"
+      },
+      {
+        "title": "Dental Restoration",
+        "treatment": "Implants & Crowns",
+        "duration": "4 months",
+        "description": "Multiple missing teeth restored with dental implants and custom crowns for full functionality and aesthetics.",
+        "beforeImage": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400"
+      }
+    ]
+  },
+  "seo": {
+    "siteTitle": "Omni Medical Center",
+    "metaDescription": "Leading medical center providing comprehensive healthcare services with experienced doctors and state-of-the-art facilities.",
+    "keywords": "medical center, healthcare, doctors, dental care, primary care"
+  },
+  "lastModified": "2025-09-26T00:34:04.627Z"
+}
