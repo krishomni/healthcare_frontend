@@ -107,7 +107,12 @@ export default function AdminDashboard() {
   }
 }
 
-
+  const updateGallery = (gallery) => {
+  setUserData(prev => ({
+    ...prev,
+    gallery
+  }))
+}
   const updateField = (section, field, value) => {
     setUserData(prev => ({
       ...prev,
@@ -130,7 +135,7 @@ export default function AdminDashboard() {
       }
     }))
   }
-
+ 
   const logout = () => {
     localStorage.removeItem('adminToken')
     localStorage.removeItem('userData') 
@@ -265,7 +270,7 @@ export default function AdminDashboard() {
                     onUpdate={(gallery) => setUserData(prev => ({...prev, gallery}))}
                   />
                 )}
-
+    
                 {/* SEO Tab */}
                 {activeTab === 'seo' && (
                   <div className="space-y-6">

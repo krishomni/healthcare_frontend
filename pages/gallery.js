@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { FaImage, FaExpand, FaTimes } from 'react-icons/fa'
+import { FaImage, FaExpand } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
 
@@ -18,11 +18,18 @@ export default function Gallery() {
 
   const loadData = async () => {
     try {
+      console.log('🔄 Loading gallery data...')
       const response = await fetch('/api/user-data')
       const data = await response.json()
+      
+      console.log('📦 Raw data received:', data)
+      console.log('🖼️ Gallery data:', data.gallery)
+      console.log('🏢 Facility images:', data.gallery?.facilityImages)
+      console.log('📊 Before/After cases:', data.gallery?.beforeAfterCases)
+      
       setUserData(data)
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error('❌ Error loading data:', error)
     } finally {
       setLoading(false)
     }
@@ -43,6 +50,10 @@ export default function Gallery() {
   const gallery = userData.gallery || { facilityImages: [], beforeAfterCases: [] }
   const categories = ['All', 'Facility', 'Results']
 
+  console.log('🎯 Current gallery state:', gallery)
+  console.log('🎯 Facility images count:', gallery.facilityImages?.length || 0)
+  console.log('🎯 Before/After count:', gallery.beforeAfterCases?.length || 0)
+
   const filteredFacilityImages = selectedCategory === 'All' || selectedCategory === 'Facility' 
     ? gallery.facilityImages || [] 
     : []
@@ -54,16 +65,35 @@ export default function Gallery() {
   const hasContent = (gallery.facilityImages && gallery.facilityImages.length > 0) || 
                      (gallery.beforeAfterCases && gallery.beforeAfterCases.length > 0)
 
+  console.log('✅ Has content:', hasContent)
+  console.log('✅ Filtered facility images:', filteredFacilityImages.length)
+  console.log('✅ Filtered before/after:', filteredBeforeAfter.length)
+
   return (
     <>
       <Head>
         <title>Gallery - {userData.practice?.name}</title>
-        <meta name="description" content="Take a virtual tour of our modern medical facility and see our state-of-the-art equipment and comfortable patient areas." />
+        <meta name="description" content="Take a virtual tour of our modern medical facility" />
       </Head>
 
       <div className="min-h-screen bg-gray-50">
         <Navbar userData={userData} />
         
+        {/* Debug Info - Remove in production */}
+        <div className="fixed top-20 right-4 bg-black text-white p-3 text-xs z-50 rounded-lg max-w-xs">
+          <div><strong>Debug Info:</strong></div>
+          <div>Facility Images: {gallery.facilityImages?.length || 0}</div>
+          <div>Before/After: {gallery.beforeAfterCases?.length || 0}</div>
+          <div>Has Content: {hasContent ? 'YES' : 'NO'}</div>
+          <div>Selected: {selectedCategory}</div>
+          <button 
+            onClick={loadData}
+            className="bg-blue-600 px-2 py-1 rounded mt-2 w-full"
+          >
+            Refresh Data
+          </button>
+        </div>
+
         {/* Hero Section */}
         <motion.section 
           className="bg-gradient-to-r from-blue-600 to-blue-800 text-white pt-32 pb-16"
@@ -80,7 +110,7 @@ export default function Gallery() {
             >
               <h1 className="text-4xl lg:text-6xl font-bold mb-6">Our Facility & Results</h1>
               <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-                Take a virtual tour of our modern medical facility and see the advanced technology we use to provide exceptional care
+                Take a virtual tour of our modern medical facility
               </p>
             </motion.div>
           </div>
@@ -134,12 +164,7 @@ export default function Gallery() {
             {filteredFacilityImages.length > 0 && (
               <div className="mb-16">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Facility</h2>
-                <motion.div 
-                  className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8 }}
-                >
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredFacilityImages.map((image, index) => (
                     <motion.div 
                       key={index}
@@ -172,45 +197,27 @@ export default function Gallery() {
                       </div>
                     </motion.div>
                   ))}
-                </motion.div>
+                </div>
               </div>
             )}
 
             {/* Before/After Cases */}
             {filteredBeforeAfter.length > 0 && (
               <div>
-                <motion.div 
-                  className="text-center mb-12"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                >
+                <div className="text-center mb-12">
                   <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Patient Success Stories</h2>
-                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg max-w-4xl mx-auto">
-                    <div className="flex">
-                      <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm text-yellow-700">
-                          <strong>Important:</strong> Results may vary. Individual outcomes depend on various factors including patient health, adherence to treatment plans, and other medical conditions. All images and cases are shared with explicit patient consent.
-                        </p>
-                      </div>
-                    </div>
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg max-w-4xl mx-auto text-left">
+                    <p className="text-sm text-yellow-700">
+                      <strong>Important:</strong> Results may vary. All images shared with patient consent.
+                    </p>
                   </div>
-                </motion.div>
+                </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredBeforeAfter.map((case_, index) => (
-                    <motion.div 
+                    <div 
                       key={index}
                       className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer"
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: index * 0.1 }}
-                      whileHover={{ y: -5 }}
                       onClick={() => setSelectedImage({ type: 'beforeafter', data: case_ })}
                     >
                       <div className="grid grid-cols-2 h-48">
@@ -241,7 +248,7 @@ export default function Gallery() {
                         <p className="text-gray-500 text-sm mb-2">{case_.duration}</p>
                         <p className="text-gray-600">{case_.description}</p>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -255,11 +262,8 @@ export default function Gallery() {
             className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
             onClick={() => setSelectedImage(null)}
           >
-            <motion.div 
+            <div 
               className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
               onClick={(e) => e.stopPropagation()}
             >
               {selectedImage.type === 'facility' ? (
@@ -287,24 +291,14 @@ export default function Gallery() {
               ) : (
                 <>
                   <div className="grid grid-cols-2 h-96">
-                    <div className="bg-gray-100 flex items-center justify-center">
-                      {selectedImage.data.beforeImage ? (
+                    <div className="bg-gray-100">
+                      {selectedImage.data.beforeImage && (
                         <img src={selectedImage.data.beforeImage} alt="Before" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="text-center text-gray-400">
-                          <FaImage className="text-4xl mb-2 mx-auto" />
-                          <p>Before</p>
-                        </div>
                       )}
                     </div>
-                    <div className="bg-green-50 flex items-center justify-center">
-                      {selectedImage.data.afterImage ? (
+                    <div className="bg-green-50">
+                      {selectedImage.data.afterImage && (
                         <img src={selectedImage.data.afterImage} alt="After" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="text-center text-green-400">
-                          <FaImage className="text-4xl mb-2 mx-auto" />
-                          <p>After</p>
-                        </div>
                       )}
                     </div>
                   </div>
@@ -322,7 +316,7 @@ export default function Gallery() {
                   </div>
                 </>
               )}
-            </motion.div>
+            </div>
           </div>
         )}
 
