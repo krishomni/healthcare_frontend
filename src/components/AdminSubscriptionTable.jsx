@@ -66,20 +66,15 @@ const AdminSubscriptionTable = () => {
   // Update subscription
   const handleUpdateSubscription = async (subscriptionId, newPlan) => {
     try {
-      const response = await fetch(`${BACKEND_API}/subscriptions/update`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriptionId, newPlan }),
-      });
-
-      if (!response.ok) throw new Error('Failed to update subscription');
+      const response = await axios.put(`${BACKEND_API}/subscriptions/update`, { subscriptionId, newPlan });
 
       fetchSubscriptionsAfterWebhook(); // Refresh data
       setShowUpdateModal(false);
       setSelectedSub(null);
+      console.log('updated sub: ', response);
     } catch (err) {
       toast.error(`Error updating subscription: ${err.message}`);
-      console.log(`Error updating subscription: ${err.message}`);
+      console.log(`Error updating subscription: ${err}`);
     }
   };
   const handleConfirmCancel = async (subscriptionId) => {
@@ -207,8 +202,11 @@ const AdminSubscriptionTable = () => {
 
   return (
     <div className="p-6 bg-white">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Subscription Management</h2>
+      {/* Title with refresh button */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 flex justify-center">
+          <h2 className="text-2xl font-bold text-gray-900">Subscription Management</h2>
+        </div>
         <button onClick={fetchSubscriptions} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition">
           <RefreshCw className="w-4 h-4" />
           Refresh
