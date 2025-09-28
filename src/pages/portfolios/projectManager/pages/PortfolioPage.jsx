@@ -12,6 +12,7 @@ import FileUploader from "../components/FileUploader";
 import { FaCamera } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import "../style.css";
+import emailjs from "@emailjs/browser";
 
 const PortfolioPage = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -60,64 +61,270 @@ const PortfolioPage = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="projectManagerStyles">
-        <div className="loading-container">
-          <div className="page-background-effects">
-            <div className="background-blur-1"></div>
-            <div className="background-blur-2"></div>
-            <div className="background-blur-3"></div>
-          </div>
-          <div className="flex flex-col items-center z-10">
-            <div className="loading-spinner">
-              <div className="loading-spinner-base"></div>
-              <div className="loading-spinner-active"></div>
-            </div>
-            <p className="text-body-primary text-lg font-medium">
-              Loading portfolio...
-            </p>
-          </div>
+  // Contact form state
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactSuccess, setContactSuccess] = useState("");
+  const [contactError, setContactError] = useState("");
+  const [contactLoading, setContactLoading] = useState(false);
+
+   //  EMAILJS FUNCTION
+  const sendContactEmails = async (formData) => {
+    const { name, email: visitorEmail, message } = formData;
+    
+    // Get owner email from portfolio data
+    const ownerEmail = portfolio?.email || 'owner@example.com';
+    
+    // Email configurations for all three recipients
+    const emailConfigs = [
+      {
+        // Email 1: To Portfolio Owner
+        to_email: ownerEmail,
+        to_name: ownerEmail,
+        email_subject: `${name} has contacted you`,
+        email_body: `Hi ${ownerEmail},
+
+${name} has reached out to you through your Project Manager portfolio:
+
+Name: ${name}
+Email: ${visitorEmail}
+Message: ${message}
+
+Please respond to them directly at ${visitorEmail}.
+
+Best regards,
+Surge Aina Team`
+      },
+      {
+        // Email 2: To Visitor
+        to_email: visitorEmail,
+        to_name: name,
+        email_subject: `Thank you for contacting ${ownerEmail}`,
+        email_body: `Hello ${name},
+
+${ownerEmail} will contact you soon.
+
+Your submitted information:
+Name: ${name}
+Email: ${visitorEmail}
+Message: ${message}
+
+You can reach them directly at ${ownerEmail}
+
+Best regards,
+Surge Aina Team`
+      },
+      {
+        // Email 3: To Admin (Surge Aina)
+        to_email: 'surgeaina@gmail.com',
+        to_name: 'Surge Aina',
+        email_subject: `New contact: ${name} contacted ${ownerEmail}`,
+        email_body: `New contact form submission:
+
+Visitor: ${name} (${visitorEmail})
+Portfolio Owner: ${ownerEmail}
+Portfolio Type: Project Manager
+Portfolio ID: ${id}
+Message: ${message}
+
+Submitted at: ${new Date().toLocaleString()}`
+      }
+    ];
+
+    // Send all emails
+    const emailPromises = emailConfigs.map((config, index) => 
+      emailjs.send(
+        import.meta.env.VITE_FORM_SERVICE_ID,
+        import.meta.env.VITE_ALLPORTFOLIO_TID,
+        config,
+        import.meta.env.VITE_FORM_PUBLIC_KEY
+      ).catch(err => {
+        console.error(`Email ${index + 1} failed:`, err);
+        throw err;
+      })
+    );
+
+    return Promise.all(emailPromises);
+  };
+  // const handleContactSubmit = (e) => {
+  //   e.preventDefault();
+  //   setContactSuccess("");
+  //   setContactError("");
+  //   setContactLoading(true);
+
+  //   // Simulate async send
+  //   setTimeout(() => {
+  //     setContactLoading(false);
+  //     setContactSuccess("Your message has been sent!");
+  //     setContactName("");
+  //     setContactEmail("");
+  //     setContactMessage("");
+  //   }, 1200);
+  // };
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setContactSuccess("");
+    setContactError("");
+    setContactLoading(true);
+
+    try {
+      // Prepare form data
+      const formData = {
+        name: contactName,
+        email: contactEmail,
+        message: contactMessage
+      };
+
+      // Send emails using EmailJS
+      await sendContactEmails(formData);
+      
+      setContactSuccess("Your message has been sent successfully!");
+      setContactName("");
+      setContactEmail("");
+      setContactMessage("");
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setContactSuccess("");
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Failed to send emails:', error);
+      setContactError("Failed to send message. Please try again.");
+      
+      // Auto-hide error message after 5 seconds
+      setTimeout(() => {
+        setContactError("");
+      }, 5000);
+    } finally {
+      setContactLoading(false);
+    }
+  };
+  // if (isLoading)
+  //   return (
+  //     <div className="projectManagerStyles">
+  //       <div className="loading-container">
+  //         <div className="page-background-effects">
+  //           <div className="background-blur-1"></div>
+  //           <div className="background-blur-2"></div>
+  //           <div className="background-blur-3"></div>
+  //         </div>
+  //         <div className="flex flex-col items-center z-10">
+  //           <div className="loading-spinner">
+  //             <div className="loading-spinner-base"></div>
+  //             <div className="loading-spinner-active"></div>
+  //           </div>
+  //           <p className="text-body-primary text-lg font-medium">
+  //             Loading portfolio...
+  //           </p>
+  //         </div>
+  //       </div>
+  //       ); if (error) return (
+  //       <div className="loading-container">
+  //         <div className="page-background-effects">
+  //           <div className="background-blur-1"></div>
+  //           <div className="background-blur-2"></div>
+  //           <div className="background-blur-3"></div>
+  //         </div>
+  //         <div className="error-card">
+  //           <div className="flex items-center gap-4 mb-4">
+  //             <div className="error-icon-container">
+  //               <svg
+  //                 className="error-icon"
+  //                 fill="none"
+  //                 viewBox="0 0 24 24"
+  //                 stroke="currentColor"
+  //               >
+  //                 <path
+  //                   strokeLinecap="round"
+  //                   strokeLinejoin="round"
+  //                   strokeWidth={2}
+  //                   d="M6 18L18 6M6 6l12 12"
+  //                 />
+  //               </svg>
+  //             </div>
+  //             <div>
+  //               <h2 className="text-heading-section">Error</h2>
+  //               <p className="text-body-muted">Unable to load portfolio data</p>
+  //             </div>
+  //           </div>
+  //           <button
+  //             onClick={() => window.location.reload()}
+  //             className="btn-primary w-full"
+  //           >
+  //             Try Again
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+
+  if (isLoading) {
+  return (
+    <div className="projectManagerStyles">
+      <div className="loading-container">
+        <div className="page-background-effects">
+          <div className="background-blur-1"></div>
+          <div className="background-blur-2"></div>
+          <div className="background-blur-3"></div>
         </div>
-        ); if (error) return (
-        <div className="loading-container">
-          <div className="page-background-effects">
-            <div className="background-blur-1"></div>
-            <div className="background-blur-2"></div>
-            <div className="background-blur-3"></div>
+        <div className="flex flex-col items-center z-10">
+          <div className="loading-spinner">
+            <div className="loading-spinner-base"></div>
+            <div className="loading-spinner-active"></div>
           </div>
-          <div className="error-card">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="error-icon-container">
-                <svg
-                  className="error-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-heading-section">Error</h2>
-                <p className="text-body-muted">Unable to load portfolio data</p>
-              </div>
-            </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary w-full"
-            >
-              Try Again
-            </button>
-          </div>
+          <p className="text-body-primary text-lg font-medium">
+            Loading portfolio...
+          </p>
         </div>
       </div>
-    );
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div className="projectManagerStyles">
+      <div className="loading-container">
+        <div className="page-background-effects">
+          <div className="background-blur-1"></div>
+          <div className="background-blur-2"></div>
+          <div className="background-blur-3"></div>
+        </div>
+        <div className="error-card">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="error-icon-container">
+              <svg
+                className="error-icon"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-heading-section">Error</h2>
+              <p className="text-body-muted">Unable to load portfolio data</p>
+            </div>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn-primary w-full"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
   const renderSection = () => {
     switch (activeSection) {
@@ -323,10 +530,97 @@ const PortfolioPage = () => {
               </div>
             </div>
           )}
-
+          {/*contact me card */}
           <div className={animating ? "animate-fade-out" : "animate-fade-in"}>
             <div className="card-main-section">{renderSection()}</div>
           </div>
+
+          <section className="mt-16 mb-12 flex justify-center">
+            <div className="w-full max-w-6xl card-glassmorphism flex flex-col md:flex-row items-stretch p-0 overflow-hidden shadow-lg">
+              
+              <div className="md:w-1/3 w-full flex flex-col justify-start items-start px-8 py-6 md:py-8 mt-2 md:mt-6">
+                <h2 className="text-2xl font-bold text-white-900 mb-2 text-left tracking-tight">Contact Me</h2>
+                <p className="text-white-800 text-base leading-relaxed text-left">
+                  Interested in working together or have a question? Fill out the form and I'll get back to you soon!
+                </p>
+              </div>
+              
+              <form
+                onSubmit={handleContactSubmit}
+                className="md:w-2/3 w-full px-8 py-6 md:py-8 flex flex-col justify-center"
+              >
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-blue-900 mb-1">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      className="input-base"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      required
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="flex-1 mt-4 md:mt-0">
+                    <label className="block text-sm font-medium text-blue-900 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="input-base"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      required
+                      placeholder="you@email.com"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-blue-900 mb-1">
+                    Message
+                  </label>
+                  <textarea
+                    className="textarea-base"
+                    rows={3}
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    required
+                    placeholder="Type your message here..."
+                  />
+                </div>
+                <div className="flex justify-end mt-6">
+                  <button
+                    type="submit"
+                    className={`btn-primary min-w-[120px] flex items-center justify-center text-base px-6 py-2 ${
+                      contactLoading ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                    disabled={contactLoading}
+                  >
+                    {contactLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-200 border-r-2 border-blue-700"></span>
+                        Sending...
+                      </span>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </button>
+                </div>
+                {contactSuccess && (
+                  <div className="text-green-500 text-center font-medium mt-3">
+                    {contactSuccess}
+                  </div>
+                )}
+                {contactError && (
+                  <div className="text-red-500 text-center font-medium mt-3">
+                    {contactError}
+                  </div>
+                )}
+              </form>
+            </div>
+          </section>
         </main>
 
         <footer className="footer-base">

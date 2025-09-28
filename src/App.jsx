@@ -8,10 +8,10 @@ import Dashboard from "./components/Dashboard";
 import ExamplePortfolios from "./components/examplePortfolios";
 import FloatingHelpButton from "./components/FloatingHelpButton";
 import Footer from "./components/Footer";
+import ITAdminPage from "./components/ITAdminPage.jsx";
 import ITForm from "./components/ITForm"; // Make sure this import is present
 import Layout from "./components/Layout";
 import Occupations from "./components/Occupations";
-import Payment from "./components/Payment";
 import ResumeUpload from "./components/ResumeUpload";
 import SuccessPage from "./components/SuccessPage.jsx";
 import TelemetryVisit from "./components/TelemetryVisit";
@@ -45,50 +45,33 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
-        <Route
-          path="/dashboard"
-          element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
-        />
+        <Route path="/dashboard" element={<Dashboard onRequestAdmin={handleRequestAdmin} />} />
         <Route path={"/signup"} element={<SignUp />} />
         <Route path="/occupations" element={<Occupations />} />
         <Route path="/resume" element={<ResumeUpload />} />
         <Route path="/portfolios" element={<ExamplePortfolios />} />
-        <Route
-          path="/portfolios/project-manager/:username/:id"
-          element={<PortfolioPage />}
-        />
+        <Route path="/portfolios/project-manager/:username/:id" element={<PortfolioPage />} />
         <Route path="/portfolios/software-engineer" />
-        <Route
-          path="/portfolios/data-scientist/*"
-          element={<DataScientistPage />}
-        />
+        <Route path="/portfolios/data-scientist/*" element={<DataScientistPage />} />
         <Route path="/portfolios/cleaning-services" />
         <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
-        <Route
-          path="/portfolios/photographer/*"
-          element={<PhotographerPage />}
-        />
+        <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
         <Route path="/portfolios/handyman/:id" element={<HandymanPage />} />
         {/* Route 3: The page where a logged-in user can edit their portfolio */}
-        <Route
-          path="/portfolios/handyman/:id/edit"
-          element={<EditHandymanPortfolio />}
-        />
-        <Route path="/payment" element={<Payment />} /> {/* Add this line */}
-        <Route path={"/success"} element={<SuccessPage />} />
+        <Route path="/portfolios/handyman/:id/edit" element={<EditHandymanPortfolio />} />
         {/*successfull subscription page} */}
+        <Route path={"/success"} element={<SuccessPage />} />
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
+        <Route path="/admin_page" element={<ITAdminPage />} />
         <Route path="/domain-search" element={<DomainSearch />} />
       </Routes>
       <FloatingHelpButton />
-      {adminRequested && (
-        <Tip message="Request received! Our admin team will contact you shortly." />
-      )}
+      {adminRequested && <Tip message="Request received! Our admin team will contact you shortly." />}
       <Footer />
       <CookieConsent />
       <CookieSettings />

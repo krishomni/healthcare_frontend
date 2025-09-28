@@ -10,32 +10,25 @@ export default function Dashboard() {
   const [portfolios, setPortfolios] = useState([]);
   const backendUrl = import.meta.env.VITE_BACKEND_API;
   const loggedInEmail = localStorage.getItem("email");
-
   const { contextLoggedIn, contextLogout } = useContext(AuthContext);
-
   useEffect(() => {
     fetchPortfolios();
   }, [contextLoggedIn]);
-
   const [myPortfolios, setMyPortfolios] = useState([]);
   const [otherPortfolios, setOtherPortfolios] = useState([]);
-
   const fetchPortfolios = async () => {
     try {
       const res = await axios.get(`${backendUrl}/portfolio/all-portfolios`);
       const all = res.data;
-      console.log("Raw API response:", res.data);
 
       const mine = all.filter((p) => p.email === loggedInEmail);
       const others = all.filter((p) => p.email !== loggedInEmail);
       console.log(
         `my portfolio count: ${mine.length} others porftolio count: ${others.length}`
       );
-
       if (mine.length === 0 && others.length === 0) {
         toast.info("No portfolios found");
       }
-
       setMyPortfolios(mine);
       setOtherPortfolios(others);
     } catch (err) {
@@ -43,12 +36,10 @@ export default function Dashboard() {
       console.error(err);
     }
   };
-
   const handleAddPortfolio = () => {
     navigate("/resume");
   };
-
-  // reminder: change this aswell in KebabMenu.jsx if you change this
+ // reminder: change this aswell in KebabMenu.jsx if you change this
   const handleCardClick = (portfolio) => {
     const username = portfolio.email.split("@")[0];
     navigate(`/portfolios/project-manager/${username}/${portfolio._id}`);
@@ -99,7 +90,6 @@ export default function Dashboard() {
               </div>
             </section>
           )}
-
           {/* Other Portfolios */}
           <section>
             <h2 className="text-2xl font-semibold mb-6 text-slate-800">
@@ -108,8 +98,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
               {/* Only render actual portfolios, no empty card */}
               {otherPortfolios
-
-                .filter((p) => p.title && p.summary) // filter out any empty/invalid portfolios
+                .filter((p) => p.title && p.name) // filter out any empty/invalid portfolios
                 .map((p, i) => (
                   <div
                     key={p._id || i}

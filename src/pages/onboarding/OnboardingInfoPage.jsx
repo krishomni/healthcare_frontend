@@ -1,9 +1,14 @@
 import axios from "axios";
+
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import { AuthContext } from "../../context/AuthContext";
+import handymanAPI from "../../pages/portfolios/handyman/api.js";
+
 const backendUrl = import.meta.env.VITE_BACKEND_API;
+
 
 export default function OnboardingInfoPage() {
   const navigate = useNavigate();
@@ -24,33 +29,49 @@ export default function OnboardingInfoPage() {
           console.log("error creating portfolio: ", error);
         }
         break;
+
+      case 5:
+        try {
+          const handyman_portfolio = user;
+          const res = await handymanAPI.post(`/api/handyman-template`, {
+            hero: { phoneNumber: user?.phone ?? user?.hero?.phoneNumber ?? "" },
+          });
+          console.log("response: ", res.data);
+          const id = res.data._id;
+          navigate(`/portfolios/handyman/${id}`);
+        } catch (error) {
+          console.log("error creating portfolio: ", error);
+        }
+        break;
+
       default:
         toast.info("Template comming soon!");
     }
   };
 
-  const borderColors = [
-    "border-blue-200",
-    "border-green-200",
-    "border-purple-200",
-    "border-orange-200",
+  // const borderColors = ["border-blue-400 bg-blue-100", "border-green-400 bg-green-100", "border-purple-400 bg-purple-100", "border-orange-400 bg-orange-100"];
+
+  const cards = [
+    { bg: "bg-slate-600 border-slate-900", text: "text-slate-100" },
+    { bg: "bg-slate-500 border-slate-700", text: "text-slate-100" },
+    { bg: "bg-slate-400 border-slate-600", text: "text-slate-100" },
+    { bg: "bg-slate-300 border-slate-500", text: "text-slate-800" },
+    { bg: "bg-slate-200 border-slate-400", text: "text-slate-800" },
+    { bg: "bg-slate-100 border-slate-300", text: "text-slate-800" },
   ];
 
   const portfolioTemplates = [
     {
       name: "Product Manager",
-      description:
-        "Showcase your product management skills, roadmaps, and project successes.",
+      description: "Showcase your product management skills, roadmaps, and project successes.",
     },
     {
       name: "Data Scientist",
-      description:
-        "Highlight your data projects, analyses, and machine learning experience.",
+      description: "Highlight your data projects, analyses, and machine learning experience.",
     },
     {
       name: "Software Engineer",
-      description:
-        "Display your coding projects, apps, and technical expertise.",
+      description: "Display your coding projects, apps, and technical expertise.",
     },
     {
       name: "Local Food Vendor",
@@ -62,8 +83,7 @@ export default function OnboardingInfoPage() {
     },
     {
       name: "Handyman / Local Repair Services",
-      description:
-        "Demonstrate your skills, previous jobs, and customer testimonials.",
+      description: "Demonstrate your skills, previous jobs, and customer testimonials.",
     },
   ];
 
@@ -110,23 +130,16 @@ export default function OnboardingInfoPage() {
         )}
       </div>
       <div>
-        <h1 className="text-gray-900 text-2xl font-bold mb-6">
-          Choose a Template
-        </h1>
-        {portfolioTemplates.map((template, index) => (
-          <div
-            key={index}
-            className={`mb-3 rounded-lg p-6 border ${
-              borderColors[index % 4]
-            } hover:shadow-md hover:border-blue-400 transition-shadow transition-transform duration-300 cursor-pointer hover:scale-105`}
-            onClick={() => handleCardClick(index)}
-          >
-            <div className="font-semibold text-slate-800 mb-2">
-              {template.name}
+        <h1 className="text-gray-900 text-2xl font-bold mb-6">Choose a Template</h1>
+        {portfolioTemplates.map((template, index) => {
+          const style = cards[index % cards.length];
+          return (
+            <div key={index} className={`mb-3 rounded-lg p-6 border ${style.bg} hover:shadow-md transition-shadow transition-transform duration-300 cursor-pointer hover:scale-105`} onClick={() => handleCardClick(index)}>
+              <div className={`font-semibold ${style.text} mb-2`}>{template.name}</div>
+              <div className={`${style.text} text-opacity-70`}>{template.description}</div>
             </div>
-            <div className="text-slate-600">{template.description}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
