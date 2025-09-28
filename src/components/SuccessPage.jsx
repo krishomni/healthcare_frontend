@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 
 function SuccessPage() {
+  const { refreshUser } = useContext(AuthContext);
   const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get(
-      "session_id"
-    );
+    const sessionId = new URLSearchParams(window.location.search).get("session_id");
 
     if (sessionId) {
       axios
@@ -17,6 +17,9 @@ function SuccessPage() {
         .then((res) => setSessionData(res.data))
         .catch((err) => console.error(err));
     }
+
+    //refresh user information stored in auth context with updated user info in mongodb
+    refreshUser();
   }, []);
 
   if (!sessionData) return <p>Loading payment details...</p>;

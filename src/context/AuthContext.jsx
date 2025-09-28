@@ -1,13 +1,12 @@
 import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   //do not use this anymore will be phased out-----------------
-  const [contextLoggedIn, setContextLoggedIn] = useState(
-    !!localStorage.getItem("token")
-  );
+  const [contextLoggedIn, setContextLoggedIn] = useState(!!localStorage.getItem("token"));
   const contextLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -23,6 +22,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const backendUrl = import.meta.env.VITE_BACKEND_API;
+  const queryClient = useQueryClient();
 
   //auto login attempt if token is present when loading into FindVirtual.me
   useEffect(() => {
@@ -63,8 +63,25 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
+    // clear all React Query caches
+    queryClient.clear();
     console.log("Logged Out");
     toast.success("Logged Out!");
+  };
+
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${backendUrl}/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data);
+      toast.success("user refreshed");
+    } catch (err) {
+      console.error("Error refreshing user:", err);
+      toast.error("error refreshing user");
+      setUser(null);
+    }
   };
 
   return (
@@ -73,6 +90,7 @@ export function AuthProvider({ children }) {
         user,
         login,
         logout,
+        refreshUser,
         //use above values moving forward
         contextLoggedIn,
         contextLogin,
