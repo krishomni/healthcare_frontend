@@ -1,32 +1,33 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import About from "./components/About";
-import Dashboard from "./components/Dashboard";
-import Tip from "./components/Tip";
-import Footer from "./components/Footer";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import ResumeUpload from "./components/ResumeUpload";
-import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
-import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
-import ExamplePortfolios from "./components/examplePortfolios";
-import DataScientistPage from "./pages/dataScientist/pages/DataScientistPage";
-import SignUp from "./pages/login/SignUp";
-import HandymanShowcasePage from "./pages/portfolios/handyman/HandyManShowcasePage.jsx";
-import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
-import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortfolio.jsx";
-import Occupations from "./components/Occupations";
-import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import About from "./components/About";
 import CookieConsent from "./components/CookieConsent";
 import CookieSettings from "./components/CookieSettings";
-import TelemetryVisit from "./components/TelemetryVisit";
-import Payment from "./components/Payment";
-import SuccessPage from "./components/SuccessPage.jsx";
+import Dashboard from "./components/Dashboard";
+import ExamplePortfolios from "./components/examplePortfolios";
 import FloatingHelpButton from "./components/FloatingHelpButton";
+import Footer from "./components/Footer";
 import ITForm from "./components/ITForm"; // Make sure this import is present
-import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
+import Layout from "./components/Layout";
+import Occupations from "./components/Occupations";
+import Payment from "./components/Payment";
+import ResumeUpload from "./components/ResumeUpload";
+import SuccessPage from "./components/SuccessPage.jsx";
+import TelemetryVisit from "./components/TelemetryVisit";
+import Tip from "./components/Tip";
 import UserProfile from "./components/UserProfile.jsx";
+import DataScientistPage from "./pages/dataScientist/pages/DataScientistPage";
+import DomainSearch from "./pages/domains/DomainSearchPage";
+import SignUp from "./pages/login/SignUp";
+import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
+import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortfolio.jsx";
+import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
+import HandymanShowcasePage from "./pages/portfolios/handyman/HandyManShowcasePage.jsx";
+import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
+import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -82,6 +83,7 @@ export default function App() {
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
+        <Route path="/domain-search" element={<DomainSearch />} />
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (

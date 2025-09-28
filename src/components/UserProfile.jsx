@@ -1,7 +1,18 @@
-import { User, Edit2, KeyRound, ChevronRight, Bell, Shield, CreditCard, HelpCircle, Settings } from "lucide-react";
-import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import {
+  Bell,
+  ChevronRight,
+  CreditCard,
+  Edit2,
+  Globe,
+  HelpCircle,
+  KeyRound,
+  Settings,
+  Shield,
+  User,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 export default function UserProfile() {
   const apiUrl = import.meta.env.VITE_BACKEND_API || "http://localhost:5000";
   const [profile, setProfile] = useState(null);
@@ -11,7 +22,8 @@ export default function UserProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("profile");
   // Fetch user data on mount
   useEffect(() => {
     const fetchProfile = async () => {
@@ -46,11 +58,9 @@ export default function UserProfile() {
     setSuccess("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.put(
-        `${apiUrl}/user/me`,
-        editData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.put(`${apiUrl}/user/me`, editData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setProfile(res.data);
       setEditMode(false);
       setSuccess("Profile updated!");
@@ -95,12 +105,48 @@ export default function UserProfile() {
           </div>
         </div>
         <nav className="flex-1 px-2 py-6 space-y-1">
-          <SidebarItem icon={<User className="w-5 h-5" />} label="Profile Information" active />
-          <SidebarItem icon={<Settings className="w-5 h-5" />} label="Account Settings" />
-          <SidebarItem icon={<Shield className="w-5 h-5" />} label="Security" />
-          <SidebarItem icon={<Bell className="w-5 h-5" />} label="Notifications" />
-          <SidebarItem icon={<CreditCard className="w-5 h-5" />} label="Billing" />
-          <SidebarItem icon={<HelpCircle className="w-5 h-5" />} label="Help & Support" />
+          <SidebarItem
+            icon={<User className="w-5 h-5" />}
+            label="Profile Information"
+            active={activeTab === "profile"}
+            onClick={() => setActiveTab("profile")}
+          />
+          <SidebarItem
+            icon={<Settings className="w-5 h-5" />}
+            label="Account Settings"
+            active={activeTab === "settings"}
+            onClick={() => setActiveTab("settings")}
+          />
+          <SidebarItem
+            icon={<Shield className="w-5 h-5" />}
+            label="Security"
+            active={activeTab === "security"}
+            onClick={() => setActiveTab("security")}
+          />
+          <SidebarItem
+            icon={<Globe className="w-5 h-5" />}
+            active={activeTab === "domains"}
+            onClick={() => setActiveTab("domains")}
+            label="Domains"
+          />
+          <SidebarItem
+            icon={<Bell className="w-5 h-5" />}
+            label="Notifications"
+            active={activeTab === "notifications"}
+            onClick={() => setActiveTab("notifications")}
+          />
+          <SidebarItem
+            icon={<CreditCard className="w-5 h-5" />}
+            label="Billing"
+            active={activeTab === "billing"}
+            onClick={() => setActiveTab("billing")}
+          />
+          <SidebarItem
+            icon={<HelpCircle className="w-5 h-5" />}
+            label="Help & Support"
+            active={activeTab === "help"}
+            onClick={() => setActiveTab("help")}
+          />
         </nav>
         <div className="px-6 pb-6">
           <button className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 text-gray-700 hover:bg-gray-100 transition">
@@ -114,7 +160,9 @@ export default function UserProfile() {
       <main className="flex-1 flex justify-center items-start py-12 px-4 md:px-12 bg-gray-50">
         <section className="w-full max-w-3xl bg-white rounded-2xl shadow border border-gray-200 p-8">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Personal Information
+            </h2>
             <button
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
               onClick={() => {
@@ -201,7 +249,9 @@ export default function UserProfile() {
                 </button>
               </div>
             )}
-            {success && <div className="text-green-600 text-center">{success}</div>}
+            {success && (
+              <div className="text-green-600 text-center">{success}</div>
+            )}
             {error && <div className="text-red-500 text-center">{error}</div>}
           </form>
         </section>
@@ -211,7 +261,7 @@ export default function UserProfile() {
 }
 
 // Sidebar item component
-function SidebarItem({ icon, label, active }) {
+function SidebarItem({ icon, label, active, onClick }) {
   return (
     <button
       className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition ${
@@ -220,8 +270,11 @@ function SidebarItem({ icon, label, active }) {
           : "text-gray-700 hover:bg-gray-50"
       }`}
       type="button"
+      onClick={onClick}
     >
-      <span className="flex items-center gap-3">{icon} {label}</span>
+      <span className="flex items-center gap-3">
+        {icon} {label}
+      </span>
       <ChevronRight className="w-4 h-4 text-gray-400" />
     </button>
   );
@@ -229,10 +282,13 @@ function SidebarItem({ icon, label, active }) {
 
 // Profile field component
 function ProfileField({ label, name, value, editable, onChange }) {
-  const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
+  const displayValue =
+    value !== undefined && value !== null && value !== "" ? value : "—";
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+      </label>
       {editable ? (
         <input
           className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"

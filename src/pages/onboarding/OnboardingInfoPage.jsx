@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-const backendUrl = import.meta.env.VITE_BACKEND_API;
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
+const backendUrl = import.meta.env.VITE_BACKEND_API;
 
 export default function OnboardingInfoPage() {
   const navigate = useNavigate();

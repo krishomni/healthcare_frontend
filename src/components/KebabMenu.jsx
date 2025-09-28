@@ -6,10 +6,11 @@ export default function KebabMenu({ portfolio }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_API;
+
   // Close menu when clicking outside
   useEffect(() => {
-    
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         event.stopPropagation();
@@ -48,7 +49,9 @@ export default function KebabMenu({ portfolio }) {
                 const username = portfolio.email.split("@")[0];
 
                 // change this if you change the handleCardClick in Dashboard.jsx
-                navigate(`/portfolios/project-manager/${username}/${portfolio._id}`);
+                navigate(
+                  `/portfolios/project-manager/${username}/${portfolio._id}`
+                );
 
                 setIsOpen(false);
               }}
@@ -57,10 +60,39 @@ export default function KebabMenu({ portfolio }) {
               Use a free domain
             </button>
             <button
-              onClick={(event) => {
+              onClick={async (event) => {
                 event.stopPropagation();
-                // TODO: Add functionality for own domain
+                const customDomain = prompt(
+                  "Enter your custom domain (e.g., yourdomain.com):"
+                );
+                if (customDomain) {
+                  try {
+                    const response = await fetch(
+                      `${backendUrl}/api/domains/custom`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          domain: customDomain,
+                          portfolioId: portfolio._id,
+                        }),
+                      }
+                    );
 
+                    if (response.ok) {
+                      alert(
+                        `Custom domain ${customDomain} configured! Please update your DNS settings.`
+                      );
+                    } else {
+                      alert("Failed to configure custom domain");
+                    }
+                  } catch (error) {
+                    console.error("Custom domain error:", error);
+                    alert("Error configuring custom domain");
+                  }
+                }
                 setIsOpen(false);
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -70,9 +102,8 @@ export default function KebabMenu({ portfolio }) {
             <button
               onClick={(event) => {
                 // TODO: Add functionality for buying domain
+                navigate("/domain-search");
                 event.stopPropagation();
-                
-                setIsOpen(false);
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
