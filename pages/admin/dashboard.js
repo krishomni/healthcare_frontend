@@ -90,7 +90,7 @@ export default function AdminDashboard() {
       setLoading(false)
     }
 }
-  const saveData = async () => {
+const saveData = async () => {
   setSaving(true)
   
   console.log('=== STEP 1: Data in frontend state ===')
