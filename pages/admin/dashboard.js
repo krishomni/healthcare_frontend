@@ -91,18 +91,40 @@ export default function AdminDashboard() {
     }
 }
   const saveData = async () => {
-    console.log('💾 Saving to MongoDB...')
-    console.log('First service:', JSON.stringify(userData.services[0], null, 2))
-    setSaving(true)
-    try {
+  setSaving(true)
+  
+  console.log('=== STEP 1: Data in frontend state ===')
+  console.log('Total services:', userData.services?.length)
+  console.log('First service full object:', userData.services?.[0])
+  console.log('First service has image field?', 'image' in (userData.services?.[0] || {}))
+  console.log('First service image value:', userData.services?.[0]?.image)
+  
+  try {
     const token = localStorage.getItem('adminToken')
-    const result = await api.saveAdminData(userData, token)
-    if (result.success) {
+    
+    console.log('=== STEP 2: Sending to API ===')
+    const bodyData = JSON.stringify(userData)
+    console.log('Body contains image?', bodyData.includes('"image"'))
+    
+    const response = await fetch('/api/admin/data', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: bodyData
+    })
+
+    if (response.ok) {
+      console.log('=== STEP 3: Save successful ===')
       setSaveStatus('Changes saved successfully!')
+      setTimeout(() => setSaveStatus(''), 3000)
     } else {
+      console.error('=== STEP 3: Save failed ===')
       setSaveStatus('Error saving changes')
     }
   } catch (error) {
+    console.error('=== STEP 3: Save error ===', error)
     setSaveStatus('Error saving changes')
   } finally {
     setSaving(false)
