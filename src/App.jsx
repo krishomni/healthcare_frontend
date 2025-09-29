@@ -28,6 +28,7 @@ import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
 import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 import ITAdminPage from "./components/ITAdminPage.jsx";
+import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -68,6 +69,7 @@ export default function App() {
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
         <Route path="/admin_page" element={<ITAdminPage />} />
+        <Route path="/itadmin/ticketing-system" element={<TicketingPage/>}/>
       </Routes>
       <FloatingHelpButton />
       {adminRequested && <Tip message="Request received! Our admin team will contact you shortly." />}
