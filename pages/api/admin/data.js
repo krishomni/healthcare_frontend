@@ -1,8 +1,7 @@
-// pages/api/admin/data.js - MongoDB Version
+// pages/api/admin/data.js
 import clientPromise from '../../../lib/mongodb'
 
 export default async function handler(req, res) {
-  // Simple auth check
   const authHeader = req.headers.authorization
   if (!authHeader) {
     return res.status(401).json({ message: 'Unauthorized' })
@@ -10,7 +9,7 @@ export default async function handler(req, res) {
 
   try {
     const client = await clientPromise
-    const db = client.db('healthcare') // Replace with your database name
+    const db = client.db('healthcare') // Your database name
     const collection = db.collection('settings')
 
     if (req.method === 'GET') {
@@ -27,16 +26,20 @@ export default async function handler(req, res) {
       const userData = req.body
       userData.lastModified = new Date().toISOString()
       
-      // Update or insert the userData document
+      // LOG what we're saving to verify images are included
+      console.log('Saving services to MongoDB:')
+      userData.services?.forEach((service, i) => {
+        console.log(`Service ${i}: ${service.title}, Image: ${service.image || 'NO IMAGE'}`)
+      })
+      
+      // Update the entire userData document
       const result = await collection.updateOne(
         { _id: 'userData' },
         { $set: userData },
         { upsert: true }
       )
 
-      console.log('Data saved to MongoDB')
-      console.log('Gallery images:', userData.gallery?.facilityImages?.length || 0)
-      console.log('Before/After cases:', userData.gallery?.beforeAfterCases?.length || 0)
+      console.log('MongoDB update result:', result.modifiedCount, 'documents modified')
       
       res.status(200).json({ 
         success: true, 
