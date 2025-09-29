@@ -23,31 +23,27 @@ export default async function handler(req, res) {
       res.status(200).json(dataWithoutId)
     } 
     else if (req.method === 'POST') {
-      const userData = req.body
-      userData.lastModified = new Date().toISOString()
-      
-      // LOG what we're saving to verify images are included
-      console.log('Saving services to MongoDB:')
-      userData.services?.forEach((service, i) => {
-        console.log(`Service ${i}: ${service.title}, Image: ${service.image || 'NO IMAGE'}`)
-      })
-      
-      // Update the entire userData document
-      const result = await collection.updateOne(
-        { _id: 'userData' },
-        { $set: userData },
-        { upsert: true }
-      )
+  const userData = req.body
+  userData.lastModified = new Date().toISOString()
+  
+  // Remove _id if it exists in the data being sent
+  const { _id, ...dataWithoutId } = userData
+  
+  // Update using the clean data
+  const result = await collection.updateOne(
+    { _id: 'userData' },
+    { $set: dataWithoutId },  // Use dataWithoutId instead of userData
+    { upsert: true }
+  )
 
-      console.log('MongoDB update result:', result.modifiedCount, 'documents modified')
-      
-      res.status(200).json({ 
-        success: true, 
-        message: 'Data saved successfully',
-        timestamp: userData.lastModified
-      })
-    } 
-    else {
+  console.log('Data saved to MongoDB')
+  
+  res.status(200).json({ 
+    success: true, 
+    message: 'Data saved successfully',
+    timestamp: dataWithoutId.lastModified
+  })
+}   else {
       res.status(405).json({ message: 'Method not allowed' })
     }
   } catch (error) {
