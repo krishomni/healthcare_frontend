@@ -19,6 +19,8 @@ export default function Services() {
   const loadData = async () => {
     try {
       const data = await api.getUserData()
+      console.log('Services loaded:', data.services) 
+      console.log('First service image:', data.services?.[0]?.image)
       setUserData(data)
     } catch (error) {
       console.error('Error loading data:', error)
