@@ -1,3 +1,4 @@
+// pages/gallery.js
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -5,6 +6,7 @@ import { motion } from 'framer-motion'
 import { FaImage, FaExpand } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
+import { api } from '../lib/api'
 
 export default function Gallery() {
   const [userData, setUserData] = useState(null)
@@ -18,18 +20,11 @@ export default function Gallery() {
 
   const loadData = async () => {
     try {
-      console.log('🔄 Loading gallery data...')
-      const response = await fetch('/api/user-data')
-      const data = await response.json()
-      
-      console.log('📦 Raw data received:', data)
-      console.log('🖼️ Gallery data:', data.gallery)
-      console.log('🏢 Facility images:', data.gallery?.facilityImages)
-      console.log('📊 Before/After cases:', data.gallery?.beforeAfterCases)
-      
+      const data = await api.getUserData()
+      console.log('Gallery page data loaded:', data.gallery)
       setUserData(data)
     } catch (error) {
-      console.error('❌ Error loading data:', error)
+      console.error('Error loading gallery data:', error)
     } finally {
       setLoading(false)
     }
@@ -38,21 +33,21 @@ export default function Gallery() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="loading-spinner"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
   if (!userData) {
-    return <div>Error loading data</div>
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        Error loading gallery
+      </div>
+    )
   }
 
   const gallery = userData.gallery || { facilityImages: [], beforeAfterCases: [] }
   const categories = ['All', 'Facility', 'Results']
-
-  console.log('🎯 Current gallery state:', gallery)
-  console.log('🎯 Facility images count:', gallery.facilityImages?.length || 0)
-  console.log('🎯 Before/After count:', gallery.beforeAfterCases?.length || 0)
 
   const filteredFacilityImages = selectedCategory === 'All' || selectedCategory === 'Facility' 
     ? gallery.facilityImages || [] 
@@ -65,64 +60,42 @@ export default function Gallery() {
   const hasContent = (gallery.facilityImages && gallery.facilityImages.length > 0) || 
                      (gallery.beforeAfterCases && gallery.beforeAfterCases.length > 0)
 
-  console.log('✅ Has content:', hasContent)
-  console.log('✅ Filtered facility images:', filteredFacilityImages.length)
-  console.log('✅ Filtered before/after:', filteredBeforeAfter.length)
-
   return (
     <>
       <Head>
         <title>Gallery - {userData.practice?.name}</title>
-        <meta name="description" content="Take a virtual tour of our modern medical facility" />
+        <meta name="description" content="Take a virtual tour of our modern medical facility and see our state-of-the-art equipment and comfortable patient areas." />
       </Head>
 
       <div className="min-h-screen bg-gray-50">
         <Navbar userData={userData} />
         
-        {/* Debug Info - Remove in production */}
-        <div className="fixed top-20 right-4 bg-black text-white p-3 text-xs z-50 rounded-lg max-w-xs">
-          <div><strong>Debug Info:</strong></div>
-          <div>Facility Images: {gallery.facilityImages?.length || 0}</div>
-          <div>Before/After: {gallery.beforeAfterCases?.length || 0}</div>
-          <div>Has Content: {hasContent ? 'YES' : 'NO'}</div>
-          <div>Selected: {selectedCategory}</div>
-          <button 
-            onClick={loadData}
-            className="bg-blue-600 px-2 py-1 rounded mt-2 w-full"
-          >
-            Refresh Data
-          </button>
-        </div>
-
         {/* Hero Section */}
-        <motion.section 
-          className="bg-gradient-to-r from-blue-600 to-blue-800 text-white pt-32 pb-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
+        <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white pt-24 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div 
-              className="text-center"
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6">Our Facility & Results</h1>
-              <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-                Take a virtual tour of our modern medical facility
-              </p>
-            </motion.div>
+            <div className="text-center">
+              <motion.h1 
+                className="text-4xl md:text-5xl font-bold mb-6"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
+                Our Facility & Results
+              </motion.h1>
+              <motion.p 
+                className="text-xl text-blue-100 max-w-3xl mx-auto"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                Take a virtual tour of our modern medical facility and see the advanced technology we use to provide exceptional care
+              </motion.p>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Category Filter */}
-        <motion.section 
-          className="bg-white py-8 shadow-sm"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
+        <section className="bg-white py-8 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center gap-4">
               {categories.map(category => (
@@ -140,10 +113,10 @@ export default function Gallery() {
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Main Content */}
-        <section className="py-16">
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             {!hasContent && (
@@ -205,19 +178,23 @@ export default function Gallery() {
             {filteredBeforeAfter.length > 0 && (
               <div>
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Patient Success Stories</h2>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-6">Patient Success Stories</h2>
                   <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg max-w-4xl mx-auto text-left">
                     <p className="text-sm text-yellow-700">
-                      <strong>Important:</strong> Results may vary. All images shared with patient consent.
+                      <strong>Important:</strong> Results may vary. Individual outcomes depend on various factors. All images shared with patient consent.
                     </p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredBeforeAfter.map((case_, index) => (
-                    <div 
+                    <motion.div 
                       key={index}
                       className="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer"
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      whileHover={{ y: -5 }}
                       onClick={() => setSelectedImage({ type: 'beforeafter', data: case_ })}
                     >
                       <div className="grid grid-cols-2 h-48">
@@ -248,7 +225,7 @@ export default function Gallery() {
                         <p className="text-gray-500 text-sm mb-2">{case_.duration}</p>
                         <p className="text-gray-600">{case_.description}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
