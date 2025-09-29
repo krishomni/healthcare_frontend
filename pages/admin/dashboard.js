@@ -91,8 +91,10 @@ export default function AdminDashboard() {
     }
 }
   const saveData = async () => {
-  setSaving(true)
-  try {
+    console.log('💾 Saving to MongoDB...')
+    console.log('First service:', JSON.stringify(userData.services[0], null, 2))
+    setSaving(true)
+    try {
     const token = localStorage.getItem('adminToken')
     const result = await api.saveAdminData(userData, token)
     if (result.success) {
