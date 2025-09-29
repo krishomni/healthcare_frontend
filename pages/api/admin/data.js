@@ -18,6 +18,8 @@ export default async function handler(req, res) {
       if (!userData) {
         return res.status(404).json({ message: 'User data not found' })
       }
+      console.log('GET: First service has image?', !!userData.services?.[0]?.image)
+
 
       const { _id, ...dataWithoutId } = userData
       res.status(200).json(dataWithoutId)
