@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   try {
     const client = await clientPromise
-    const db = client.db('Clinic Example')
+    const db = client.db('test')
     const collection = db.collection('settings')
 
     if (req.method === 'GET') {

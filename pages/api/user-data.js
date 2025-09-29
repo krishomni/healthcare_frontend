@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const client = await clientPromise
-      const db = client.db('Clinic Example') 
+      const db = client.db('tests') 
       
       // Fetch from MongoDB instead of JSON file
       const userData = await db.collection('settings').findOne({ _id: 'userData' })
