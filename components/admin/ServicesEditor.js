@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaCamera } from 'react-icons/fa'
 
 export default function ServicesEditor({ services, onUpdate }) {
   const [editingService, setEditingService] = useState(null)
@@ -13,6 +13,7 @@ export default function ServicesEditor({ services, onUpdate }) {
       icon: 'user-md',
       price: '',
       duration: '',
+      image: '', // Add image field
       features: []
     }
     onUpdate([...services, newService])
@@ -74,6 +75,45 @@ export default function ServicesEditor({ services, onUpdate }) {
               <div key={service.id || index} className="border border-gray-200 rounded-lg p-6">
                 {editingService === index ? (
                   <div className="space-y-4">
+                    {/* Service Image Upload */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Service Image URL
+                      </label>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <input
+                            type="url"
+                            value={service.image || ''}
+                            onChange={(e) => updateService(index, 'image', e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Enter an image URL or upload to a service like Imgur, Cloudinary, etc.
+                          </p>
+                        </div>
+                        {service.image && (
+                          <div className="w-24 h-24 border rounded-lg overflow-hidden flex-shrink-0">
+                            <img 
+                              src={service.image} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = ''
+                                e.target.style.display = 'none'
+                              }}
+                            />
+                          </div>
+                        )}
+                        {!service.image && (
+                          <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <FaCamera className="text-gray-400 text-2xl" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Service Title *</label>
@@ -117,6 +157,22 @@ export default function ServicesEditor({ services, onUpdate }) {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="e.g., 45 minutes"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                      <select
+                        value={service.icon || 'user-md'}
+                        onChange={(e) => updateService(index, 'icon', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="user-md">Medical Professional</option>
+                        <option value="heartbeat">Heartbeat</option>
+                        <option value="tooth">Tooth</option>
+                        <option value="microscope">Microscope</option>
+                        <option value="shield-alt">Shield</option>
+                        <option value="procedures">Procedures</option>
+                      </select>
                     </div>
 
                     <div>
@@ -172,16 +228,34 @@ export default function ServicesEditor({ services, onUpdate }) {
                 ) : (
                   <div>
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
-                        <p className="text-gray-600 mt-1">{service.description}</p>
-                        <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                          {service.price && <span>{service.price}</span>}
-                          {service.duration && <span>{service.duration}</span>}
-                          <span>{service.features?.length || 0} features</span>
+                      <div className="flex gap-4 flex-1">
+                        {/* Service Image Thumbnail */}
+                        {service.image ? (
+                          <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                            <img 
+                              src={service.image} 
+                              alt={service.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <FaImage className="text-gray-400 text-2xl" />
+                          </div>
+                        )}
+                        
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
+                          <p className="text-gray-600 mt-1 line-clamp-2">{service.description}</p>
+                          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                            {service.price && <span>{service.price}</span>}
+                            {service.duration && <span>{service.duration}</span>}
+                            <span>{service.features?.length || 0} features</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
+                      
+                      <div className="flex space-x-2 ml-4">
                         <button
                           onClick={() => setEditingService(index)}
                           className="text-blue-600 hover:text-blue-800"
@@ -200,6 +274,18 @@ export default function ServicesEditor({ services, onUpdate }) {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Helpful Tips */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="text-blue-800 font-semibold mb-2">Image Upload Tips:</h4>
+            <ul className="text-blue-700 text-sm space-y-1">
+              <li>• Use high-quality images (recommended: 800x600px or larger)</li>
+              <li>• Upload images to free services like <a href="https://imgur.com" target="_blank" className="underline">Imgur</a>, <a href="https://cloudinary.com" target="_blank" className="underline">Cloudinary</a>, or your own hosting</li>
+              <li>• Copy the direct image URL and paste it in the Image URL field</li>
+              <li>• Images with people work best for healthcare services</li>
+              <li>• Make sure images are relevant to the service being offered</li>
+            </ul>
           </div>
         </div>
       </div>
