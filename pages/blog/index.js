@@ -3,9 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { FaImage, FaCalendar, FaUser, FaClock, FaTag } from 'react-icons/fa'
-import Navbar from '../components/Navbar'
-import ScrollToTop from '../components/ScrollToTop'
-import { api } from '../lib/api'
+import Navbar from '../../components/Navbar'
+import ScrollToTop from '../../components/ScrollToTop'
+import { api } from '../../lib/api'
 
 export default function Blog() {
   const [userData, setUserData] = useState(null)
