@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { FaTooth, FaUserMd, FaHeartbeat, FaMicroscope, FaShieldAlt, FaProcedures, FaPhone, FaEnvelope, FaMapMarkerAlt, FaCheck } from 'react-icons/fa'
+import { FaTooth, FaUserMd, FaHeartbeat, FaMicroscope, FaShieldAlt, FaProcedures, FaPhone, FaEnvelope, FaMapMarkerAlt, FaCheck, FaImage } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
 import { api } from '../lib/api'
@@ -19,12 +19,9 @@ export default function Services() {
   const loadData = async () => {
     try {
       const data = await api.getUserData()
-      console.log('Services loaded:', data.services) 
-      console.log('First service image:', data.services?.[0]?.image)
       setUserData(data)
     } catch (error) {
       console.error('Error loading data:', error)
-      // Set fallback data
       setUserData({
         practice: { name: 'Healthcare Practice' },
         contact: { phone: '+1234567890', email: 'info@practice.com' },
@@ -147,25 +144,36 @@ export default function Services() {
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       whileHover={{ y: -5 }}
                     >
-                      {/* Service Header */}
-                      <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6">
-                        <div className="flex items-center mb-4">
-                          <div className="bg-blue-600 rounded-lg w-12 h-12 flex items-center justify-center mr-4">
-                            <Icon className="text-white text-xl" />
+                      {/* Service Image */}
+                      <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 relative overflow-hidden">
+                        {service.image ? (
+                          <img 
+                            src={service.image} 
+                            alt={service.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Icon className="text-blue-600 text-6xl opacity-30" />
                           </div>
-                          <h3 className="text-2xl font-bold text-gray-900">{service.title}</h3>
+                        )}
+                        {/* Icon Overlay */}
+                        <div className="absolute top-4 left-4 bg-blue-600 rounded-lg w-12 h-12 flex items-center justify-center shadow-lg">
+                          <Icon className="text-white text-xl" />
                         </div>
+                      </div>
+
+                      {/* Service Header */}
+                      <div className="p-6">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{service.title}</h3>
                         
                         {(service.price || service.duration) && (
-                          <div className="flex items-center space-x-4 text-sm text-blue-700">
+                          <div className="flex items-center space-x-4 text-sm text-blue-700 mb-4">
                             {service.price && <span className="font-semibold">{service.price}</span>}
                             {service.duration && <span>{service.duration}</span>}
                           </div>
                         )}
-                      </div>
 
-                      {/* Service Content */}
-                      <div className="p-6">
                         <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
                         
                         {/* Features */}
@@ -173,12 +181,17 @@ export default function Services() {
                           <div className="mb-6">
                             <h4 className="font-semibold text-gray-900 mb-3">What's Included:</h4>
                             <ul className="space-y-2">
-                              {service.features.map((feature, featureIndex) => (
+                              {service.features.slice(0, 3).map((feature, featureIndex) => (
                                 <li key={featureIndex} className="flex items-start">
                                   <FaCheck className="text-green-500 mt-0.5 mr-3 flex-shrink-0" />
                                   <span className="text-gray-600 text-sm">{feature}</span>
                                 </li>
                               ))}
+                              {service.features.length > 3 && (
+                                <li className="text-blue-600 text-sm font-medium">
+                                  +{service.features.length - 3} more features
+                                </li>
+                              )}
                             </ul>
                           </div>
                         )}
@@ -257,6 +270,17 @@ export default function Services() {
         {selectedService && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedService(null)}>
             <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Image */}
+              {selectedService.image && (
+                <div className="h-64 bg-gray-200">
+                  <img 
+                    src={selectedService.image} 
+                    alt={selectedService.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-2xl font-bold text-gray-900">{selectedService.title}</h3>
