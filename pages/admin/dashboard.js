@@ -93,38 +93,31 @@ export default function AdminDashboard() {
 const saveData = async () => {
   setSaving(true)
   
-  console.log('=== STEP 1: Data in frontend state ===')
-  console.log('Total services:', userData.services?.length)
-  console.log('First service full object:', userData.services?.[0])
-  console.log('First service has image field?', 'image' in (userData.services?.[0] || {}))
-  console.log('First service image value:', userData.services?.[0]?.image)
+  console.log('=== Saving to Backend API ===')
+  console.log('First service image:', userData.services?.[0]?.image)
   
   try {
     const token = localStorage.getItem('adminToken')
     
-    console.log('=== STEP 2: Sending to API ===')
-    const bodyData = JSON.stringify(userData)
-    console.log('Body contains image?', bodyData.includes('"image"'))
-    
-    const response = await fetch('/api/admin/data', {
+    const response = await fetch('https://healthcare-backend-wzyo.onrender.com/api/admin/data', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: bodyData
+      body: JSON.stringify(userData)
     })
 
     if (response.ok) {
-      console.log('=== STEP 3: Save successful ===')
+      console.log('=== Saved to backend successfully ===')
       setSaveStatus('Changes saved successfully!')
       setTimeout(() => setSaveStatus(''), 3000)
     } else {
-      console.error('=== STEP 3: Save failed ===')
+      console.error('=== Backend save failed ===')
       setSaveStatus('Error saving changes')
     }
   } catch (error) {
-    console.error('=== STEP 3: Save error ===', error)
+    console.error('=== Save error ===', error)
     setSaveStatus('Error saving changes')
   } finally {
     setSaving(false)
