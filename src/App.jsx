@@ -72,8 +72,11 @@ export default function App() {
           path="/portfolios/data-scientist/*"
           element={<DataScientistPage />}
         />
-        <Route path="/portfolios/cleaning-services" />
         {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
+        <Route
+          path="/portfolios/cleaningService/*"
+          element={<CleaningPage />}
+        />
         <Route
           path="/portfolios/localVendor"
           element={
