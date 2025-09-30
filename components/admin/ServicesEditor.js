@@ -93,19 +93,18 @@ export default function ServicesEditor({ services, onUpdate }) {
                             Enter an image URL or upload to a service like Imgur, Cloudinary, etc.
                           </p>
                         </div>
-                        {service.image && (
-                          <div className="w-24 h-24 border rounded-lg overflow-hidden flex-shrink-0">
-                            <img 
-                              src={service.image} 
-                              alt="Preview" 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.src = ''
-                                e.target.style.display = 'none'
-                              }}
-                            />
-                          </div>
-                        )}
+                        {service.image && service.image.startsWith('http') && (
+  <div className="w-24 h-24 border rounded-lg overflow-hidden flex-shrink-0">
+    <img 
+      src={service.image} 
+      alt="Preview" 
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        e.target.style.display = 'none'
+      }}
+    />
+  </div>
+)}
                         {!service.image && (
                           <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center flex-shrink-0">
                             <FaCamera className="text-gray-400 text-2xl" />
