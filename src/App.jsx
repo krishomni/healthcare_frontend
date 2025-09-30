@@ -29,6 +29,7 @@ import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 import ITAdminPage from "./components/ITAdminPage.jsx";
 import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
+import { VendorProvider } from "./context/VendorContext.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -64,7 +65,15 @@ export default function App() {
           element={<DataScientistPage />}
         />
         <Route path="/portfolios/cleaning-services" />
-        <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
+        {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
+        <Route
+          path="/portfolios/localVendor"
+          element={
+            <VendorProvider forceDefault={true}>
+              <LocalVendorApp />
+            </VendorProvider>
+          }
+        />
         <Route
           path="/portfolios/photographer/*"
           element={<PhotographerPage />}
@@ -85,7 +94,11 @@ export default function App() {
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
         <Route
           path="/portfolios/vendor/:username/:id"
-          element={<LocalVendorApp />}
+          element={
+            <VendorProvider>
+              <LocalVendorApp />
+            </VendorProvider>
+          }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
         <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
