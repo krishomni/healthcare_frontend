@@ -16,7 +16,7 @@ import ResumeUpload from "./components/ResumeUpload";
 import SuccessPage from "./components/SuccessPage.jsx";
 import TelemetryVisit from "./components/TelemetryVisit";
 import Tip from "./components/Tip";
-import UserProfile from "./components/UserProfile.jsx";
+import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import DataScientistPage from "./pages/dataScientist/pages/DataScientistPage";
 import DomainSearch from "./pages/domains/DomainSearchPage";
 import SignUp from "./pages/login/SignUp";

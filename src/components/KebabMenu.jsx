@@ -60,40 +60,10 @@ export default function KebabMenu({ portfolio }) {
               Use a free domain
             </button>
             <button
-              onClick={async (event) => {
+              onClick={(event) => {
+                // TODO: Add functionality for buying domain
+                navigate("/profile?tab=Domains");
                 event.stopPropagation();
-                const customDomain = prompt(
-                  "Enter your custom domain (e.g., yourdomain.com):"
-                );
-                if (customDomain) {
-                  try {
-                    const response = await fetch(
-                      `${backendUrl}/api/domains/custom`,
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          domain: customDomain,
-                          portfolioId: portfolio._id,
-                        }),
-                      }
-                    );
-
-                    if (response.ok) {
-                      alert(
-                        `Custom domain ${customDomain} configured! Please update your DNS settings.`
-                      );
-                    } else {
-                      alert("Failed to configure custom domain");
-                    }
-                  } catch (error) {
-                    console.error("Custom domain error:", error);
-                    alert("Error configuring custom domain");
-                  }
-                }
-                setIsOpen(false);
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
@@ -102,12 +72,22 @@ export default function KebabMenu({ portfolio }) {
             <button
               onClick={(event) => {
                 // TODO: Add functionality for buying domain
-                navigate("/domain-search");
+                navigate("/profile?tab=Domains");
                 event.stopPropagation();
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Buy your own domain from us
+            </button>
+            <button
+              onClick={(event) => {
+                // TODO: Add functionality for deleting domain
+
+                event.stopPropagation();
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-50 transition-colors"
+            >
+              Delete Portfolio
             </button>
           </div>
         </div>

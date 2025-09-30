@@ -67,6 +67,9 @@ export default function Dashboard() {
                     className="bg-white rounded-xl shadow-md p-6"
                     onClick={() => handleCardClick(p)}
                   >
+                    <div className="absolute top-3  right-2">
+                      <KebabMenu portfolio={p} />
+                    </div>
                     <div className="font-semibold text-slate-800 mb-2">
                       {p.title}
                     </div>
@@ -105,9 +108,6 @@ export default function Dashboard() {
                     className="bg-white rounded-xl shadow-md p-6 relative"
                     onClick={() => handleCardClick(p)}
                   >
-                    <div className="absolute top-3  right-2">
-                      <KebabMenu portfolio={p} />
-                    </div>
                     <div className="font-semibold text-slate-800 mb-2 mt-3">
                       {p.title}
                     </div>
