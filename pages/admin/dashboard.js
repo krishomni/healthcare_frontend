@@ -93,13 +93,17 @@ export default function AdminDashboard() {
 const saveData = async () => {
   setSaving(true)
   
-  console.log('=== Saving to Backend API ===')
-  console.log('First service image:', userData.services?.[0]?.image)
+  console.log('=== SAVING ALL SERVICES ===')
+  userData.services?.forEach((service, index) => {
+    console.log(`Service ${index}: ${service.title}`)
+    console.log(`  - Has image: ${!!service.image}`)
+    console.log(`  - Image URL: ${service.image || 'NONE'}`)
+  })
   
   try {
     const token = localStorage.getItem('adminToken')
     
-    const response = await fetch('https://healthcare-backend-wzyo.onrender.com/api/admin/data', {
+    const response = await fetch('/api/admin/data', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -109,21 +113,17 @@ const saveData = async () => {
     })
 
     if (response.ok) {
-      console.log('=== Saved to backend successfully ===')
+      console.log('=== Saved successfully ===')
       setSaveStatus('Changes saved successfully!')
       setTimeout(() => setSaveStatus(''), 3000)
-    } else {
-      console.error('=== Backend save failed ===')
-      setSaveStatus('Error saving changes')
     }
   } catch (error) {
-    console.error('=== Save error ===', error)
+    console.error('Save error:', error)
     setSaveStatus('Error saving changes')
   } finally {
     setSaving(false)
   }
 }
-
   const updateGallery = (gallery) => {
   setUserData(prev => ({
     ...prev,
