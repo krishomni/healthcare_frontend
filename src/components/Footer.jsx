@@ -47,7 +47,11 @@ export default function Footer() {
             <ul className="space-y-2 text-slate-400">
               <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Templates</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
+              <li>
+                <a href="/payment" className="hover:text-white transition-colors">
+                  Pricing
+                </a>
+              </li>
               <li><a href="#" className="hover:text-white transition-colors">Examples</a></li>
             </ul>
           </motion.div>

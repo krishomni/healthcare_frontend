@@ -39,7 +39,7 @@ export default function Dashboard() {
   };
   const handleCardClick = (portfolio) => {
     const username = portfolio.email.split("@")[0];
-    navigate(`/portfolios/project-manager/${username}/${portfolio._id}`);
+    navigate(`/portfolios/project-manager/${username}/${portfolio._id}`, { state: { from: "dashboard" } }); // to identify where user came from
   };
   return (
     <>

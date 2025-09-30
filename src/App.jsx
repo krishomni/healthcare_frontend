@@ -70,6 +70,7 @@ export default function App() {
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
         <Route path="/admin_page" element={<ITAdminPage />} />
         <Route path="/itadmin/ticketing-system" element={<TicketingPage/>}/>
+        <Route path="/payment" element={<Payment />} />
       </Routes>
       <FloatingHelpButton />
       {adminRequested && <Tip message="Request received! Our admin team will contact you shortly." />}
