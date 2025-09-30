@@ -73,7 +73,14 @@ export default function VendorSelector() {
       setOpen(false);
     } catch (err) {
       console.error("Failed to inject vendor", err);
-      alert("Error creating vendor from document");
+      // Show server-side message if available
+      if (err.response?.status === 400 && err.response.data?.error) {
+        alert(err.response.data.error);
+      } else {
+        alert(
+          "Something went wrong while creating the vendor. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
