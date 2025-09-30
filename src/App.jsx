@@ -7,6 +7,8 @@ import Tip from "./components/Tip";
 import Footer from "./components/Footer";
 import "./App.css";
 import ResumeUpload from "./components/ResumeUpload";
+import CleaningPage from "./pages/portfolios/cleaningService/src/App.jsx";
+
 import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
 import ExamplePortfolios from "./components/examplePortfolios";
@@ -54,8 +56,11 @@ export default function App() {
         <Route path="/portfolios/project-manager/:username/:id" element={<PortfolioPage />} />
         <Route path="/portfolios/software-engineer" />
         <Route path="/portfolios/data-scientist/*" element={<DataScientistPage />} />
-        <Route path="/portfolios/cleaning-services" />
         <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
+        <Route
+          path="/portfolios/cleaningService/*"
+          element={<CleaningPage />}
+        />
         <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
