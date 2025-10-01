@@ -6,6 +6,7 @@ import ProcessTimeline from './ProcessTimeline.jsx';
 import Testimonials from './Testimonials.jsx';
 import ContactForm from './ContactForm.jsx';
 import Footer from './Footer.jsx';
+import HeroSubNav from './HeroSubNav.jsx';
 
 // Import all the necessary CSS files
 import './Hero.css';
@@ -48,6 +49,7 @@ const HandymanShowcasePage = () => {
   return (
     <div>
       <main>
+        <HeroSubNav />
         <Hero content={showcaseData.hero} />
         <Services list={showcaseData.services} />
         <Portfolio />

@@ -11,6 +11,7 @@ import ProcessTimeline from './ProcessTimeline.jsx';
 import Testimonials from './Testimonials.jsx';
 import ContactForm from './ContactForm.jsx';
 import Footer from './Footer.jsx';
+import HeroSubNav from './HeroSubNav.jsx';
 
 import './Hero.css';
 import './Services.css';
@@ -79,6 +80,7 @@ const HandymanPage = () => {
       )}
 
       <main>
+        <HeroSubNav />
         <Hero content={data.hero} />
         <Services list={data.services} />
         <Portfolio templateId={id} />

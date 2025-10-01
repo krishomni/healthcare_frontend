@@ -72,6 +72,7 @@
         loadProjects();
     }, [id]);
 
+    // --- nested path setter (already supports hero.imageUrl etc.) ---
     const setNested = (path, value) => {
         const keys = path.split('.');
         setFormData(prev => {
@@ -201,6 +202,7 @@
             {/* Hero */}
             <div className="p-4 border rounded">
             <h2 className="text-xl font-semibold mb-4">Hero Section</h2>
+
             <label>Title</label>
             <input
                 className="w-full p-2 border rounded"
@@ -208,6 +210,7 @@
                 value={formData.hero.title}
                 onChange={handleInputChange}
             />
+
             <label className="mt-2">Subtitle</label>
             <input
                 className="w-full p-2 border rounded"
@@ -215,6 +218,7 @@
                 value={formData.hero.subtitle}
                 onChange={handleInputChange}
             />
+
             <label className="mt-2">Phone Number</label>
             <input
                 className="w-full p-2 border rounded"
@@ -222,6 +226,55 @@
                 value={formData.hero.phoneNumber}
                 onChange={handleInputChange}
             />
+
+            <label className="mt-2">Hero Image URL</label>
+            <input
+                className="w-full p-2 border rounded"
+                name="hero.imageUrl"
+                value={formData.hero.imageUrl || ''}
+                onChange={handleInputChange}
+                placeholder="https://…"
+            />
+
+            {/* NEW — editable badges + CTA */}
+            <div className="grid md:grid-cols-2 gap-3 mt-4">
+                <div>
+                <label className="block mb-1">Badge 1</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="hero.badge1Text"
+                    value={formData.hero.badge1Text ?? 'Licensed & Insured'}
+                    onChange={handleInputChange}
+                />
+                </div>
+                <div>
+                <label className="block mb-1">Badge 2</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="hero.badge2Text"
+                    value={formData.hero.badge2Text ?? '5-Star Rated'}
+                    onChange={handleInputChange}
+                />
+                </div>
+                <div>
+                <label className="block mb-1">Badge 3</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="hero.badge3Text"
+                    value={formData.hero.badge3Text ?? '24/7 Emergency Service'}
+                    onChange={handleInputChange}
+                />
+                </div>
+                <div>
+                <label className="block mb-1">CTA Button Text</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="hero.ctaText"
+                    value={formData.hero.ctaText ?? 'Request a Free Estimate'}
+                    onChange={handleInputChange}
+                />
+                </div>
+            </div>
             </div>
 
             {/* Services */}
