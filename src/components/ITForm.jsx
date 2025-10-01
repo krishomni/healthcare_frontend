@@ -62,6 +62,25 @@ export default function ITForm() {
       const userName = user ? stored.name || stored.email : form.name;
       const userEmail = user ? stored.email : form.email;
 
+      const payload = {
+        name: form.name,
+        email: userEmail,
+        phone: form.phone || "",
+        requestType: form.requestType,
+        portfolioId: contextLoggedIn ? (stored.portfolioId || form.portfolioId) : form.portfolioId,
+        message: form.message,
+      }
+
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/support-form`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
       //template parameters for company email
       const companyTemplateParams = {
         user_name: userName,
@@ -133,7 +152,7 @@ Our team will review your request and respond within 24-48 hours.`,
         message: "",
       });
     } catch (error) {
-      console.error("Error sending emails:", error);
+      console.error("Error in storeing data into collection or sending emails:", error);
       alert("There was an error submitting your request. Please try again.");
     } finally {
       setIsSubmitting(false);
