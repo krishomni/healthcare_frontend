@@ -69,13 +69,13 @@ const PortfolioPage = () => {
   const [contactError, setContactError] = useState("");
   const [contactLoading, setContactLoading] = useState(false);
 
-   //  EMAILJS FUNCTION
+  //  EMAILJS FUNCTION
   const sendContactEmails = async (formData) => {
     const { name, email: visitorEmail, message } = formData;
-    
+
     // Get owner email from portfolio data
-    const ownerEmail = portfolio?.email || 'owner@example.com';
-    
+    const ownerEmail = portfolio?.email || "owner@example.com";
+
     // Email configurations for all three recipients
     const emailConfigs = [
       {
@@ -94,7 +94,7 @@ Message: ${message}
 Please respond to them directly at ${visitorEmail}.
 
 Best regards,
-Surge Aina Team`
+Surge Aina Team`,
       },
       {
         // Email 2: To Visitor
@@ -113,12 +113,12 @@ Message: ${message}
 You can reach them directly at ${ownerEmail}
 
 Best regards,
-Surge Aina Team`
+Surge Aina Team`,
       },
       {
         // Email 3: To Admin (Surge Aina)
-        to_email: 'surgeaina@gmail.com',
-        to_name: 'Surge Aina',
+        to_email: "surgeaina@gmail.com",
+        to_name: "Surge Aina",
         email_subject: `New contact: ${name} contacted ${ownerEmail}`,
         email_body: `New contact form submission:
 
@@ -128,21 +128,23 @@ Portfolio Type: Project Manager
 Portfolio ID: ${id}
 Message: ${message}
 
-Submitted at: ${new Date().toLocaleString()}`
-      }
+Submitted at: ${new Date().toLocaleString()}`,
+      },
     ];
 
     // Send all emails
-    const emailPromises = emailConfigs.map((config, index) => 
-      emailjs.send(
-        import.meta.env.VITE_FORM_SERVICE_ID,
-        import.meta.env.VITE_ALLPORTFOLIO_TID,
-        config,
-        import.meta.env.VITE_FORM_PUBLIC_KEY
-      ).catch(err => {
-        console.error(`Email ${index + 1} failed:`, err);
-        throw err;
-      })
+    const emailPromises = emailConfigs.map((config, index) =>
+      emailjs
+        .send(
+          import.meta.env.VITE_FORM_SERVICE_ID,
+          import.meta.env.VITE_ALLPORTFOLIO_TID,
+          config,
+          import.meta.env.VITE_FORM_PUBLIC_KEY
+        )
+        .catch((err) => {
+          console.error(`Email ${index + 1} failed:`, err);
+          throw err;
+        })
     );
 
     return Promise.all(emailPromises);
@@ -173,26 +175,25 @@ Submitted at: ${new Date().toLocaleString()}`
       const formData = {
         name: contactName,
         email: contactEmail,
-        message: contactMessage
+        message: contactMessage,
       };
 
       // Send emails using EmailJS
       await sendContactEmails(formData);
-      
+
       setContactSuccess("Your message has been sent successfully!");
       setContactName("");
       setContactEmail("");
       setContactMessage("");
-      
+
       // Auto-hide success message after 5 seconds
       setTimeout(() => {
         setContactSuccess("");
       }, 5000);
-      
     } catch (error) {
-      console.error('Failed to send emails:', error);
+      console.error("Failed to send emails:", error);
       setContactError("Failed to send message. Please try again.");
-      
+
       // Auto-hide error message after 5 seconds
       setTimeout(() => {
         setContactError("");
@@ -261,70 +262,55 @@ Submitted at: ${new Date().toLocaleString()}`
   //   );
 
   if (isLoading) {
-  return (
-    <div className="projectManagerStyles">
-      <div className="loading-container">
-        <div className="page-background-effects">
-          <div className="background-blur-1"></div>
-          <div className="background-blur-2"></div>
-          <div className="background-blur-3"></div>
-        </div>
-        <div className="flex flex-col items-center z-10">
-          <div className="loading-spinner">
-            <div className="loading-spinner-base"></div>
-            <div className="loading-spinner-active"></div>
+    return (
+      <div className="projectManagerStyles">
+        <div className="loading-container">
+          <div className="page-background-effects">
+            <div className="background-blur-1"></div>
+            <div className="background-blur-2"></div>
+            <div className="background-blur-3"></div>
           </div>
-          <p className="text-body-primary text-lg font-medium">
-            Loading portfolio...
-          </p>
+          <div className="flex flex-col items-center z-10">
+            <div className="loading-spinner">
+              <div className="loading-spinner-base"></div>
+              <div className="loading-spinner-active"></div>
+            </div>
+            <p className="text-body-primary text-lg font-medium">Loading portfolio...</p>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-if (error) {
-  return (
-    <div className="projectManagerStyles">
-      <div className="loading-container">
-        <div className="page-background-effects">
-          <div className="background-blur-1"></div>
-          <div className="background-blur-2"></div>
-          <div className="background-blur-3"></div>
-        </div>
-        <div className="error-card">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="error-icon-container">
-              <svg
-                className="error-icon"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-heading-section">Error</h2>
-              <p className="text-body-muted">Unable to load portfolio data</p>
-            </div>
+  if (error) {
+    return (
+      <div className="projectManagerStyles">
+        <div className="loading-container">
+          <div className="page-background-effects">
+            <div className="background-blur-1"></div>
+            <div className="background-blur-2"></div>
+            <div className="background-blur-3"></div>
           </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="btn-primary w-full"
-          >
-            Try Again
-          </button>
+          <div className="error-card">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="error-icon-container">
+                <svg className="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-heading-section">Error</h2>
+                <p className="text-body-muted">Unable to load portfolio data</p>
+              </div>
+            </div>
+            <button onClick={() => window.location.reload()} className="btn-primary w-full">
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   const renderSection = () => {
     switch (activeSection) {
@@ -410,34 +396,22 @@ if (error) {
                     <h2 className="text-2xl font-bold mb-1 text-white tracking-tight drop-shadow-sm">
                       {portfolio?.name || "Portfolio Name"}
                     </h2>
-                    <p className="text-blue-300 drop-shadow-sm">
-                      {portfolio?.title || "Professional Title"}
-                    </p>
+                    <p className="text-blue-300 drop-shadow-sm">{portfolio?.title || "Professional Title"}</p>
                   </div>
 
                   <div className="divider-blue">
                     <h3 className="text-heading-blue mb-3">About</h3>
-                    <p className="text-body-secondary mb-7">
-                      {portfolio?.bio || "Professional bio and description"}
-                    </p>
+                    <p className="text-body-secondary mb-7">{portfolio?.bio || "Professional bio and description"}</p>
 
                     <h3 className="text-heading-blue mb-4">Connect</h3>
                     <div className="flex justify-center gap-4">
                       <a href="#" className="social-icon" aria-label="LinkedIn">
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M22.225 0h-20.45c-0.975 0-1.775 0.8-1.775 1.775v20.45c0 0.975 0.8 1.775 1.775 1.775h20.45c0.975 0 1.775-0.8 1.775-1.775v-20.45c0-0.975-0.8-1.775-1.775-1.775zM7.8 20.425h-3.55v-10.65h3.55v10.65zM6.025 8.175c-1.175 0-2.125-0.95-2.125-2.125s0.95-2.125 2.125-2.125 2.125 0.95 2.125 2.125-0.95 2.125-2.125 2.125zM20.425 20.425h-3.55v-5.875c0-1.325-0.025-3.025-1.85-3.025-1.85 0-2.125 1.425-2.125 2.9v6h-3.55v-10.65h3.4v1.55h0.05c0.475-0.9 1.625-1.85 3.35-1.85 3.6 0 4.275 2.375 4.275 5.475v5.475z"></path>
                         </svg>
                       </a>
                       <a href="#" className="social-icon" aria-label="GitHub">
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
                         </svg>
                       </a>
@@ -449,24 +423,16 @@ if (error) {
               {/* Main info card */}
               <div className="col-span-main group">
                 <div className="card-glassmorphism p-8 hover-scale-sm">
-                  <h1 className="text-heading-main mb-8">
-                    Professional Summary
-                  </h1>
-                  <p className="text-body-secondary mb-10 text-lg">
-                    {portfolio?.summary ||
-                      "Summary of your professional experience and goals"}
+                  <h1 className="text-heading-main mb-8">Professional Summary</h1>
+                  <p className="text-body-secondary mb-10 text-lg whitespace-pre-line">
+                    {portfolio?.summary || "Summary of your professional experience and goals"}
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div>
                       <h3 className="text-heading-blue flex items-center mb-4">
                         <span className="section-icon-container">
-                          <svg
-                            className="section-icon"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
+                          <svg className="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -496,12 +462,7 @@ if (error) {
                     <div>
                       <h3 className="text-heading-blue flex items-center mb-4">
                         <span className="section-icon-container">
-                          <svg
-                            className="section-icon"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
+                          <svg className="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -537,23 +498,20 @@ if (error) {
 
           <section className="mt-16 mb-12 flex justify-center">
             <div className="w-full max-w-6xl card-glassmorphism flex flex-col md:flex-row items-stretch p-0 overflow-hidden shadow-lg">
-              
               <div className="md:w-1/3 w-full flex flex-col justify-start items-start px-8 py-6 md:py-8 mt-2 md:mt-6">
                 <h2 className="text-2xl font-bold text-white-900 mb-2 text-left tracking-tight">Contact Me</h2>
                 <p className="text-white-800 text-base leading-relaxed text-left">
                   Interested in working together or have a question? Fill out the form and I'll get back to you soon!
                 </p>
               </div>
-              
+
               <form
                 onSubmit={handleContactSubmit}
                 className="md:w-2/3 w-full px-8 py-6 md:py-8 flex flex-col justify-center"
               >
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-blue-900 mb-1">
-                      Name
-                    </label>
+                    <label className="block text-sm font-medium text-blue-900 mb-1">Name</label>
                     <input
                       type="text"
                       className="input-base"
@@ -564,9 +522,7 @@ if (error) {
                     />
                   </div>
                   <div className="flex-1 mt-4 md:mt-0">
-                    <label className="block text-sm font-medium text-blue-900 mb-1">
-                      Email
-                    </label>
+                    <label className="block text-sm font-medium text-blue-900 mb-1">Email</label>
                     <input
                       type="email"
                       className="input-base"
@@ -578,9 +534,7 @@ if (error) {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-blue-900 mb-1">
-                    Message
-                  </label>
+                  <label className="block text-sm font-medium text-blue-900 mb-1">Message</label>
                   <textarea
                     className="textarea-base"
                     rows={3}
@@ -608,16 +562,8 @@ if (error) {
                     )}
                   </button>
                 </div>
-                {contactSuccess && (
-                  <div className="text-green-500 text-center font-medium mt-3">
-                    {contactSuccess}
-                  </div>
-                )}
-                {contactError && (
-                  <div className="text-red-500 text-center font-medium mt-3">
-                    {contactError}
-                  </div>
-                )}
+                {contactSuccess && <div className="text-green-500 text-center font-medium mt-3">{contactSuccess}</div>}
+                {contactError && <div className="text-red-500 text-center font-medium mt-3">{contactError}</div>}
               </form>
             </div>
           </section>
@@ -631,13 +577,10 @@ if (error) {
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-md flex items-center justify-center shadow-sm">
                     <span className="text-xs font-medium text-white">PM</span>
                   </div>
-                  <span className="text-body-primary font-medium">
-                    Portfolio Management
-                  </span>
+                  <span className="text-body-primary font-medium">Portfolio Management</span>
                 </div>
                 <p className="text-body-muted text-sm">
-                  Showcase your professional journey ©{" "}
-                  {new Date().getFullYear()}
+                  Showcase your professional journey © {new Date().getFullYear()}
                 </p>
               </div>
               <div className="flex gap-8">
