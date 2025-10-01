@@ -25,11 +25,13 @@ const Charges = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const svc = await axios.get('http://localhost:5000/services');
+        const svc = await axios.get(`${import.meta.env.VITE_BACKEND_API}/services`);
+      
         setServices(svc.data);
 
         if (isAdmin) {
-          const q = await axios.get('http://localhost:5000/quotes', authHeaders);
+          const q = await axios.get(`${import.meta.env.VITE_BACKEND_API}/quotes`, authHeaders);
+        
           setQuotes(q.data);
         }
       } catch (err) {
@@ -57,9 +59,9 @@ const Charges = () => {
   // ===== Admin: update price =====
   const savePrice = async (id, newPrice) => {
     try {
-      await axios.put(`http://localhost:5000/services/${id}`, { price: newPrice }, authHeaders);
+      await axios.put(`${import.meta.env.VITE_BACKEND_API}/services/${id}`, { price: newPrice }, authHeaders);
       toast.success('Price updated');
-      const svc = await axios.get('http://localhost:5000/services');
+      const svc = await axios.get(`${import.meta.env.VITE_BACKEND_API}/services`);
       setServices(svc.data);
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update price');
@@ -69,9 +71,9 @@ const Charges = () => {
   // ===== Admin: update quote status =====
   const updateStatus = async (quoteId, status) => {
     try {
-      await axios.patch(`http://localhost:5000/quotes/${quoteId}/status`, { status }, authHeaders);
+      await axios.patch(`${import.meta.env.VITE_BACKEND_API}/quotes/${quoteId}/status`, { status }, authHeaders);
       toast.success('Status updated');
-      const q = await axios.get('http://localhost:5000/quotes', authHeaders);
+      const q = await axios.get(`${import.meta.env.VITE_BACKEND_API}/quotes`, authHeaders);
       setQuotes(q.data);
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update status');
@@ -99,7 +101,7 @@ const Charges = () => {
         ? `Estimated Price: $${quoteEstimate}. ${details || ''}`.trim()
         : details;
 
-      await axios.post('http://localhost:5000/quotes', {
+      await axios.post(`${import.meta.env.VITE_BACKEND_API}/quotes`, {
         services: selectedServices,
         details: detailsWithEstimate,
         dueDate,

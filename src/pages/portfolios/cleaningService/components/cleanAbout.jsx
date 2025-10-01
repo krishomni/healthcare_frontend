@@ -6,6 +6,7 @@ import CleaningLady from '../models/CleaningLady';
 import HouseModel from '../models/HouseModel';
 import FamilyModel from '../models/FamilyModel';
 import { useNavigate } from 'react-router-dom';
+import * as THREE from 'three';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
@@ -57,8 +58,6 @@ export default function CleanAbout() {
     if (!el) return;
     const onWheel = (e) => {
       if (Math.abs(e.deltaY) < 10) return;
-      setUserInteracted(true);
-lastInteractionTime.current = Date.now();
       velocity.current = clamp(velocity.current + e.deltaY * scrollSensitivity, -maxVelocity, maxVelocity);
       // no preventDefault → outer page can still scroll
     };
@@ -88,7 +87,9 @@ lastInteractionTime.current = Date.now();
   // Animate
   useEffect(() => {
     let raf;
+    let isActive = true;
     const step = () => {
+      if(!isActive) return;
       velocity.current *= 0.9;
       rotation.current = normalize(rotation.current + velocity.current * 10);
 
@@ -103,7 +104,10 @@ lastInteractionTime.current = Date.now();
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      isActive=false;
+      cancelAnimationFrame(raf);
+    }
   }, []);
 
   const currentRotation = rotation.current;
@@ -145,7 +149,10 @@ lastInteractionTime.current = Date.now();
     <section className="clean-about-container">
       {mounted && (
         <motion.div ref={wrapRef} className="about-canvas-wrap" layout initial={false}>
-          <Canvas dpr={[1, 2]} camera={cameraProps} style={{ height: '100vh', width: '100%' }}>
+          <Canvas dpr={[1, 1.5]} camera={cameraProps} style={{ height: '100vh', width: '100%' }}  gl={{ 
+              preserveDrawingBuffer: true,
+              powerPreference: "high-performance"
+            }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 10, 5]} intensity={1} />
             <Environment preset="apartment" />
