@@ -69,7 +69,7 @@ export default function App() {
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/itadmin/ticketing-system" element={<TicketingPage/>}/>
+        <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
         <Route path="/payment" element={<Payment />} />
       </Routes>
       <FloatingHelpButton />
