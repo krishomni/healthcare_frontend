@@ -30,6 +30,11 @@ import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 import ITAdminPage from "./components/ITAdminPage.jsx";
 import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
 import { VendorProvider } from "./context/VendorContext.jsx";
+import Solutions from "./components/Solutions/Solutions.jsx";
+import Vendors from "./components/Solutions/Vendors";
+import Restaurant from "./components/Solutions/Restaurant";
+import Property from "./components/Solutions/Property";
+import Farmers from "./components/Solutions/Farmers";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -103,6 +108,11 @@ export default function App() {
         <Route path="/admin_page" element={<ITAdminPage />} />
         <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/solutions" element={<Solutions />} />
+        <Route path="/solutions/vendors" element={<Vendors />} />
+        <Route path="/solutions/restaurant" element={<Restaurant />} />
+        <Route path="/solutions/property" element={<Property />} />
+        <Route path="/solutions/farmers" element={<Farmers />} />
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (
