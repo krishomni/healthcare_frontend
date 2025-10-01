@@ -14,7 +14,7 @@ const solutions = [
       "Multi-channel sales integration",
       "Performance dashboards and reporting",
     ],
-    image: "/src/assets/images/vendors.jpeg",
+    image: "/assets/images/vendors.jpeg",
   },
   {
     category: "Restaurants",
@@ -28,7 +28,7 @@ const solutions = [
       "Menu analytics and pricing optimization",
       "Customer feedback and loyalty programs",
     ],
-    image: "/src/assets/images/restaurant.jpeg",
+    image: "/assets/images/restaurant.jpeg",
   },
   {
     category: "Rental Owners / Property Managers",
@@ -43,7 +43,7 @@ const solutions = [
       "Property inspection management",
       "Tenant communication portal",
     ],
-    image: "/src/assets/images/property.jpeg",
+    image: "/assets/images/property.jpeg",
   },
   {
     category: "Farmers",
@@ -57,7 +57,7 @@ const solutions = [
       "Market price tracking and analysis",
       "Compliance and certification management",
     ],
-    image: "/src/assets/images/farmers.jpeg",
+    image: "/assets/images/farmers.jpeg",
   },
 ];
 
