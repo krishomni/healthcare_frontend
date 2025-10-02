@@ -14,9 +14,14 @@ export default function Domains({ getAuthHeaders }) {
   const [userData, setUserData] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_API;
 
-  const writeToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+  const writeToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+      toast.error("Failed to copy to clipboard");
+    }
   };
 
   const fetchUserData = async () => {

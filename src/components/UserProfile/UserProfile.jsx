@@ -31,7 +31,7 @@ export default function UserProfile() {
   });
 
   const getAuthHeaders = () => ({
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
   });
   // Fetch user data on mount
   useEffect(() => {
