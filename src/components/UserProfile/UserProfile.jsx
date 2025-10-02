@@ -25,18 +25,22 @@ export default function UserProfile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const tab = new URLSearchParams(window.location.search).get("tab");
-  const [currentTab, setCurrentTab] = useState(tab || "Profile Information");
+  const [currentTab, setCurrentTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("tab") || "Profile Information";
+  });
 
+  const getAuthHeaders = () => ({
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
   // Fetch user data on mount
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError("");
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(`${apiUrl}/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: getAuthHeaders(),
         });
         setProfile(res.data);
         setEditData(res.data);
@@ -61,9 +65,8 @@ export default function UserProfile() {
     setError("");
     setSuccess("");
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.put(`${apiUrl}/user/me`, editData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(),
       });
       setProfile(res.data);
       setEditMode(false);
@@ -264,7 +267,7 @@ export default function UserProfile() {
       )}
 
       {/* Domains */}
-      {currentTab === "Domains" && <Domains />}
+      {currentTab === "Domains" && <Domains getAuthHeaders={getAuthHeaders} />}
 
       {/* Billing */}
       {currentTab === "Billing" && <ManageBillingComponent />}

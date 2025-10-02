@@ -1,9 +1,9 @@
 import { EllipsisVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function KebabMenu({ portfolio }) {
-
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -46,13 +46,18 @@ export default function KebabMenu({ portfolio }) {
               onClick={(event) => {
                 event.stopPropagation();
                 // TODO: Add functionality for free domain
+                if (!portfolio.email) {
+                  setIsOpen(false);
+                  toast.error("Email not found");
+                  return;
+                }
                 const username = portfolio.email.split("@")[0];
 
                 // change this if you change the handleCardClick in Dashboard.jsx
                 navigate(
                   `/portfolios/project-manager/${username}/${portfolio._id}`
                 );
-
+                toast.success("Redirecting to portfolio");
                 setIsOpen(false);
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

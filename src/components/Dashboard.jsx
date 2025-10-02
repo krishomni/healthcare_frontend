@@ -64,7 +64,7 @@ export default function Dashboard() {
                 {myPortfolios.map((p, i) => (
                   <div
                     key={p._id || i}
-                    className="bg-white rounded-xl shadow-md p-6"
+                    className="bg-white rounded-xl shadow-md p-6 relative"
                     onClick={() => handleCardClick(p)}
                   >
                     <div className="absolute top-3  right-2">
