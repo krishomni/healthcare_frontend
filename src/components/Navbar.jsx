@@ -229,6 +229,15 @@ export default function Navbar() {
               >
                 Dashboard
               </button>
+              <button
+                className="w-full text-left px-6 py-3 text-slate-800 hover:bg-blue-100 rounded-lg"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/solutions");
+                }}
+              >
+                Solutions
+              </button>
               {user && user.role === "admin" && (
                 <button
                   className="w-full text-left px-6 py-3 text-slate-800 hover:bg-blue-100 rounded-lg flex items-center"
