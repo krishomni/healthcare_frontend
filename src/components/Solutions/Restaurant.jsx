@@ -280,34 +280,7 @@ export default function Restaurant() {
         </div>
       </section>
 
-      {/* testimonials */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="mb-4 text-2xl font-bold text-gray-900">
-              Trusted by Restaurant Owners Nationwide
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              See how FindVirtual.me has helped restaurants like yours achieve better results.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="p-6 border rounded-lg bg-gray-50 border-gray-200">
-                <blockquote className="text-gray-600 mb-4">
-                  "{testimonial.quote}"
-                </blockquote>
-                <div>
-                  <div className="font-medium text-gray-900">{testimonial.author}</div>
-                  <div className="text-sm text-gray-500">
-                    {testimonial.restaurant} • {testimonial.location}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* pricing */}
       <section className="py-16 md:py-24 bg-white">
