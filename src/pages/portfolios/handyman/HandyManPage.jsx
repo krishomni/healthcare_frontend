@@ -82,7 +82,11 @@ const HandymanPage = () => {
       <main>
         <HeroSubNav />
         <Hero content={data.hero} />
-        <Services list={data.services} />
+        <Services
+          list={data.services}
+          heading={data.servicesSectionTitle}
+          intro={data.servicesSectionIntro}
+        />
         <Portfolio templateId={id} />
         <ProcessTimeline steps={data.processSteps} />
         <Testimonials list={data.testimonials} />

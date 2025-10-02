@@ -99,10 +99,57 @@
         next[index][name] = value;
         setFormData(prev => ({ ...prev, services: next }));
     };
+    // --- Services helpers (icon + bullets) ---
+    const ICON_OPTIONS = ['💧','💡','🔨','🚪','🔧','🌳'];
+
     const addService = () =>
-        setFormData(p => ({ ...p, services: [...p.services, { icon: '🔧', name: '' }] }));
+    setFormData(p => ({
+        ...p,
+        services: [
+        ...p.services,
+        { icon: '🔧', title: '', description: '', bullets: [] }
+        ]
+    }));
+
     const removeService = (i) =>
-        setFormData(p => ({ ...p, services: p.services.filter((_, idx) => idx !== i) }));
+    setFormData(p => ({ ...p, services: p.services.filter((_, idx) => idx !== i) }));
+
+    const handleServiceField = (index, field, value) => {
+    setFormData(prev => {
+        const next = [...prev.services];
+        next[index] = { ...next[index], [field]: value };
+        return { ...prev, services: next };
+    });
+    };
+
+    const addServiceBullet = (sIndex) => {
+    setFormData(prev => {
+        const next = [...prev.services];
+        const bullets = Array.isArray(next[sIndex].bullets) ? next[sIndex].bullets : [];
+        next[sIndex] = { ...next[sIndex], bullets: [...bullets, ''] };
+        return { ...prev, services: next };
+    });
+    };
+
+    const updateServiceBullet = (sIndex, bIndex, value) => {
+    setFormData(prev => {
+        const next = [...prev.services];
+        const bullets = [...(next[sIndex].bullets || [])];
+        bullets[bIndex] = value;
+        next[sIndex] = { ...next[sIndex], bullets };
+        return { ...prev, services: next };
+    });
+    };
+
+    const removeServiceBullet = (sIndex, bIndex) => {
+    setFormData(prev => {
+        const next = [...prev.services];
+        const bullets = [...(next[sIndex].bullets || [])].filter((_, i) => i !== bIndex);
+        next[sIndex] = { ...next[sIndex], bullets };
+        return { ...prev, services: next };
+    });
+    };
+
 
     const handleStepChange = (index, field, value) => {
         const next = [...formData.processSteps];
@@ -277,51 +324,121 @@
             </div>
             </div>
 
-            {/* Services */}
-            <div className="p-4 border rounded space-y-3">
-            <h2 className="text-xl font-semibold">Services</h2>
-            <label>Section Title</label>
-            <input
+                {/* Services */}
+    <div className="p-4 border rounded space-y-3">
+    <h2 className="text-xl font-semibold">Services</h2>
+
+    <label>Section Title</label>
+    <input
+        className="w-full p-2 border rounded"
+        name="servicesSectionTitle"
+        value={formData.servicesSectionTitle || ''}
+        onChange={handleInputChange}
+    />
+
+    <label className="mt-2">Intro Blurb</label>
+    <textarea
+        rows={3}
+        className="w-full p-2 border rounded"
+        name="servicesSectionIntro"
+        value={formData.servicesSectionIntro || ''}
+        onChange={handleInputChange}
+    />
+
+    <div className="space-y-4">
+        {formData.services.map((service, index) => (
+        <div key={index} className="p-3 border rounded-md space-y-2">
+            <div className="grid grid-cols-12 gap-2 items-center">
+            {/* Icon dropdown */}
+            <div className="col-span-12 sm:col-span-2">
+                <label className="block text-sm mb-1">Icon</label>
+                <select
                 className="w-full p-2 border rounded"
-                name="servicesSectionTitle"
-                value={formData.servicesSectionTitle || ''}
-                onChange={handleInputChange}
-            />
-            <label className="mt-2">Intro Blurb</label>
-            <textarea
-                rows={3}
-                className="w-full p-2 border rounded"
-                name="servicesSectionIntro"
-                value={formData.servicesSectionIntro || ''}
-                onChange={handleInputChange}
-            />
-            {formData.services.map((service, index) => (
-                <div key={index} className="flex items-center gap-2">
-                <input
-                    name="icon"
-                    className="p-2 border rounded w-20"
-                    value={service.icon}
-                    onChange={(e) => handleServiceChange(index, e)}
-                />
-                <input
-                    name="name"
-                    className="p-2 border rounded flex-grow"
-                    value={service.name}
-                    onChange={(e) => handleServiceChange(index, e)}
-                />
-                <button
-                    type="button"
-                    className="bg-red-500 text-white p-2 rounded"
-                    onClick={() => removeService(index)}
+                value={service.icon || '🔧'}
+                onChange={(e) => handleServiceField(index, 'icon', e.target.value)}
                 >
-                    Remove
-                </button>
-                </div>
-            ))}
-            <button type="button" className="bg-blue-500 text-white p-2 rounded" onClick={addService}>
-                Add Service
-            </button>
+                {ICON_OPTIONS.map(ic => (
+                    <option key={ic} value={ic}>{ic}</option>
+                ))}
+                </select>
             </div>
+
+            {/* Title */}
+            <div className="col-span-12 sm:col-span-5">
+                <label className="block text-sm mb-1">Title</label>
+                <input
+                className="w-full p-2 border rounded"
+                value={service.title ?? service.name ?? ''}
+                onChange={(e) => handleServiceField(index, 'title', e.target.value)}
+                placeholder="e.g., Plumbing Services"
+                />
+            </div>
+
+            {/* Remove button */}
+            <div className="col-span-12 sm:col-span-2 sm:col-start-12 sm:justify-self-end">
+                <label className="block text-sm opacity-0 select-none">remove</label>
+                <button
+                type="button"
+                className="bg-red-500 text-white px-3 py-2 rounded w-full"
+                onClick={() => removeService(index)}
+                >
+                Remove
+                </button>
+            </div>
+
+            {/* Description */}
+            <div className="col-span-12">
+                <label className="block text-sm mb-1">Short Description</label>
+                <textarea
+                rows={2}
+                className="w-full p-2 border rounded"
+                value={service.description || ''}
+                onChange={(e) => handleServiceField(index, 'description', e.target.value)}
+                placeholder="One-sentence summary shown under the title."
+                />
+            </div>
+            </div>
+
+            {/* Bullets */}
+            <div>
+            <label className="block text-sm mb-1">Bullets</label>
+            <div className="space-y-2">
+                {(service.bullets || []).map((b, bi) => (
+                <div key={bi} className="flex gap-2">
+                    <input
+                    className="flex-1 p-2 border rounded"
+                    value={b}
+                    onChange={(e) => updateServiceBullet(index, bi, e.target.value)}
+                    placeholder={`Bullet ${bi + 1}`}
+                    />
+                    <button
+                    type="button"
+                    className="bg-gray-200 px-3 rounded"
+                    onClick={() => removeServiceBullet(index, bi)}
+                    title="Remove bullet"
+                    >
+                    ✕
+                    </button>
+                </div>
+                ))}
+                <button
+                type="button"
+                className="bg-blue-500 text-white px-3 py-1 rounded"
+                onClick={() => addServiceBullet(index)}
+                >
+                Add Bullet
+                </button>
+            </div>
+            </div>
+        </div>
+        ))}
+    </div>
+
+    <button type="button" className="bg-blue-600 text-white p-2 rounded" onClick={addService}>
+        Add Service
+    </button>
+    </div>
+
 
             {/* Process */}
             <div className="p-4 border rounded space-y-3">
