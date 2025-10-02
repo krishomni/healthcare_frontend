@@ -74,7 +74,7 @@ export default function Solutions() {
     "/solutions/vendors",
     "/solutions/restaurant",
     "/solutions/property",
-    "/solutions/farmers",
+    "/solutions/farmers#crop-health",
   ];
 
   return (
