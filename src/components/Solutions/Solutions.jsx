@@ -199,7 +199,7 @@ export default function Solutions() {
           </div>
           <div className="flex flex-col items-center">
             <img
-              src="/assets/images/team/Carlos.png"
+              src="/assets/images/team/Carlos.jpg"
               alt="Team Lead 1"
               className="w-40 h-40 object-cover object-center rounded-full shadow-lg mb-4 border border-slate-300"
             />
@@ -208,7 +208,7 @@ export default function Solutions() {
           </div>
           <div className="flex flex-col items-center">
             <img
-              src="/assets/images/team/Ri.png"
+              src="/assets/images/team/Ri.jpg"
               alt="Team Lead 2"
               className="w-40 h-40 object-cover object-center rounded-full shadow-lg mb-4 border border-slate-300"
             />
