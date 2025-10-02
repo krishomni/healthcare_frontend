@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Search, TrendingUp, Briefcase, Users, ChevronRight } from "lucide-react";
+import {
+  Search,
+  TrendingUp,
+  Briefcase,
+  Users,
+  ChevronRight,
+} from "lucide-react";
 import axios from "axios";
 
 const goals = [
@@ -10,7 +16,7 @@ const goals = [
     icon: Search,
     color: "text-blue-600",
     bg: "bg-blue-50",
-    border: "border-blue-200"
+    border: "border-blue-200",
   },
   {
     id: "grow-business",
@@ -19,7 +25,7 @@ const goals = [
     icon: TrendingUp,
     color: "text-green-600",
     bg: "bg-green-50",
-    border: "border-green-200"
+    border: "border-green-200",
   },
   {
     id: "showcase-work",
@@ -28,7 +34,7 @@ const goals = [
     icon: Briefcase,
     color: "text-purple-600",
     bg: "bg-purple-50",
-    border: "border-purple-200"
+    border: "border-purple-200",
   },
   {
     id: "attract-clients",
@@ -37,11 +43,11 @@ const goals = [
     icon: Users,
     color: "text-orange-600",
     bg: "bg-orange-50",
-    border: "border-orange-200"
-  }
+    border: "border-orange-200",
+  },
 ];
 
-export default function GoalSelection({ onSelect }) {
+export default function GoalSelection({ onSelect, onFileUpload }) {
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [resumeFileName, setResumeFileName] = useState("");
   const [uploadError, setUploadError] = useState("");
@@ -68,19 +74,24 @@ export default function GoalSelection({ onSelect }) {
         `${import.meta.env.VITE_BACKEND_API}/portfolio/upload-pdf`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      if (res.status !== 200 && res.status !== 201) throw new Error("Upload failed");
+      if (res.status !== 200 && res.status !== 201)
+        throw new Error("Upload failed");
       setResumeUploaded(true);
+      onFileUpload?.(selectedFile);
     } catch (err) {
       setResumeUploaded(false);
       setUploadError(
         err?.response?.data?.message ||
-        err?.message ||
-        "Resume upload failed. Please try again."
+          err?.message ||
+          "Resume upload failed. Please try again."
       );
-      console.log("Resume upload error:", err?.response?.data || err.message || err);
+      console.log(
+        "Resume upload error:",
+        err?.response?.data || err.message || err
+      );
     } finally {
       setLoading(false);
     }
@@ -93,9 +104,12 @@ export default function GoalSelection({ onSelect }) {
         className="text-center mb-12 opacity-0 animate-fade-in"
         style={{ animationDelay: "0ms" }}
       >
-        <h1 className="mb-4 text-gray-900 text-2xl md:text-3xl font-bold">What's your main goal?</h1>
+        <h1 className="mb-4 text-gray-900 text-2xl md:text-3xl font-bold">
+          What's your main goal?
+        </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Help us personalize your experience by telling us what you want to achieve
+          Help us personalize your experience by telling us what you want to
+          achieve
         </p>
       </div>
 
@@ -111,11 +125,15 @@ export default function GoalSelection({ onSelect }) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 ${goal.bg} rounded-lg flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 ${goal.bg} rounded-lg flex items-center justify-center`}
+                  >
                     <IconComponent className={`w-6 h-6 ${goal.color}`} />
                   </div>
                   <div>
-                    <h3 className="text-gray-900 mb-1 font-semibold">{goal.title}</h3>
+                    <h3 className="text-gray-900 mb-1 font-semibold">
+                      {goal.title}
+                    </h3>
                     <p className="text-sm text-gray-600">{goal.description}</p>
                   </div>
                 </div>
@@ -126,12 +144,19 @@ export default function GoalSelection({ onSelect }) {
         })}
       </div>
       {/* resume upload section */}
-      <div className="mt-16 text-center opacity-0 animate-fade-in-up" style={{ animationDelay: "700ms" }}>
-        <h2 className="mb-2 text-lg md:text-xl font-semibold text-gray-900" style={{ fontFamily: 'inherit' }}>
+      <div
+        className="mt-16 text-center opacity-0 animate-fade-in-up"
+        style={{ animationDelay: "700ms" }}
+      >
+        <h2
+          className="mb-2 text-lg md:text-xl font-semibold text-gray-900"
+          style={{ fontFamily: "inherit" }}
+        >
           Upload Your Resume
         </h2>
         <p className="mb-4 text-gray-600 max-w-xl mx-auto text-sm">
-          Easily upload your PDF resume to enhance your portfolio and showcase your experience.
+          Easily upload your PDF resume to enhance your portfolio and showcase
+          your experience.
         </p>
         <label htmlFor="resume-upload" className="inline-block">
           <input
@@ -142,7 +167,11 @@ export default function GoalSelection({ onSelect }) {
             onChange={handleResumeChange}
             disabled={loading}
           />
-          <span className={`px-6 py-2 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 cursor-pointer font-mono text-base font-semibold inline-block transition-all ${loading ? "opacity-70 cursor-not-allowed" : ""}`}>
+          <span
+            className={`px-6 py-2 bg-blue-900 text-white rounded-md shadow hover:bg-blue-800 cursor-pointer font-mono text-base font-semibold inline-block transition-all ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-400 border-r-2 border-blue-800"></span>
@@ -161,14 +190,13 @@ export default function GoalSelection({ onSelect }) {
               Resume "{resumeFileName}" uploaded successfully!
             </div>
             <div className="mt-2 text-blue-700 text-sm font-medium">
-              You can continue with onboarding while we process your resume in the background.
+              You can continue with onboarding while we process your resume in
+              the background.
             </div>
           </>
         )}
         {uploadError && (
-          <div className="mt-4 text-red-600 font-semibold">
-            {uploadError}
-          </div>
+          <div className="mt-4 text-red-600 font-semibold">{uploadError}</div>
         )}
       </div>
       {/* tailwind animation */}

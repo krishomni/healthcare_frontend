@@ -4,12 +4,15 @@ import { useLocation } from "react-router-dom";
 export default function Layout({ children }) {
   const location = useLocation();
   const isPortfolio = location.pathname.startsWith("/portfolios/");
+  const fromDashboard = location.state?.from === "dashboard";
+
+  // Hide Navbar only if on a portfolio page AND came from dashboard
+  const showNavbar = !(isPortfolio && fromDashboard);
 
   return (
     <>
-      {/* only render Navbar if not on a portfolio page */}
-      {!isPortfolio && <Navbar />}
-      <main className={`min-h-screen w-full ${!isPortfolio ? "pt-20" : ""}`}>
+      {showNavbar && <Navbar />}
+      <main className={`min-h-screen w-full ${showNavbar ? "pt-20" : ""}`}>
         {children}
       </main>
     </>

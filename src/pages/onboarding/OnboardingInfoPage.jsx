@@ -30,14 +30,45 @@ export default function OnboardingInfoPage() {
         }
         break;
 
+      case 3: // Local Food Vendor
+        try {
+          let res;
+          if (user.file) {
+            const formData = new FormData();
+            formData.append("file", user.file);
+            res = await axios.post(`${backendUrl}/vendor/inject`, formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          } else {
+            const vendorData = {
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              phone: user.phone || "",
+              description: user.bio || "My business portfolio",
+            };
+            res = await axios.post(`${backendUrl}/vendor`, vendorData);
+          }
+
+          const vendor = res.data.vendor || res.data;
+          const username =
+            vendor.username || vendor.name.toLowerCase().replace(/\s+/g, "-");
+          navigate(`/portfolios/vendor/${username}/${vendor._id}`);
+        } catch (err) {
+          console.error("Vendor portfolio creation failed:", err);
+          toast.error("Could not create vendor portfolio");
+        }
+        break;
+
       case 5:
         try {
           const handyman_portfolio = user;
           const res = await handymanAPI.post(`/api/handyman-template`, {
             hero: { phoneNumber: user?.phone ?? user?.hero?.phoneNumber ?? "" },
           });
+
           console.log("response: ", res.data);
           const id = res.data._id;
+          navigate(`/portfolios/handyman/${id}`);
           navigate(`/portfolios/handyman/${id}`);
         } catch (error) {
           console.log("error creating portfolio: ", error);
@@ -63,15 +94,18 @@ export default function OnboardingInfoPage() {
   const portfolioTemplates = [
     {
       name: "Product Manager",
-      description: "Showcase your product management skills, roadmaps, and project successes.",
+      description:
+        "Showcase your product management skills, roadmaps, and project successes.",
     },
     {
       name: "Data Scientist",
-      description: "Highlight your data projects, analyses, and machine learning experience.",
+      description:
+        "Highlight your data projects, analyses, and machine learning experience.",
     },
     {
       name: "Software Engineer",
-      description: "Display your coding projects, apps, and technical expertise.",
+      description:
+        "Display your coding projects, apps, and technical expertise.",
     },
     {
       name: "Local Food Vendor",
@@ -83,7 +117,8 @@ export default function OnboardingInfoPage() {
     },
     {
       name: "Handyman / Local Repair Services",
-      description: "Demonstrate your skills, previous jobs, and customer testimonials.",
+      description:
+        "Demonstrate your skills, previous jobs, and customer testimonials.",
     },
   ];
 
@@ -130,13 +165,23 @@ export default function OnboardingInfoPage() {
         )}
       </div>
       <div>
-        <h1 className="text-gray-900 text-2xl font-bold mb-6">Choose a Template</h1>
+        <h1 className="text-gray-900 text-2xl font-bold mb-6">
+          Choose a Template
+        </h1>
         {portfolioTemplates.map((template, index) => {
           const style = cards[index % cards.length];
           return (
-            <div key={index} className={`mb-3 rounded-lg p-6 border ${style.bg} hover:shadow-md transition-shadow transition-transform duration-300 cursor-pointer hover:scale-105`} onClick={() => handleCardClick(index)}>
-              <div className={`font-semibold ${style.text} mb-2`}>{template.name}</div>
-              <div className={`${style.text} text-opacity-70`}>{template.description}</div>
+            <div
+              key={index}
+              className={`mb-3 rounded-lg p-6 border ${style.bg} hover:shadow-md transition-shadow transition-transform duration-300 cursor-pointer hover:scale-105`}
+              onClick={() => handleCardClick(index)}
+            >
+              <div className={`font-semibold ${style.text} mb-2`}>
+                {template.name}
+              </div>
+              <div className={`${style.text} text-opacity-70`}>
+                {template.description}
+              </div>
             </div>
           );
         })}

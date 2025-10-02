@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { isAdminLoggedIn } from "../services/auth";
 import VendorSelector from "./VendorSelector";
+import { AuthContext } from "../../../../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
+  const { user } = useContext(AuthContext);
 
   const navLinks = [
     { label: "Home", href: "#home" },
@@ -37,7 +39,7 @@ const Navbar = () => {
         ))}
 
         <div className="hidden md:flex items-center gap-3">
-          {isAdminLoggedIn() && <VendorSelector />}
+          {user?.role === "admin" && <VendorSelector />}
         </div>
 
         {isAdminLoggedIn() && (
@@ -78,7 +80,7 @@ const Navbar = () => {
           ))}
 
           {/* 🔹 Vendor Selector also in mobile view */}
-          {isAdminLoggedIn() && <VendorSelector />}
+          {user?.role === "admin" && <VendorSelector />}
 
           {isAdminLoggedIn() && (
             <Link
