@@ -1,8 +1,8 @@
 // pages/portfolios/handyman/HandyManPage.jsx
-import React, { useEffect, useState, useContext } from 'react'; // + useContext
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import handymanAPI from './api.js';
-import { AuthContext } from '../../../context/AuthContext';       // + AuthContext
+import { AuthContext } from '../../../context/AuthContext';
 
 import Hero from './Hero.jsx';
 import Services from './Services.jsx';
@@ -25,11 +25,11 @@ import './Footer.css';
 
 const HandymanPage = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);                 // + get logged-in user
+  const { user } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isOwner, setIsOwner] = useState(false);            // + derive ownership
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -37,27 +37,22 @@ const HandymanPage = () => {
       setLoading(false);
       return;
     }
-
-    const fetchPortfolioData = async () => {
+    (async () => {
       try {
         setLoading(true);
         const { data } = await handymanAPI.get(`/api/handyman-template/${id}`);
         setData(data);
-
-        // --- ownership check (no /me endpoints) ---
         const uid = user?.id || user?._id;
         const ownerId = data?.userId;
         setIsOwner(Boolean(uid && ownerId && String(uid) === String(ownerId)));
       } catch (err) {
         console.error(err);
-        setError('Could not load this portfolio. It may not exist or there was a server error.');
+        setError('Could not load this portfolio.');
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchPortfolioData();
-  }, [id, user]); // recompute when user changes
+    })();
+  }, [id, user]);
 
   if (loading) return <div className="text-center p-10 font-bold">Loading...</div>;
   if (error) return <div className="text-center p-10 text-red-600 font-bold">{error}</div>;
@@ -69,10 +64,7 @@ const HandymanPage = () => {
         <div className="bg-yellow-200 text-center p-2 sticky top-0 z-50">
           <p>
             You are viewing your portfolio.{` `}
-            <Link
-              to={`/portfolios/handyman/${id}/edit`}
-              className="font-bold underline text-blue-600"
-            >
+            <Link to={`/portfolios/handyman/${id}/edit`} className="font-bold underline text-blue-600">
               Click here to edit
             </Link>.
           </p>
@@ -87,7 +79,15 @@ const HandymanPage = () => {
           heading={data.servicesSectionTitle}
           intro={data.servicesSectionIntro}
         />
-        <Portfolio templateId={id} />
+
+        {/* 🔽 Pass new props for title/subtext/allLabel */}
+        <Portfolio
+          templateId={id}
+          title={data.portfolioTitle}
+          subtitle={data.portfolioSubtitle}
+          allLabel={data.portfolioAllLabel}
+        />
+
         <ProcessTimeline steps={data.processSteps} />
         <Testimonials list={data.testimonials} />
         <ContactForm />

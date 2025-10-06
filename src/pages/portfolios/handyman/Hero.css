@@ -14,8 +14,11 @@
   align-items:center;
 }
 
+/* ⬅️ ensure text is left-aligned regardless of global styles */
+.hero-left{ text-align:left; }
+
 .hero-h1{
-  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-size: clamp(2rem, 3vw, 3.2rem);
   line-height:1.1;
   margin:0 0 1rem 0;
   font-weight:800;
@@ -29,39 +32,23 @@
 
 .hero-badges{
   list-style:none;
-  display:flex;
-  gap:1rem;
-  flex-wrap:wrap;
-  padding:0;
-  margin:0 0 1.25rem 0;
-  color:#1f2937;
+  padding:0; margin:0 0 1.25rem 0;
+  display:flex; gap:.75rem; flex-wrap:wrap;
 }
 .hero-badges li{
-  display:flex; align-items:center; gap:.4rem;
-  background:#fff;
-  border:1px solid #e5e7eb;
-  padding:.5rem .75rem;
-  border-radius:999px;
-  font-size:.95rem;
-  box-shadow:0 2px 6px rgba(0,0,0,.04);
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid #e5e7eb; padding:.55rem .8rem; border-radius:.75rem;
+  background:#fff; color:#0b1324; font-weight:600;
 }
 
 .hero-cta-row{
-  display:flex;
-  gap:.75rem;
-  flex-wrap:wrap;
+  display:flex; gap:.9rem; align-items:center; flex-wrap:wrap;
 }
 .hero-btn-primary{
-  background:#1667ff;
-  color:#fff;
-  padding:.85rem 1.1rem;
-  border-radius:.7rem;
-  text-decoration:none;
-  font-weight:600;
-  box-shadow:0 6px 18px rgba(22,103,255,.18);
+  background:#1d4ed8; color:#fff; text-decoration:none;
+  padding:.9rem 1.2rem; border-radius:.9rem; font-weight:700;
+  box-shadow:0 10px 30px rgba(29,78,216,.25);
 }
-.hero-btn-primary:hover{ filter:brightness(.95); }
-
 .hero-phone-pill{
   display:inline-flex; align-items:center; gap:.55rem;
   border:1px solid #d1d5db;
@@ -73,27 +60,31 @@
 .hero-phone-icn{ font-size:1.05rem; }
 
 .hero-right{ width:100%; }
+
+/* Photo */
 .hero-photo-wrap{
   position:relative;
   border-radius:1rem;
   overflow:hidden;
   box-shadow:0 20px 60px rgba(0,0,0,.12);
-  background:#fff;
+  margin-bottom: .25rem;          /* ⬆️ nudge photo a touch upward visually */
 }
 .hero-photo{
-  display:block;
-  width:100%;
-  height:auto;
+  width:100%; height:auto; display:block;
 }
+
+/* Stats box — now BELOW the image */
 .hero-stats{
-  position:absolute;
-  left:1rem; right:1rem; bottom:-20px;
-  display:flex; justify-content:space-around; gap:1rem;
+  position:relative;               /* no longer absolute overlay */
+  inset:auto;
+  transform:none;
+  display:flex; gap:1.25rem; justify-content:space-between;
   background:#fff;
   border:1px solid #e5e7eb;
   border-radius:.9rem;
   padding:.9rem 1rem;
   box-shadow:0 12px 30px rgba(0,0,0,.12);
+  margin-top:.9rem;                /* spacing under the photo */
 }
 .hero-stats div{
   display:flex; flex-direction:column; align-items:center;
@@ -104,5 +95,5 @@
 /* Mobile */
 @media (max-width: 900px){
   .hero-inner{ grid-template-columns:1fr; padding:2.5rem 1.25rem; }
-  .hero-stats{ position:relative; inset:auto; margin: .75rem 0 0; }
+  .hero-stats{ margin-top:.75rem; }
 }

@@ -10,11 +10,15 @@
 
 .services-section h2 {
   margin: 0 0 8px 0;
+  /* 1) Header ("A One-Call Solution") size + bold */
+  font-size: clamp(1.5rem, 1.8vw, 2rem);
+  font-weight: 700;
 }
 
 .services-intro {
   max-width: 720px;
   margin: 0 auto 32px;
+  /* 3) Sub text size */
   font-size: 1.05rem;
   color: #555;
   line-height: 1.6;
@@ -62,14 +66,19 @@
   margin-bottom: 10px;
 }
 
+/* 2) Card headers size + bold */
 .service-title {
   margin: 0 0 6px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
+/* 3) Card sub text size */
 .service-desc {
   color: #555;
   margin: 0 0 10px 0;
   line-height: 1.55;
+  font-size: 1.05rem;
 }
 
 /* Bullets with small arrow indicator */

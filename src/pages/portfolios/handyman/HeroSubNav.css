@@ -11,7 +11,7 @@
     margin:0 auto;
     padding:.75rem 2rem;
     display:flex;
-    gap:1.5rem;
+    gap:3rem;                         /* ⬅️ more space between links */
     justify-content:center;
     list-style:none;
     }

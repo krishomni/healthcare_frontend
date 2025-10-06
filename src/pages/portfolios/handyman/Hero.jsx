@@ -16,10 +16,10 @@ export default function Hero({ content }) {
   } = content || {};
 
   return (
-    <section id="hero" className="hero-v2">
+    <section className="hero-v2" id="home">
       <div className="hero-inner">
         {/* Left column */}
-        <div className="hero-left">
+        <div className="hero-left">{/* ⬅️ force left-align via CSS */}
           <h1 className="hero-h1">{title}</h1>
           <p className="hero-sub">{subtitle}</p>
 
@@ -42,11 +42,13 @@ export default function Hero({ content }) {
         <div className="hero-right">
           <div className="hero-photo-wrap">
             <img src={imageUrl} alt="Handyman at work" className="hero-photo" />
-            <div className="hero-stats">
-              <div><strong>15+</strong><span>Years Experience</span></div>
-              <div><strong>500+</strong><span>Happy Customers</span></div>
-              <div><strong>24/7</strong><span>Emergency Service</span></div>
-            </div>
+          </div>
+
+          {/* ⬇️ moved outside the image wrapper so it sits below the photo */}
+          <div className="hero-stats">
+            <div><strong>15+</strong><span>Years Experience</span></div>
+            <div><strong>500+</strong><span>Happy Customers</span></div>
+            <div><strong>24/7</strong><span>Emergency Service</span></div>
           </div>
         </div>
       </div>
