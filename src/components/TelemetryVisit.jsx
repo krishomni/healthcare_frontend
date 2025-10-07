@@ -15,14 +15,14 @@ export default function TelemetryVisit() {
 
   useEffect(() => {
     const consent = getConsent();
-    console.log("[TelemetryVisit] route ->", pathname, "consent:", consent);
+    //console.log("[TelemetryVisit] route ->", pathname, "consent:", consent);
 
     if (consent !== "accepted") return;
     if (lastSent.current === pathname) return;
     lastSent.current = pathname;
 
     const url = `${API_BASE}/api/telemetry/visit`;
-    console.log("[TelemetryVisit] POST", url, "page:", pathname);
+    // console.log("[TelemetryVisit] POST", url, "page:", pathname);
 
     fetch(url, {
       method: "POST",
@@ -32,7 +32,7 @@ export default function TelemetryVisit() {
     })
       .then(async (r) => {
         const txt = await r.text();
-        console.log("[TelemetryVisit] resp:", r.status, txt);
+        // console.log("[TelemetryVisit] resp:", r.status, txt);
       })
       .catch((e) => console.warn("[TelemetryVisit] fetch failed:", e));
   }, [pathname]);
@@ -40,7 +40,7 @@ export default function TelemetryVisit() {
   useEffect(() => {
     const handler = () => {
       const consent = getConsent();
-      console.log("[TelemetryVisit] consent-changed ->", consent);
+      // console.log("[TelemetryVisit] consent-changed ->", consent);
       if (consent === "accepted") {
         lastSent.current = "";
         const url = `${API_BASE}/api/telemetry/visit`;
