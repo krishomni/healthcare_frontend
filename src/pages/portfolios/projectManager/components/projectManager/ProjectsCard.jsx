@@ -1,21 +1,30 @@
-import { useState, useEffect } from "react";
-import {
-  FaPen,
-  FaPlus,
-  FaTimes,
-  FaTrash,
-  FaSave,
-  FaExternalLinkAlt,
-} from "react-icons/fa";
+import { useState, useEffect, useContext } from "react";
+import { FaPen, FaPlus, FaTimes, FaTrash, FaSave, FaExternalLinkAlt } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { AuthContext } from "../../../../../context/AuthContext";
+
+//attach token to each axios request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const ProjectsCard = ({ portfolio }) => {
+  const { user } = useContext(AuthContext);
   const projects = portfolio.projects;
   const [editIdx, setEditIdx] = useState(null);
   const [editProject, setEditProject] = useState({});
   const [projectList, setProjectList] = useState(projects);
   const [adding, setAdding] = useState(false);
+  const [linkValid, setLinkValid] = useState(true);
   const [newProject, setNewProject] = useState({
     name: "",
     description: "",
@@ -33,38 +42,19 @@ const ProjectsCard = ({ portfolio }) => {
   // Mutation for saving projects data
   const saveProjectsMutation = useMutation({
     mutationFn: async (projectsData) => {
-      console.log("Saving projects data:", projectsData); // DEBUG
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${apiUrl}/portfolio/edit?email=${portfolio.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            portfolio: {
-              projects: projectsData,
-            },
-          }),
-        }
-      );
-
-      const result = await response.json();
-      console.log("Server response:", result); // DEBUG
-
-      if (!response.ok) throw new Error("Failed to save projects");
-      return result;
+      const response = await axios.patch(`${apiUrl}/portfolio/edit`, {
+        portfolio: { projects: projectsData },
+      });
+      return response.data;
     },
     onSuccess: (data) => {
-      console.log("Save successful:", data); // DEBUG
-      toast.success("Projects saved successfully!");
+      console.log("Save successful:", data);
+      toast.success("Project saved successfully!");
       queryClient.invalidateQueries(["portfolio"]);
     },
     onError: (error) => {
-      console.error("Save failed:", error); // DEBUG
-      toast.error("Failed to save projects");
+      console.error("Save failed:", error);
+      toast.error("Failed to save Project");
     },
   });
 
@@ -115,13 +105,20 @@ const ProjectsCard = ({ portfolio }) => {
     setAdding(false);
   };
 
+  const isValidUrl = (str) => {
+    try {
+      new URL(str);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-          Projects
-        </h2>
-        {portfolio.email === localStorage.getItem("email") && (
+        <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-sm">Projects</h2>
+        {portfolio.email === user?.email && (
           <button
             onClick={() => setAdding(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg border border-blue-500"
@@ -184,15 +181,26 @@ const ProjectsCard = ({ portfolio }) => {
 
                 <input
                   name="link"
-                  value={editProject.link || ""}
+                  value={editProject.link}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-slate-700 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+                  onBlur={() => {
+                    if (!isValidUrl(editProject.link)) {
+                      setLinkValid(false);
+                      editProject.link = null;
+                      toast.error("Invalid URL");
+                    } else {
+                      setLinkValid(true);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 bg-slate-700 border border-white/20 rounded-lg ${
+                    linkValid ? "text-white" : "text-red-400"
+                  } placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50`}
                   placeholder="Project Link (https://...)"
                 />
               </div>
             ) : (
               <>
-                {portfolio.email === localStorage.getItem("email") && (
+                {portfolio.email === user?.email && (
                   <button
                     onClick={() => handleEdit(idx)}
                     className="absolute top-4 right-4 p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors"
@@ -204,12 +212,8 @@ const ProjectsCard = ({ portfolio }) => {
 
                 <div className="pr-12 flex-1 flex flex-col">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">
-                      {proj.name}
-                    </h3>
-                    <p className="text-slate-200 leading-relaxed drop-shadow-sm">
-                      {proj.description}
-                    </p>
+                    <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">{proj.name}</h3>
+                    <p className="text-slate-200 leading-relaxed drop-shadow-sm">{proj.description}</p>
                   </div>
 
                   {proj.link && (
@@ -241,9 +245,7 @@ const ProjectsCard = ({ portfolio }) => {
               <FaTimes className="w-4 h-4" />
             </button>
 
-            <h3 className="text-xl font-bold text-white mb-6 drop-shadow-sm">
-              Add New Project
-            </h3>
+            <h3 className="text-xl font-bold text-white mb-6 drop-shadow-sm">Add New Project</h3>
 
             <div className="space-y-4 flex-1">
               <input

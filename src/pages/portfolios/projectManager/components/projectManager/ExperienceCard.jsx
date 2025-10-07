@@ -1,9 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaPen, FaPlus, FaTimes, FaTrash, FaSave } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../../../../context/AuthContext";
+import axios from "axios";
+
+//attach token to each axios request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const ExperienceCard = ({ portfolio }) => {
+  const { user } = useContext(AuthContext);
   const experiences = portfolio.experiences;
   const [editIdx, setEditIdx] = useState(null);
   const [editExp, setEditExp] = useState({});
@@ -27,29 +42,10 @@ const ExperienceCard = ({ portfolio }) => {
 
   const saveExperienceMutation = useMutation({
     mutationFn: async (experienceData) => {
-      console.log("Saving experience data:", experienceData);
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${apiUrl}/portfolio/edit?email=${portfolio.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            portfolio: {
-              experiences: experienceData,
-            },
-          }),
-        }
-      );
-
-      const result = await response.json();
-      console.log("Server response:", result);
-
-      if (!response.ok) throw new Error("Failed to save experience");
-      return result;
+      const response = await axios.patch(`${apiUrl}/portfolio/edit`, {
+        portfolio: { experience: experienceData },
+      });
+      return response.data;
     },
     onSuccess: (data) => {
       console.log("Save successful:", data);
@@ -58,7 +54,7 @@ const ExperienceCard = ({ portfolio }) => {
     },
     onError: (error) => {
       console.error("Save failed:", error);
-      toast.error("Failed to save experience");
+      toast.error("Failed to save Experience");
     },
   });
 
@@ -116,10 +112,8 @@ const ExperienceCard = ({ portfolio }) => {
     <div className="mt-6">
       {/* Mobile-optimized header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-          Experience
-        </h2>
-        {portfolio.email === localStorage.getItem("email") && (
+        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">Experience</h2>
+        {portfolio.email === user?.email && (
           <button
             onClick={() => setAdding(true)}
             className="self-start sm:self-auto px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg border border-blue-500 text-sm sm:text-base"
@@ -196,9 +190,7 @@ const ExperienceCard = ({ portfolio }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                      End Date
-                    </label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">End Date</label>
                     <input
                       name="endDate"
                       type="date"
@@ -227,7 +219,7 @@ const ExperienceCard = ({ portfolio }) => {
               </div>
             ) : (
               <>
-                {portfolio.email === localStorage.getItem("email") && (
+                {portfolio.email === user?.email && (
                   <button
                     onClick={() => handleEdit(idx)}
                     className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors"
@@ -243,22 +235,16 @@ const ExperienceCard = ({ portfolio }) => {
                       <h3 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2 drop-shadow-sm leading-tight">
                         {exp.title}
                       </h3>
-                      <p className="text-blue-300 font-medium text-base sm:text-lg drop-shadow-sm">
-                        {exp.company}
-                      </p>
+                      <p className="text-blue-300 font-medium text-base sm:text-lg drop-shadow-sm">{exp.company}</p>
                       {exp.location && (
-                        <p className="text-slate-300 text-xs sm:text-sm mt-1 drop-shadow-sm">
-                          📍 {exp.location}
-                        </p>
+                        <p className="text-slate-300 text-xs sm:text-sm mt-1 drop-shadow-sm">📍 {exp.location}</p>
                       )}
                     </div>
                     <div className="mt-2">
                       <div className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 bg-slate-700 rounded-full border border-white/20">
                         <span className="text-xs sm:text-sm text-slate-300 font-mono">
                           {new Date(exp.startDate).toLocaleDateString()} –{" "}
-                          {exp.endDate
-                            ? new Date(exp.endDate).toLocaleDateString()
-                            : "Present"}
+                          {exp.endDate ? new Date(exp.endDate).toLocaleDateString() : "Present"}
                         </span>
                       </div>
                     </div>
@@ -311,9 +297,7 @@ const ExperienceCard = ({ portfolio }) => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                    Start Date
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">Start Date</label>
                   <input
                     name="startDate"
                     type="date"
@@ -323,9 +307,7 @@ const ExperienceCard = ({ portfolio }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                    End Date
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">End Date</label>
                   <input
                     name="endDate"
                     type="date"
@@ -357,9 +339,7 @@ const ExperienceCard = ({ portfolio }) => {
                 className="w-full mt-4 sm:mt-6 px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 disabled:opacity-50 text-sm sm:text-base"
                 disabled={saveExperienceMutation.isPending}
               >
-                {saveExperienceMutation.isPending
-                  ? "Saving..."
-                  : "Add Experience"}
+                {saveExperienceMutation.isPending ? "Saving..." : "Add Experience"}
               </button>
             </div>
           </div>
@@ -368,9 +348,7 @@ const ExperienceCard = ({ portfolio }) => {
 
       {expList.length === 0 && !adding && (
         <div className="text-center py-8 sm:py-12">
-          <div className="text-slate-400 text-base sm:text-lg mb-4">
-            No experience entries yet
-          </div>
+          <div className="text-slate-400 text-base sm:text-lg mb-4">No experience entries yet</div>
           <button
             onClick={() => setAdding(true)}
             className="px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 text-sm sm:text-base"
