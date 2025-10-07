@@ -64,6 +64,13 @@ export default function Navbar() {
               <span className="relative z-10">Dashboard</span>
               <span className="absolute inset-0 w-1/3 h-full bg-blue-200/40 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
             </button>
+            <button
+              className="relative transition-colors text-slate-800 px-4 py-2 rounded-xl overflow-hidden group"
+              onClick={() => navigate("/solutions")}
+            >
+              <span className="relative z-10">Solutions</span>
+              <span className="absolute inset-0 w-1/3 h-full bg-blue-200/40 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+            </button>
             {user && user.role === "admin" && (
             <button
               className="relative transition-colors text-slate-800 px-4 py-2 rounded-xl overflow-hidden group"
@@ -221,6 +228,15 @@ export default function Navbar() {
                 }}
               >
                 Dashboard
+              </button>
+              <button
+                className="w-full text-left px-6 py-3 text-slate-800 hover:bg-blue-100 rounded-lg"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/solutions");
+                }}
+              >
+                Solutions
               </button>
               {user && user.role === "admin" && (
                 <button

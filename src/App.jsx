@@ -29,6 +29,13 @@ import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 import ITAdminPage from "./components/ITAdminPage.jsx";
 import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
+import { VendorProvider } from "./context/VendorContext.jsx";
+import Solutions from "./components/Solutions/Solutions.jsx";
+import Vendors from "./components/Solutions/Vendors";
+import Restaurant from "./components/Solutions/Restaurant";
+import Property from "./components/Solutions/Property";
+import Farmers from "./components/Solutions/Farmers";
+import AdminRoute from "./components/AdminRoute.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -46,34 +53,72 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
-        <Route path="/dashboard" element={<Dashboard onRequestAdmin={handleRequestAdmin} />} />
+        <Route
+          path="/dashboard"
+          element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
+        />
         <Route path={"/signup"} element={<SignUp />} />
         <Route path="/occupations" element={<Occupations />} />
         <Route path="/resume" element={<ResumeUpload />} />
         <Route path="/portfolios" element={<ExamplePortfolios />} />
-        <Route path="/portfolios/project-manager/:username/:id" element={<PortfolioPage />} />
+        <Route
+          path="/portfolios/project-manager/:username/:id"
+          element={<PortfolioPage />}
+        />
         <Route path="/portfolios/software-engineer" />
-        <Route path="/portfolios/data-scientist/*" element={<DataScientistPage />} />
+        <Route
+          path="/portfolios/data-scientist/*"
+          element={<DataScientistPage />}
+        />
         <Route path="/portfolios/cleaning-services" />
-        <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} />
-        <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
+        {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
+        <Route
+          path="/portfolios/localVendor"
+          element={
+            <VendorProvider forceDefault={true}>
+              <LocalVendorApp />
+            </VendorProvider>
+          }
+        />
+        <Route
+          path="/portfolios/photographer/*"
+          element={<PhotographerPage />}
+        />
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
         <Route path="/portfolios/handyman/:id" element={<HandymanPage />} />
         {/* Route 3: The page where a logged-in user can edit their portfolio */}
-        <Route path="/portfolios/handyman/:id/edit" element={<EditHandymanPortfolio />} />
+        <Route
+          path="/portfolios/handyman/:id/edit"
+          element={<EditHandymanPortfolio />}
+        />
         {/*successfull subscription page} */}
         <Route path={"/success"} element={<SuccessPage />} />
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
+        <Route
+          path="/portfolios/vendor/:username/:id"
+          element={
+            <VendorProvider>
+              <LocalVendorApp />
+            </VendorProvider>
+          }
+        />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
+        <Route path="/itadmin/ticketing-system" element={<AdminRoute><TicketingPage /></AdminRoute>} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/solutions" element={<Solutions />} />
+        <Route path="/solutions/vendors" element={<Vendors />} />
+        <Route path="/solutions/restaurant" element={<Restaurant />} />
+        <Route path="/solutions/property" element={<Property />} />
+        <Route path="/solutions/farmers" element={<Farmers />} />
       </Routes>
       <FloatingHelpButton />
-      {adminRequested && <Tip message="Request received! Our admin team will contact you shortly." />}
+      {adminRequested && (
+        <Tip message="Request received! Our admin team will contact you shortly." />
+      )}
       <Footer />
       <CookieConsent />
       <CookieSettings />

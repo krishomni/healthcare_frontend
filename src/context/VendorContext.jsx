@@ -4,8 +4,12 @@ import { isAdminLoggedIn } from "../pages/portfolios/localVendor/services/auth";
 const VendorContext = createContext();
 export const useVendor = () => useContext(VendorContext);
 
-export function VendorProvider({ children }) {
+export function VendorProvider({ children, forceDefault = false }) {
   const [vendorId, setVendorId] = useState(() => {
+    if (forceDefault) {
+      // Always return demo vendor for Examples
+      return "68af9176f5115d59643841d9";
+    }
     // try to restore from localStorage first
     return localStorage.getItem("vendorId") || null;
   });
