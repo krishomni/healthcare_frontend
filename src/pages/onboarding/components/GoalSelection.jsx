@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
 import {
   Search,
   TrendingUp,
@@ -53,15 +54,21 @@ export default function GoalSelection({ onSelect, onFileUpload }) {
   const [uploadError, setUploadError] = useState("");
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const { setPendingFile } = useContext(AuthContext);
 
   const handleResumeChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
+
     setFile(selectedFile);
     setResumeFileName(selectedFile.name);
     setResumeUploaded(false);
     setUploadError("");
-    handleResumeUpload(selectedFile);
+    setPendingFile(selectedFile); // Store globally in context
+
+    if (typeof onFileUpload === "function") {
+      onFileUpload(selectedFile); // Pass to OnboardingFlow
+    }
   };
 
   const handleResumeUpload = async (selectedFile) => {
@@ -80,7 +87,9 @@ export default function GoalSelection({ onSelect, onFileUpload }) {
       if (res.status !== 200 && res.status !== 201)
         throw new Error("Upload failed");
       setResumeUploaded(true);
-      onFileUpload?.(selectedFile);
+      if (typeof onFileUpload === "function") {
+        onFileUpload(selectedFile); // pass File object
+      }
     } catch (err) {
       setResumeUploaded(false);
       setUploadError(
