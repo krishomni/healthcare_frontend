@@ -74,7 +74,7 @@ export default function Solutions() {
     "/solutions/vendors",
     "/solutions/restaurant",
     "/solutions/property",
-    "/solutions/farmers",
+    "/solutions/farmers#crop-health",
   ];
 
   return (
@@ -179,6 +179,42 @@ export default function Solutions() {
           <button className="bg-white border border-gray-200 text-slate-900 font-semibold px-8 py-4 rounded-xl text-lg shadow hover:bg-gray-100 transition">
             Contact Sales
           </button>
+        </div>
+      </div>
+
+      {/* Our Team Section */}
+      <div className="w-full max-w-4xl mx-auto text-center mt-24">
+        <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 mb-10">
+          Our Team
+        </h2>
+        <div className="flex flex-col md:flex-row gap-10 justify-center items-center">
+          <div className="flex flex-col items-center">
+            <img
+              src="/assets/images/team/Om.jpg"
+              alt="Project Manager"
+              className="w-40 h-40 object-cover object-center rounded-full shadow-lg mb-4 border border-slate-300"
+            />
+            <div className="font-bold text-base text-slate-700 mb-1">Om Patil</div>
+            <div className="font-semibold text-lg text-slate-800">Project Manager</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src="/assets/images/team/Carlos.png"
+              alt="Team Lead 1"
+              className="w-40 h-40 object-cover object-center rounded-full shadow-lg mb-4 border border-slate-300"
+            />
+            <div className="font-bold text-base text-slate-700 mb-1">Carlos Garcia</div>
+            <div className="font-semibold text-lg text-slate-800">Team Lead</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src="/assets/images/team/Ri.png"
+              alt="Team Lead 2"
+              className="w-40 h-40 object-cover object-center rounded-full shadow-lg mb-4 border border-slate-300"
+            />
+            <div className="font-bold text-base text-slate-700 mb-1">Rimma Esheva</div>
+            <div className="font-semibold text-lg text-slate-800">Team Lead</div>
+          </div>
         </div>
       </div>
     </div>

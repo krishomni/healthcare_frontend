@@ -1,9 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaPlus, FaTimes, FaTrash } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../../../../context/AuthContext";
+import axios from "axios";
+
+//attach token to each axios request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const SkillsCard = ({ portfolio }) => {
+  const { user } = useContext(AuthContext);
   const skills = portfolio.skills;
   const [skillList, setSkillList] = useState(skills);
   const [newSkill, setNewSkill] = useState("");
@@ -20,38 +35,19 @@ const SkillsCard = ({ portfolio }) => {
   // Mutation for saving skills data
   const saveSkillsMutation = useMutation({
     mutationFn: async (skillsData) => {
-      console.log("Saving skills data:", skillsData); // DEBUG
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${apiUrl}/portfolio/edit?email=${portfolio.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            portfolio: {
-              skills: skillsData,
-            },
-          }),
-        }
-      );
-
-      const result = await response.json();
-      console.log("Server response:", result); // DEBUG
-
-      if (!response.ok) throw new Error("Failed to save skills");
-      return result;
+      const response = await axios.patch(`${apiUrl}/portfolio/edit`, {
+        portfolio: { skills: skillsData },
+      });
+      return response.data;
     },
     onSuccess: (data) => {
-      console.log("Save successful:", data); // DEBUG
+      console.log("Save successful:", data);
       toast.success("Skills saved successfully!");
       queryClient.invalidateQueries(["portfolio"]);
     },
     onError: (error) => {
-      console.error("Save failed:", error); // DEBUG
-      toast.error("Failed to save skills");
+      console.error("Save failed:", error);
+      toast.error("Failed to save Skills");
     },
   });
 
@@ -80,10 +76,8 @@ const SkillsCard = ({ portfolio }) => {
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-          Skills
-        </h2>
-        {portfolio.email === localStorage.getItem("email") && (
+        <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-sm">Skills</h2>
+        {portfolio.email === user?.email && (
           <button
             onClick={() => setAdding(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg border border-blue-500"
@@ -103,7 +97,7 @@ const SkillsCard = ({ portfolio }) => {
                 className="group relative inline-flex items-center gap-2 bg-blue-500/20 text-blue-200 text-sm font-medium px-4 py-2 rounded-full border border-blue-400/30 hover:bg-blue-500/30 transition-colors"
               >
                 <span className="drop-shadow-sm">{skill}</span>
-                {portfolio.email === localStorage.getItem("email") && (
+                {portfolio.email === user?.email && (
                   <button
                     onClick={() => handleDeleteSkill(idx)}
                     className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 rounded-full hover:bg-red-500/20 transition-all"
@@ -115,9 +109,7 @@ const SkillsCard = ({ portfolio }) => {
               </div>
             ))
           ) : (
-            <div className="text-slate-400 text-lg py-8 text-center w-full">
-              No skills listed yet
-            </div>
+            <div className="text-slate-400 text-lg py-8 text-center w-full">No skills listed yet</div>
           )}
         </div>
 
