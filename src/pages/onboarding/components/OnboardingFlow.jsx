@@ -19,6 +19,7 @@ export default function OnboardingFlow() {
   const [countdown, setCountdown] = useState(5);
   // track which step the user is on
   const [currentStep, setCurrentStep] = useState("goal");
+  const { login, setPendingFile } = useContext(AuthContext);
 
   // store all user input data for onboarding
   const [data, setData] = useState({
@@ -34,11 +35,24 @@ export default function OnboardingFlow() {
   const handleGoalSelect = (goal) => {
     setData((prev) => ({ ...prev, goal }));
     // if user is a business, skip to complete
-    if (goal === "grow-business") {
+    if (data.file) {
+      // If file uploaded, skip directly to user info
       setCurrentStep("userInfo");
     } else {
-      setCurrentStep("industry");
+      // Normal path
+      if (goal === "grow-business") {
+        setCurrentStep("userInfo");
+      } else {
+        setCurrentStep("industry");
+      }
     }
+  };
+
+  const handleFileUpload = (file) => {
+    setData((prev) => ({ ...prev, file }));
+    // set in auth context so it's available after login/navigation
+    if (typeof setPendingFile === "function") setPendingFile(file);
+    setCurrentStep("userInfo"); // skip straight ahead
   };
 
   // handle selection of industry
@@ -101,6 +115,9 @@ export default function OnboardingFlow() {
   // get the labels for each step to show in progress bar
   const getStepLabels = () => {
     const baseSteps = ["Goal"];
+    if (data.file) {
+      return ["Goal", "Profile"];
+    }
     if (data.goal === "grow-business") {
       return ["Goal", "Profile"]; // changing the flow for business users, no need to select industry or skills
     }
@@ -139,7 +156,6 @@ export default function OnboardingFlow() {
   };
 
   //send data to backend when they finish onboarding
-  const { login } = useContext(AuthContext);
   useEffect(() => {
     if (currentStep === "complete") {
       setError("");
@@ -266,7 +282,10 @@ export default function OnboardingFlow() {
         <div className="mt-12">
           {/* show goal selection step */}
           {currentStep === "goal" && (
-            <GoalSelection onSelect={handleGoalSelect} />
+            <GoalSelection
+              onSelect={handleGoalSelect}
+              onFileUpload={handleFileUpload}
+            />
           )}
           {/* show industry selection step */}
           {currentStep === "industry" && (
