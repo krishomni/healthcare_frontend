@@ -37,6 +37,7 @@ import Vendors from "./components/Solutions/Vendors";
 import Restaurant from "./components/Solutions/Restaurant";
 import Property from "./components/Solutions/Property";
 import Farmers from "./components/Solutions/Farmers";
+import AdminRoute from "./components/AdminRoute.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -120,7 +121,7 @@ export default function App() {
           }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
+        <Route path="/itadmin/ticketing-system" element={<AdminRoute><TicketingPage /></AdminRoute>} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/solutions" element={<Solutions />} />
         <Route path="/solutions/vendors" element={<Vendors />} />
