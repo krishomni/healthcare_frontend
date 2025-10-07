@@ -103,7 +103,14 @@ export default function App() {
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
+        <Route
+          path="/onboarding_info"
+          element={
+            <VendorProvider>
+              <OnboardingInfoPage />
+            </VendorProvider>
+          }
+        />
         <Route
           path="/portfolios/vendor/:username/:id"
           element={

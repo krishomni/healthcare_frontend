@@ -6,7 +6,9 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   //do not use this anymore will be phased out-----------------
-  const [contextLoggedIn, setContextLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [contextLoggedIn, setContextLoggedIn] = useState(
+    !!localStorage.getItem("token")
+  );
   const contextLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -23,6 +25,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const backendUrl = import.meta.env.VITE_BACKEND_API;
   const queryClient = useQueryClient();
+  const [pendingFile, setPendingFile] = useState(null);
 
   //auto login attempt if token is present when loading into FindVirtual.me
   useEffect(() => {
@@ -41,13 +44,17 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
+  useEffect(() => {
+    if (pendingFile) console.log("✅ pendingFile stored:", pendingFile.name);
+  }, [pendingFile]);
+
   const login = async (email, password) => {
     try {
       const res = await axios.post(`${backendUrl}/user/login`, {
         email,
         password,
       });
-      setUser(res.data.user);
+      setUser((prev) => ({ ...prev, ...res.data.user }));
       setToken(res.data.token);
       localStorage.setItem("email", res.data.user.email);              // ADD THIS LINE
     localStorage.setItem("userId", res.data.user._id || res.data.user.id);  
@@ -95,6 +102,8 @@ export function AuthProvider({ children }) {
         login,
         logout,
         refreshUser,
+        pendingFile, //  new
+        setPendingFile, // new
         //use above values moving forward
         contextLoggedIn,
         contextLogin,

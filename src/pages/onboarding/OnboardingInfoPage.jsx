@@ -3,13 +3,15 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import handymanAPI from "../../pages/portfolios/handyman/api.js";
-
+import { useVendor } from "../../context/VendorContext.jsx";
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 import { AuthContext } from "../../context/AuthContext";
 
 export default function OnboardingInfoPage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { setVendorId } = useVendor();
+  const { pendingFile, setPendingFile } = useContext(AuthContext);
 
   const handleCardClick = async (index) => {
     switch (index) {
@@ -30,12 +32,27 @@ export default function OnboardingInfoPage() {
       case 3: // Local Food Vendor
         try {
           let res;
-          if (user.file) {
+          const fileToSend = user?.file || pendingFile;
+          if (fileToSend) {
+            console.log("Injecting vendor file:", fileToSend.name);
             const formData = new FormData();
-            formData.append("file", user.file);
+            formData.append("file", fileToSend); // must match `upload.single("file")`
+
+            // optionally extra metadata if uploaded doesn't have these values, so json doesnt fail
+            formData.append("name", `${user.firstName} ${user.lastName}`);
+            formData.append("email", user.email);
+            formData.append("phone", user.phone || "");
+            formData.append("description", user.bio || "My business portfolio");
+
             res = await axios.post(`${backendUrl}/vendor/inject`, formData, {
               headers: { "Content-Type": "multipart/form-data" },
             });
+            if (res.status === 201 || res.status === 200) {
+              toast.success("Vendor portfolio created successfully!");
+              // setPendingFile(null);
+            }
+
+            console.log("inject response:", res.data);
           } else {
             const vendorData = {
               name: `${user.firstName} ${user.lastName}`,
@@ -44,12 +61,23 @@ export default function OnboardingInfoPage() {
               description: user.bio || "My business portfolio",
             };
             res = await axios.post(`${backendUrl}/vendor`, vendorData);
+            toast.info("Vendor created without uploaded file.");
           }
 
-          const vendor = res.data.vendor || res.data;
-          const username =
-            vendor.username || vendor.name.toLowerCase().replace(/\s+/g, "-");
-          navigate(`/portfolios/vendor/${username}/${vendor._id}`);
+          if (res.status === 200 || res.status === 201) {
+            const vendor = res.data.vendor || res.data;
+            const username =
+              vendor.username || vendor.name.toLowerCase().replace(/\s+/g, "-");
+
+            // ✅ Store the vendor ID in context for global use
+            setVendorId(vendor._id);
+
+            // ✅ Clear pending file after successful injection
+            setPendingFile(null);
+
+            toast.success("Vendor portfolio created successfully!");
+            navigate(`/portfolios/vendor/${username}/${vendor._id}`);
+          }
         } catch (err) {
           console.error("Vendor portfolio creation failed:", err);
           toast.error("Could not create vendor portfolio");
