@@ -603,23 +603,81 @@
             </div>
 
             {/* Contact copy */}
-            <div className="p-4 border rounded">
-            <h2 className="text-xl font-semibold">Contact</h2>
-            <label>Section Title</label>
-            <input
-                className="w-full p-2 border rounded"
-                name="contactSectionTitle"
-                value={formData.contactSectionTitle || ''}
-                onChange={handleInputChange}
-            />
-            <label className="mt-2">Subtitle</label>
-            <input
-                className="w-full p-2 border rounded"
-                name="contactSectionSubtitle"
-                value={formData.contactSectionSubtitle || ''}
-                onChange={handleInputChange}
-            />
-            </div>
+                <div className="p-4 border rounded">
+                <h2 className="text-xl font-semibold">Contact</h2>
+
+                <label>Section Title</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="contact.title"
+                    value={formData.contact?.title || ''}
+                    onChange={handleInputChange}
+                    placeholder="Get Your Free Estimate"
+                />
+
+                <label className="mt-2">Subtitle (under the main heading)</label>
+                <textarea
+                    rows={2}
+                    className="w-full p-2 border rounded"
+                    name="contact.subtitle"
+                    value={formData.contact?.subtitle || ''}
+                    onChange={handleInputChange}
+                    placeholder="Ready to get started? Contact us today..."
+                />
+
+                <label className="mt-2">Form Card Title</label>
+                <input
+                    className="w-full p-2 border rounded"
+                    name="contact.formTitle"
+                    value={formData.contact?.formTitle || ''}
+                    onChange={handleInputChange}
+                    placeholder="Ready to get started? Send us a message!"
+                />
+
+                <div className="grid md:grid-cols-2 gap-3 mt-3">
+                    <div>
+                    <label>Phone</label>
+                    <input
+                        className="w-full p-2 border rounded"
+                        name="contact.phone"
+                        value={formData.contact?.phone || ''}
+                        onChange={handleInputChange}
+                        placeholder="(112) 233-4455"
+                    />
+                    </div>
+                    <div>
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        className="w-full p-2 border rounded"
+                        name="contact.email"
+                        value={formData.contact?.email || ''}
+                        onChange={handleInputChange}
+                        placeholder="contact@prohandy.com"
+                    />
+                    </div>
+                    <div>
+                    <label>Hours</label>
+                    <input
+                        className="w-full p-2 border rounded"
+                        name="contact.hours"
+                        value={formData.contact?.hours || ''}
+                        onChange={handleInputChange}
+                        placeholder="Mon–Fri: 7AM–7PM"
+                    />
+                    </div>
+                    <div>
+                    <label>Note (small helper text)</label>
+                    <input
+                        className="w-full p-2 border rounded"
+                        name="contact.note"
+                        value={formData.contact?.note || ''}
+                        onChange={handleInputChange}
+                        placeholder="Weekend & emergency calls available"
+                    />
+                    </div>
+                </div>
+                </div>
         </form>
 
         {/* ========== PROJECTS (Before/After) ========== */}

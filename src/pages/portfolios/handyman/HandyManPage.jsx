@@ -80,7 +80,6 @@ const HandymanPage = () => {
           intro={data.servicesSectionIntro}
         />
 
-        {/* 🔽 Pass new props for title/subtext/allLabel */}
         <Portfolio
           templateId={id}
           title={data.portfolioTitle}
@@ -90,7 +89,20 @@ const HandymanPage = () => {
 
         <ProcessTimeline steps={data.processSteps} />
         <Testimonials list={data.testimonials} />
-        <ContactForm />
+
+        {/* ✅ Pass templateId and the resolved contact info */}
+        <ContactForm
+          templateId={id}
+          contact={{
+            title:     data.contact?.title     ?? data.contactSectionTitle,
+            subtitle:  data.contact?.subtitle  ?? data.contactSectionSubtitle,
+            formTitle: data.contact?.formTitle ?? 'Ready to get started? Send us a message!',
+            phone:     data.contact?.phone     ?? data.hero?.phoneNumber,
+            email:     data.contact?.email     ?? 'contact@prohandy.com',
+            hours:     data.contact?.hours     ?? 'Mon–Fri: 7AM–7PM',
+            note:      data.contact?.note      ?? 'Weekend & emergency calls available'
+          }}
+        />
       </main>
 
       <Footer />
