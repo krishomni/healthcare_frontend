@@ -14,10 +14,9 @@ export default function Dashboard() {
   const [otherPortfolios, setOtherPortfolios] = useState([]);
 
   // robust identity getters
-  const loggedInEmail =
-    (user?.email ||
-      localStorage.getItem("email") ||
-      "").trim().toLowerCase();
+  const loggedInEmail = (user?.email || localStorage.getItem("email") || "")
+    .trim()
+    .toLowerCase();
 
   const loggedInId = String(
     user?._id ||
@@ -84,11 +83,19 @@ export default function Dashboard() {
       const cleaningLady = allPortfolios
   .filter(p => p.templateType === 'cleaning-service')
   .map(p => toCard(p, "cleaningLady"));
-      const all = [...regular, ...handyman,...cleaningLady];
+      
  console.log('🔍 Logged in email:', loggedInEmail);
     console.log('🔍 Logged in ID:', loggedInId);
     console.log('🔍 All portfolios after toCard:', all);
     console.log('🔍 Cleaning lady cards:', cleaningLady);
+
+      // vendor portfolios
+      const v = await axios.get(`${backendUrl}/vendor`);
+      const vendors = (Array.isArray(v.data) ? v.data : []).map((d) =>
+        toCard(d, "vendor")
+      );
+
+      const all = [...regular, ...handyman, ...vendors,...cleaningLady];
 
       const mine = all.filter(
         (p) => p.email && p.email.toLowerCase() === loggedInEmail
@@ -97,7 +104,8 @@ export default function Dashboard() {
         (p) => !p.email || p.email.toLowerCase() !== loggedInEmail
       );
 
-      if (mine.length === 0 && others.length === 0) toast.info("No portfolios found");
+      if (mine.length === 0 && others.length === 0)
+        toast.info("No portfolios found");
 
       setMyPortfolios(mine);
       setOtherPortfolios(others);
@@ -114,7 +122,13 @@ export default function Dashboard() {
       navigate(`/portfolios/handyman/${p._id}`);
     } else if (p.type === "cleaningLady") {
     navigate(`/portfolios/cleaningService/${p._id}/about`); // add your route here
-  }else {
+  
+    } else if (p.type === "vendor") {
+      const username = (p.name || p.email || "vendor")
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+      navigate(`/portfolios/vendor/${username}/${p._id}`);
+    } else {
       const username = (p.email || "").split("@")[0];
       navigate(`/portfolios/project-manager/${username}/${p._id}`);
     }
@@ -127,7 +141,9 @@ export default function Dashboard() {
           {/* My Portfolios */}
           {contextLoggedIn && (
             <section>
-              <h2 className="text-2xl font-semibold mb-6 text-slate-800">My Portfolios</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-slate-800">
+                My Portfolios
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
                 {myPortfolios.map((p) => (
                   <div
@@ -135,7 +151,9 @@ export default function Dashboard() {
                     className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
                     onClick={() => handleCardClick(p)}
                   >
-                    <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
+                    <div className="font-semibold text-slate-800 mb-2">
+                      {p.title}
+                    </div>
                     <div className="text-slate-600">{p.name}</div>
                   </div>
                 ))}
@@ -153,7 +171,9 @@ export default function Dashboard() {
 
           {/* Other Portfolios */}
           <section>
-            <h2 className="text-2xl font-semibold mb-6 text-slate-800">Other Portfolios</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-slate-800">
+              Other Portfolios
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
               {otherPortfolios
                 .filter((p) => p.title && p.name)
@@ -163,7 +183,9 @@ export default function Dashboard() {
                     className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
                     onClick={() => handleCardClick(p)}
                   >
-                    <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
+                    <div className="font-semibold text-slate-800 mb-2">
+                      {p.title}
+                    </div>
                     <div className="text-slate-600">{p.name}</div>
                   </div>
                 ))}
