@@ -12,6 +12,7 @@ export default function OnboardingInfoPage() {
   const { user } = useContext(AuthContext);
   const { setVendorId } = useVendor();
   const { pendingFile, setPendingFile } = useContext(AuthContext);
+  const [creatingVendor, setCreatingVendor] = useState(false);
 
   const handleCardClick = async (index) => {
     switch (index) {
@@ -31,6 +32,7 @@ export default function OnboardingInfoPage() {
 
       case 3: // Local Food Vendor
         try {
+          setCreatingVendor(true); // ⏳ show loader
           let res;
           const fileToSend = user?.file || pendingFile;
           if (fileToSend) {
@@ -43,6 +45,10 @@ export default function OnboardingInfoPage() {
             formData.append("email", user.email);
             formData.append("phone", user.phone || "");
             formData.append("description", user.bio || "My business portfolio");
+
+            toast.info(
+              "We’re generating your site using your uploaded file. This may take a few moments..."
+            );
 
             res = await axios.post(`${backendUrl}/vendor/inject`, formData, {
               headers: { "Content-Type": "multipart/form-data" },
@@ -81,6 +87,8 @@ export default function OnboardingInfoPage() {
         } catch (err) {
           console.error("Vendor portfolio creation failed:", err);
           toast.error("Could not create vendor portfolio");
+        } finally {
+          setCreatingVendor(false); // ✅ always stop loader
         }
         break;
 
@@ -148,6 +156,20 @@ export default function OnboardingInfoPage() {
   ];
 
   if (user === null) return <p className="text-gray-600">No user found.</p>;
+
+  if (creatingVendor) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 className="text-lg font-semibold text-slate-700 animate-pulse">
+          Creating your vendor site...
+        </h2>
+        <p className="text-slate-500 text-sm mt-2">
+          This may take up to a minute as we process your file.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
