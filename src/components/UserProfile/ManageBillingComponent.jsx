@@ -21,7 +21,7 @@ axios.interceptors.request.use(
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 
 const fetchBilling = async () => {
-  const { data } = await axios.get(`${backendUrl}/user/subInfo`);
+  const { data } = await axios.get(`${backendUrl}/user/subInfo`); //return a list of subscription objects limit: 1
   return data;
 };
 
@@ -33,24 +33,16 @@ export default function ManageBillingComponent() {
   // If no subscription ID, check with backend once
   useEffect(() => {
     if (!user?._id) return;
+    fetchBilling();
+  }, [user?._id]);
 
-    if (!user?.stripeSubscriptionId) {
-      axios.get(`${backendUrl}/user/hasSubscription`).then((res) => {
-        if (res.data?.hasSubscription) {
-          refreshUser();
-          console.log("user has sub, updated user, refreshed local user state");
-        }
-      });
-    }
-  }, [user?._id, user?.stripeSubscriptionId, refreshUser]);
-
-  // Fetch billing info only if sub exists
+  //useQuery used for caching data
   const { data, error, isLoading } = useQuery({
-    queryKey: ["billing"],
+    queryKey: ["billing"], //id for this info cache, use this id elsewhere to use cached billing data
     queryFn: fetchBilling,
-    enabled: !!user?.stripeSubscriptionId,
-    staleTime: 1000 * 60 * 10,
-    cacheTime: 1000 * 60 * 30,
+    enabled: !!user, //!! converts value to truthy so wont give error if null/undefined
+    staleTime: 1000 * 60 * 10, //10 min before data becomes stale and will refresh
+    cacheTime: 1000 * 60 * 30, // 30 minutes that data will stay in memory after becomes unmounted(unused)
   });
 
   //take user to manage subscription
@@ -70,18 +62,18 @@ export default function ManageBillingComponent() {
     "Basic Plan": "bg-blue-200 text-blue-600",
   };
 
-  if (isLoading) return <p>Loading billing info...</p>;
-  if (error) return <p>Something went wrong</p>;
+  if (isLoading) return <p className="flex items-center justify-center mx-auto">Loading billing info...</p>;
+  if (error) return <p className="flex items-center justify-center mx-auto">Something went wrong</p>;
 
-  if (user?.stripeSubscriptionId && data) {
-    const plan = data.subscription.items?.data[0]?.price?.product?.name;
+  if (user && data.subscriptionList.length > 0) {
+    const plan = data.subscriptionList[0]?.plan?.product?.name;
     return (
       <div className="flex flex-col items-center gap-5 mx-auto my-[5vh]">
         <div>
           <h1 className="text-2xl font-semibold ">Subscription Information</h1>
         </div>
-        <p className="font-semibold">Status: {data.subscription.status}</p>
-        <p className="font-semibold">Auto Renews: {data.subscription.cancel_at_period_end ? "No" : "Yes"}</p>
+        <p className="font-semibold">Status: {data.subscriptionList[0].status}</p>
+        <p className="font-semibold">Auto Renews: {data.subscriptionList[0].cancel_at_period_end ? "No" : "Yes"}</p>
         <p className="font-semibold">
           Plan: <span className={`${plan_colors?.[plan]} rounded-4xl px-4 py-2 text-gra`}> {plan}</span>
         </p>
