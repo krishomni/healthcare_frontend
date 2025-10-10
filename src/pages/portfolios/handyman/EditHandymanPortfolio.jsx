@@ -421,6 +421,19 @@
                         placeholder="e.g., Plumbing Services"
                         />
                     </div>
+                    
+                    {/* ✅ NEW: Price (hidden on website, used in emails/estimates) */}
+                    <div className="col-span-12 sm:col-span-3">
+                    <label className="block text-sm mb-1">Price (hidden)</label>
+                    <input
+                        type="number"
+                        min="0"
+                        className="w-full p-2 border rounded"
+                        value={Number(service.price ?? 0)}
+                        onChange={(e) => handleServiceField(index, 'price', Number(e.target.value))}
+                        placeholder="e.g., 149"
+                    />
+                    </div>
 
                     {/* Remove button */}
                     <div className="col-span-12 sm:col-span-2 sm:col-start-12 sm:justify-self-end">

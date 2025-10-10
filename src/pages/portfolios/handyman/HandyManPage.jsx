@@ -102,6 +102,7 @@ const HandymanPage = () => {
             hours:     data.contact?.hours     ?? 'Mon–Fri: 7AM–7PM',
             note:      data.contact?.note      ?? 'Weekend & emergency calls available'
           }}
+          services={data.services}
         />
       </main>
 

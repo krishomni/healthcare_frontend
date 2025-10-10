@@ -112,7 +112,7 @@ const HandymanShowcasePage = () => {
 
         <ProcessTimeline steps={showcaseData.processSteps} />
         <Testimonials list={showcaseData.testimonials} />
-        <ContactForm />
+        <ContactForm services={showcaseData.services} />
       </main>
       <Footer />
     </div>
