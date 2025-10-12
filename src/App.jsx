@@ -32,6 +32,8 @@ import EditHandymanPortfolio from "./pages/portfolios/handyman/EditHandymanPortf
 import HandymanPage from "./pages/portfolios/handyman/HandyManPage.jsx";
 import HandymanShowcasePage from "./pages/portfolios/handyman/HandyManShowcasePage.jsx";
 import LocalVendorApp from "./pages/portfolios/localVendor/LocalVendorApp.jsx";
+import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
+import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
 
 export default function App() {
