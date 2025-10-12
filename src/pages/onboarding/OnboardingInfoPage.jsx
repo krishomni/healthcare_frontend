@@ -71,6 +71,54 @@ export default function OnboardingInfoPage() {
           console.log("error creating portfolio: ", error);
         }
         break;
+case 6: // Cleaning Lady Portfolio
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Check if user already has a portfolio
+    const checkResponse = await axios.get(
+      `${backendUrl}/api/portfolios/my-portfolio`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    if (checkResponse.data.portfolio) {
+      // They already have one, navigate to it
+      const portfolioId = checkResponse.data.portfolio._id;
+      navigate(`/portfolios/cleaningService/${portfolioId}/about`);
+      toast.info('Opening your portfolio');
+      return;
+    }
+    
+    // They don't have one - create it with defaults
+    const createResponse = await axios.post(
+      `${backendUrl}/api/portfolios/my-portfolio`,
+      {
+        slug: `${user.firstName?.toLowerCase() || 'user'}-cleaning-${Date.now()}`,
+        templateType: 'cleaning-service',
+        businessName: `${user.firstName || 'My'} Cleaning Service`,
+        contactInfo: {
+          phone: user.phone || '',
+          email: user.email || ''
+        },
+        roomPricing: [
+          { roomType: 'bedroom', price: 50 },
+          { roomType: 'kitchen', price: 70 },
+          { roomType: 'bathroom', price: 40 },
+          { roomType: 'livingRoom', price: 60 }
+        ]
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    const newPortfolioId = createResponse.data.portfolio._id;
+    navigate(`/portfolios/cleaningService/${newPortfolioId}/about`);
+    toast.success('Your cleaning portfolio has been created!');
+    
+  } catch (error) {
+    console.error('Error creating cleaning portfolio:', error);
+    toast.error(error.response?.data?.message || 'Could not create portfolio');
+  }
+  break;
 
       default:
         toast.info("Template comming soon!");
@@ -116,6 +164,11 @@ export default function OnboardingInfoPage() {
       name: "Handyman / Local Repair Services",
       description:
         "Demonstrate your skills, previous jobs, and customer testimonials.",
+    },
+    {
+      name: "Cleaning Lady Portfolio",
+      description:
+        "Demonstrate your services, skils and expand .",
     },
   ];
 

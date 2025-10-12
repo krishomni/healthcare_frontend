@@ -1,20 +1,34 @@
-// client/src/pages/cleanServices.jsx
-import React, { useEffect, useState, Suspense, useMemo } from 'react';
+
+import React, { useEffect, useState, Suspense, useMemo, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { RoomModel } from '../models/RoomModels';
-
-const BASE = '/portfolios/cleaningService'; // ✅ add this
+import Editable from './Editable';
+import { AuthContext } from '../context/AuthContext';
 
 const Services = () => {
+  
+  const { portfolioId } = useParams();
+  const BASE = portfolioId 
+    ? `/portfolios/cleaningService/${portfolioId}`
+    : `/portfolios/cleaningService`;
+
+  const backendUrl = import.meta.env.VITE_BACKEND_API || 'http://localhost:5000';
   const [services, setServices] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-
+  const [buildRoomsTitle, setBuildRoomsTitle] = useState("Build Your Rooms");
+  const [cleaningServicesTitle, setCleaningServicesTitle] = useState("Cleaning Services");
+  const [roomLabels, setRoomLabels] = useState({
+    bedroom: 'Bedroom',
+    kitchen: 'Kitchen',
+    bathroom: 'Bathroom',
+    livingRoom: 'LivingRoom'
+  });
   const [roomCounts, setRoomCounts] = useState({
     bedroom: 0,
     kitchen: 0,
@@ -25,8 +39,26 @@ const Services = () => {
   const [editPricesMode, setEditPricesMode] = useState(false);
   const [editDraft, setEditDraft] = useState(null);
   const [quoteTotal, setQuoteTotal] = useState(null);
+  const { isAdmin ,setCurrentPortfolioId} = useContext(AuthContext);
+// ✅ ADD THIS ENTIRE useEffect:
+useEffect(() => {
+  if (portfolioId) {
+    setCurrentPortfolioId(portfolioId);
+  }
+  
+  return () => setCurrentPortfolioId(null);
+}, [portfolioId, setCurrentPortfolioId]);
 
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+useEffect(() => {
+  console.log('🔥 Services - isAdmin CHANGED! New value:', isAdmin);
+}, [isAdmin]);
+  // ✅ ADD THIS DEBUG LOG:
+  console.log('🔍 Services Debug:', {
+    portfolioId,
+    isAdmin,
+    hasToken: !!localStorage.getItem('token')
+  });
+  
   const token = localStorage.getItem('token');
   const authHeaders = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
   const navigate = useNavigate();
@@ -34,57 +66,259 @@ const Services = () => {
   useEffect(() => {
     fetchServices();
     fetchRoomPrices();
-  }, []);
+    if (portfolioId) {
+      fetchTitles();
+      fetchRoomLabels();
+    }
+  }, [portfolioId]);
+
+  const fetchRoomLabels = async () => {
+  if (!portfolioId) return;
+  
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${backendUrl}/api/portfolios/${portfolioId}`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+    
+    if (!res.ok) throw new Error('Failed to fetch portfolio');
+    
+    const response = await res.json();
+    const p = response.portfolio || response;
+    
+    // ✅ Get room labels from portfolio
+    if (p.roomLabels) {
+      setRoomLabels({
+        bedroom: p.roomLabels.bedroom || 'Bedroom',
+        kitchen: p.roomLabels.kitchen || 'Kitchen',
+        bathroom: p.roomLabels.bathroom || 'Bathroom',
+        livingRoom: p.roomLabels.livingRoom || 'Living Room'
+      });
+    }
+  } catch (err) {
+    console.error('Failed to fetch room labels:', err);
+  }
+};
+
+const handleRoomLabelChange = async (roomType, newValue) => {
+  if (!portfolioId) {
+    toast.info('This is a demo. Sign up to create your own portfolio!');
+    return;
+  }
+  
+  // Update local state
+  setRoomLabels(prev => ({
+    ...prev,
+    [roomType]: newValue
+  }));
+
+  try {
+    const token = localStorage.getItem('token');
+    
+    // ✅ Save to portfolio's roomLabels object
+    await fetch(`${backendUrl}/api/portfolios/my-portfolio`, {
+      method: 'PATCH',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ 
+        [`roomLabels.${roomType}`]: newValue  // ← Nested field update
+      })
+    });
+    
+    toast.success('Room label updated!');
+  } catch (err) {
+    console.error('Failed to save room label:', err);
+    toast.error('Failed to save room label');
+  }
+};
+
+ const fetchTitles = async () => {
+  if (!portfolioId) {
+    console.log('📋 No portfolioId - using default titles (demo mode)');
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');  // ← Get token
+    
+    const res = await fetch(`${backendUrl}/api/portfolios/${portfolioId}?t=${Date.now()}`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}  // ← Add headers
+    });
+    
+    if (!res.ok) throw new Error('Failed to fetch portfolio');
+    
+    const response = await res.json();
+    const p = response.portfolio || response;
+    
+    if (p.buildRoomsTitle) setBuildRoomsTitle(p.buildRoomsTitle);
+    if (p.cleaningServicesTitle) setCleaningServicesTitle(p.cleaningServicesTitle);
+    
+  } catch (err) {
+    console.error('Failed to fetch titles:', err);
+  }
+};
+
+  const handleTitleChange = async (key, newValue) => {
+    if (!portfolioId) {
+      toast.info('This is a demo. Sign up to create your own portfolio!');
+      return;
+    }
+    
+    // Update local state immediately
+    if (key === 'buildRoomsTitle') {
+      setBuildRoomsTitle(newValue);
+    } else if (key === 'cleaningServicesTitle') {
+      setCleaningServicesTitle(newValue);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${backendUrl}/api/portfolios/my-portfolio`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ [key]: newValue })
+      });
+      toast.success('Title updated!');
+    } catch (err) {
+      console.error('Failed to save title:', err);
+      toast.error('Failed to save title');
+    }
+  };
 
   const fetchServices = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/services', authHeaders);
-      setServices(res.data);
-    } catch {
-      toast.error('Failed to load services');
-    }
-  };
-
-  const fetchRoomPrices = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/rooms', authHeaders);
-      const prices = {};
-      res.data.forEach((room) => {
-        prices[room.type] = parseFloat(room.price);
+  if (!portfolioId) {
+    console.log('No portfolio ID, skipping service fetch');
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');
+    
+    // ✅ Fetch services from the portfolio
+    const res = await axios.get(
+      `${backendUrl}/api/portfolios/${portfolioId}`,
+      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+    );
+    
+    const portfolio = res.data.portfolio || res.data;
+    setServices(portfolio.services || []);
+    
+    console.log('✅ Services fetched:', portfolio.services);
+  } catch (err) {
+    console.error('Failed to load services:', err);
+    toast.error('Failed to load services');
+  }
+};
+const fetchRoomPrices = async () => {
+  if (!portfolioId) {
+    // Use default prices for demo
+    setRoomPrices({
+      bedroom: 25,
+      kitchen: 40,
+      bathroom: 30,
+      livingRoom: 35
+    });
+    return;
+  }
+  
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.get(
+      `${backendUrl}/api/portfolios/${portfolioId}`,
+      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+    );
+    
+    const portfolio = res.data.portfolio || res.data;
+    
+    // Extract room prices from portfolio
+    const prices = {};
+    if (portfolio.roomPricing && portfolio.roomPricing.length > 0) {
+      portfolio.roomPricing.forEach((room) => {
+        prices[room.roomType || room.type] = parseFloat(room.price);
       });
-      setRoomPrices(prices);
-    } catch {
-      toast.error('Failed to load room prices');
+    } else {
+      // Default prices if none set
+      prices.bedroom = 25;
+      prices.kitchen = 40;
+      prices.bathroom = 30;
+      prices.livingRoom = 35;
     }
-  };
+    
+    setRoomPrices(prices);
+  } catch (err) {
+    console.error('Failed to load room prices:', err);
+    // Keep default prices
+    setRoomPrices({
+      bedroom: 25,
+      kitchen: 40,
+      bathroom: 30,
+      livingRoom: 35
+    });
+  }
+};
 
   const startEditPrices = () => {
+    if (!portfolioId) {
+      toast.info('This is a demo. Sign up to create your own portfolio!');
+      return;
+    }
     setEditDraft({ ...roomPrices });
     setEditPricesMode(true);
   };
-
-  const saveEditedPrices = async () => {
-    try {
-      const draft = editDraft || {};
-      const changed = Object.fromEntries(
-        Object.entries(draft).filter(([k, v]) => v !== roomPrices[k])
-      );
-      if (Object.keys(changed).length === 0) {
-        toast.info('No price changes');
-        setEditPricesMode(false);
-        setEditDraft(null);
-        return;
-      }
-      await axios.put('http://localhost:5000/rooms', changed, authHeaders);
-      setRoomPrices((prev) => ({ ...prev, ...changed }));
-      toast.success('Room prices updated');
-    } catch {
-      toast.error('Failed to update room prices');
-    } finally {
+const saveEditedPrices = async () => {
+  if (!portfolioId) {
+    toast.info('This is a demo. Sign up to edit room prices!');
+    setEditPricesMode(false);
+    setEditDraft(null);
+    return;
+  }
+  
+  try {
+    const draft = editDraft || {};
+    const changed = Object.fromEntries(
+      Object.entries(draft).filter(([k, v]) => v !== roomPrices[k])
+    );
+    
+    if (Object.keys(changed).length === 0) {
+      toast.info('No price changes');
       setEditPricesMode(false);
       setEditDraft(null);
+      return;
     }
-  };
+    
+    // Convert to array format expected by backend
+    const updatedRoomPricing = Object.entries({ ...roomPrices, ...changed }).map(
+      ([roomType, price]) => ({
+        roomType,
+        price: Number(price)
+      })
+    );
+    
+    const token = localStorage.getItem('token');
+    await axios.put(
+      `${backendUrl}/api/portfolios/my-portfolio/room-pricing`,
+      { roomPricing: updatedRoomPricing },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    setRoomPrices((prev) => ({ ...prev, ...changed }));
+    toast.success('Room prices updated');
+    
+    // Refetch to confirm
+    fetchRoomPrices();
+  } catch (err) {
+    console.error('Failed to update room prices:', err);
+    toast.error('Failed to update room prices');
+  } finally {
+    setEditPricesMode(false);
+    setEditDraft(null);
+  }
+};
 
   const handleRoomChange = (type, count) => {
     setRoomCounts((prev) => ({
@@ -117,39 +351,66 @@ const Services = () => {
     setQuoteTotal(draft.total);
     localStorage.setItem('quoteDraft', JSON.stringify(draft));
     toast.success(`Rough Estimate: $${draft.total}`);
-    // (you said this flow is fine—no redirect here)
   };
 
-  const handleAddService = async () => {
-    if (!title.trim() || !description.trim())
-      return toast.error('Please fill all fields');
-    try {
-      await axios.post(
-        'http://localhost:5000/services',
-        { title, description, price: '' },
-        authHeaders
-      );
-      toast.success('Service added');
-      setTitle('');
-      setDescription('');
-      setShowForm(false);
-      fetchServices();
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to add service');
-    }
-  };
+const handleAddService = async () => {
+  if (!portfolioId) {
+    toast.info('This is a demo. Sign up to create your own portfolio!');
+    return;
+  }
+  
+  if (!title.trim() || !description.trim())
+    return toast.error('Please fill all fields');
+    
+  try {
+    const token = localStorage.getItem('token');
+    
+    // ✅ Use the correct endpoint
+    await axios.post(
+      `${backendUrl}/api/portfolios/my-portfolio/services`,
+      { title, description, price: '' },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    toast.success('Service added');
+    setTitle('');
+    setDescription('');
+    setShowForm(false);
+    fetchServices();
+  } catch (err) {
+    console.error('Add service error:', err);
+    toast.error(err?.response?.data?.message || 'Failed to add service');
+  }
+};
 
   const handleDeleteService = async (id) => {
-    if (!window.confirm('Delete this service?')) return;
-    try {
-      await axios.delete(`http://localhost:5000/services/${id}`, authHeaders);
-      toast.success('Service deleted');
-      fetchServices();
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete service');
-    }
-  };
-
+  if (!isAdmin) {
+    toast.error('Admin access only');
+    return;
+  }
+  
+  if (!portfolioId) {
+    toast.info('This is a demo. Sign up to create your own portfolio!');
+    return;
+  }
+  
+  if (!window.confirm('Delete this service?')) return;
+  
+  try {
+    const token = localStorage.getItem('token');
+    
+    // ✅ FIX: Change the URL to match the backend route
+    await axios.delete(`${backendUrl}/api/portfolios/my-portfolio/services/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    toast.success('Service deleted');
+    fetchServices();
+  } catch (err) {
+    console.error('Delete error:', err);
+    toast.error(err?.response?.data?.message || 'Failed to delete service');
+  }
+};
   const roomInstances = useMemo(() => {
     const types = ['bedroom', 'bathroom', 'kitchen', 'livingRoom'];
     const instances = [];
@@ -189,18 +450,43 @@ const Services = () => {
   return (
     <div className="services-container">
       <div className="services-left">
-        {isAdmin && <div className="admin-chip">👑 Admin Mode</div>}
+        {isAdmin  && <div className="admin-chip">👑 Admin Mode</div>}
+        
+        {/* Show demo banner if no portfolioId */}
+        {!portfolioId && (
+          <div style={{
+            padding: '1rem',
+            background: '#3B82F6',
+            color: 'white',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: 0 }}>
+              📋 This is a demo. <strong>Sign up</strong> to create your own portfolio!
+            </p>
+          </div>
+        )}
 
         {/* ROOM BUILDER */}
         <section className="room-builder card">
-          <h3 className="section-title">Build Your Rooms</h3>
-
+          <Editable
+            type="text"
+            value={buildRoomsTitle}
+            onChange={(newValue) => handleTitleChange('buildRoomsTitle', newValue)}
+            tag="h3"
+            className="section-title buildRoomsTitle"
+          />
           <div className="room-grid">
             {['bedroom', 'kitchen', 'bathroom', 'livingRoom'].map((room) => (
               <div className="room-control" key={room}>
-                <label className="room-label" htmlFor={`select-${room}`}>
-                  {room.charAt(0).toUpperCase() + room.slice(1)}
-                </label>
+                <Editable
+                  type="text"
+                  value={roomLabels[room]}
+                  onChange={(newValue) => handleRoomLabelChange(room, newValue)}
+                  tag="label"
+                  className="room-label"
+                />
 
                 <select
                   id={`select-${room}`}
@@ -215,7 +501,7 @@ const Services = () => {
                   ))}
                 </select>
 
-                {isAdmin && editPricesMode && (
+                {isAdmin  && editPricesMode && (
                   <input
                     type="number"
                     className="form-input price-editor-input"
@@ -237,7 +523,7 @@ const Services = () => {
               Get a Quote
             </button>
 
-            {isAdmin &&
+            {isAdmin  &&
               (editPricesMode ? (
                 <button className="btn" onClick={saveEditedPrices}>
                   Done Editing Prices
@@ -251,7 +537,6 @@ const Services = () => {
             {quoteTotal !== null && (
               <>
                 <p className="quote-total">Estimate: ${quoteTotal}</p>
-                {/* ⬇️ FIX: absolute path into the sub-app */}
                 <button className="btn" onClick={() => navigate(`${BASE}/charges`)}>
                   Go to Charges
                 </button>
@@ -263,15 +548,21 @@ const Services = () => {
         {/* SERVICES SECTION */}
         <section className="services-section card">
           <div className="services-header">
-            <h2 className="section-title">Cleaning Services</h2>
-            {isAdmin && (
+            <Editable
+              type="text"
+              value={cleaningServicesTitle}
+              onChange={(newValue) => handleTitleChange('cleaningServicesTitle', newValue)}
+              tag="h3"
+              className="section-title cleaningServicesTitle"
+            />
+            {isAdmin  && (
               <button className="btn primary" onClick={() => setShowForm((s) => !s)}>
                 {showForm ? 'Cancel' : 'Add Service'}
               </button>
             )}
           </div>
 
-          {isAdmin && showForm && (
+          {isAdmin  && showForm && (
             <div className="add-service-form">
               <div className="form-group">
                 <label>Service Title</label>
@@ -308,14 +599,13 @@ const Services = () => {
                 className={`service-card ${isAdmin ? 'admin' : ''}`}
                 onClick={(e) => {
                   if (e.target.closest('.delete-btn')) return;
-                  // ⬇️ FIX: absolute path into the sub-app
                   navigate(`${BASE}/charges`);
                 }}
               >
                 <h3>{service.title}</h3>
                 <p>{service.description}</p>
 
-                {isAdmin && (
+                {isAdmin  && (
                   <button
                     className="delete-btn"
                     title="Delete"

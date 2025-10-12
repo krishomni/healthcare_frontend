@@ -1,22 +1,25 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+
+import React, { useState, useEffect, useRef, Suspense, useContext } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import CleaningLady from '../models/CleaningLady';
 import HouseModel from '../models/HouseModel';
 import FamilyModel from '../models/FamilyModel';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import Editable from './Editable';
+import { AuthContext } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import * as THREE from 'three';
+
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
-
 
 const models = [
   { key: 'cleaningLady', component: CleaningLady },
   { key: 'house', component: HouseModel },
   { key: 'family', component: FamilyModel },
 ];
-
 
 const degToRad = (deg) => (deg * Math.PI) / 180;
 const scrollSensitivity = 0.0005;
@@ -25,22 +28,51 @@ const maxVelocity = 0.5;
 const modelSpecificScale = [2.2, 1.8, 0.6];
 const modelY = [-2, 2.7, -2.0];
 const modelZ = [2, -2, 2];
-
 const normalize = (a) => ((a % 360) + 360) % 360;
 
-const AUTO_ROTATE_INTERVAL = 4000; // 4 seconds per model
-const AUTO_ROTATE_SPEED = 0.8; // Speed of automatic rotation
+const defaultTaglines = [
+  "DOM's Cleaning – We bring sparkle to your space.",
+  'From roof to floor – Every detail matters.',
+  'For those I love – My purpose in every sweep.'
+];
 
 export default function CleanAbout() {
+  const { portfolioId } = useParams();
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_API;
+  const authContext = useContext(AuthContext);
+  
+  const { isAdmin, setCurrentPortfolioId, isOwner, user } = useContext(AuthContext);
+  
+  useEffect(() => {
+    console.log('🔍 CleanAbout Debug:', {
+      portfolioId,
+      isAdmin,
+      isOwner,
+      user,
+      hasToken: !!localStorage.getItem('token')
+    });
+  }, [portfolioId, isAdmin, isOwner, user]);
+  
   const rotation = useRef(0);
   const velocity = useRef(0);
   const [activeTextIndex, setActiveTextIndex] = useState(0);
   const activeIdxRef = useRef(0);
   const [, setTick] = useState(0);
   const [mounted, setMounted] = useState(false);
-
   const [isMobile, setIsMobile] = useState(false);
+  
+  const [taglines, setTaglines] = useState(defaultTaglines);
+
+  // Set portfolio ID only if we have one
+  useEffect(() => {
+    if (portfolioId) {
+      setCurrentPortfolioId(portfolioId);
+    }
+    
+    return () => setCurrentPortfolioId(null);
+  }, [portfolioId, setCurrentPortfolioId]);
+
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 520px)');
     const apply = () => setIsMobile(mq.matches);
@@ -49,8 +81,66 @@ export default function CleanAbout() {
     return () => mq.removeEventListener?.('change', apply);
   }, []);
 
+  // Fetch taglines - only if portfolioId exists
+  useEffect(() => {
+    const fetchTaglines = async () => {
+      // Skip if no portfolioId (demo mode)
+      if (!portfolioId) {
+        console.log('📋 No portfolioId - using default taglines (demo mode)');
+        return;
+      }
+      
+      try {
+        console.log('🔍 FETCHING portfolio ID:', portfolioId);
+        
+        const res = await fetch(`${backendUrl}/api/portfolios/${portfolioId}?t=${Date.now()}`);
+        if (!res.ok) throw new Error('Failed to fetch portfolio');
+        
+        const response = await res.json();
+        const p = response.portfolio || response;
+        
+        console.log('🔍 RECEIVED portfolio:', p);
+        console.log('🔍 tagline1 from API:', p.tagline1);
+        
+        setTaglines([
+          p.tagline1 || defaultTaglines[0],
+          p.tagline2 || defaultTaglines[1],
+          p.tagline3 || defaultTaglines[2],
+        ]);
+      } catch (err) {
+        console.error('Failed to fetch portfolio:', err);
+      }
+    };
 
-  // Scope wheel to the about section; DO NOT lock body or preventDefault
+    fetchTaglines();
+  }, [backendUrl, portfolioId]);
+
+  const handleTaglineChange = async (index, newValue) => {
+    // Prevent editing in demo mode
+    if (!portfolioId) {
+      toast.info('This is a demo. Sign up to create your own portfolio!');
+      return;
+    }
+    
+    const newTaglines = [...taglines];
+    newTaglines[index] = newValue;
+    setTaglines(newTaglines);
+
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${backendUrl}/api/portfolios/my-portfolio`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ [`tagline${index + 1}`]: newValue }),
+      });
+    } catch (err) {
+      console.error('Failed to save tagline:', err);
+    }
+  };
+
   const wrapRef = useRef(null);
   useEffect(() => {
     setMounted(true);
@@ -59,13 +149,11 @@ export default function CleanAbout() {
     const onWheel = (e) => {
       if (Math.abs(e.deltaY) < 10) return;
       velocity.current = clamp(velocity.current + e.deltaY * scrollSensitivity, -maxVelocity, maxVelocity);
-      // no preventDefault → outer page can still scroll
     };
     el.addEventListener('wheel', onWheel, { passive: true });
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
-  // Drag input (scoped to gesture layer)
   const drag = useRef({ active: false, lastX: 0 });
   const onPointerDown = (e) => {
     drag.current.active = true;
@@ -79,12 +167,10 @@ export default function CleanAbout() {
     velocity.current = clamp(-dx * 0.02, -maxVelocity, maxVelocity);
   };
   const onPointerUp = (e) => {
-  
     drag.current.active = false;
     e.currentTarget.releasePointerCapture?.(e.pointerId);
   };
 
-  // Animate
   useEffect(() => {
     let raf;
     let isActive = true;
@@ -113,7 +199,7 @@ export default function CleanAbout() {
   const currentRotation = rotation.current;
 
   const renderModel = (model, index) => {
-    const radius = isMobile ? 3.4 : 6; // same values as before
+    const radius = isMobile ? 3.4 : 6;
     const xOffset = isMobile ? 0 : 2;
 
     let rel = normalize(index * 120 - currentRotation);
@@ -143,16 +229,20 @@ export default function CleanAbout() {
   const cameraProps = isMobile
     ? { position: [-1.2, 1.5, 9.2], fov: 55 }
     : { position: [-2, 1.5, 10], fov: 50 };
- 
 
   return (
     <section className="clean-about-container">
       {mounted && (
         <motion.div ref={wrapRef} className="about-canvas-wrap" layout initial={false}>
-          <Canvas dpr={[1, 1.5]} camera={cameraProps} style={{ height: '100vh', width: '100%' }}  gl={{ 
+          <Canvas 
+            dpr={[1, 1.5]} 
+            camera={cameraProps} 
+            style={{ height: '100vh', width: '100%' }}  
+            gl={{ 
               preserveDrawingBuffer: true,
               powerPreference: "high-performance"
-            }}>
+            }}
+          >
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 10, 5]} intensity={1} />
             <Environment preset="apartment" />
@@ -171,20 +261,41 @@ export default function CleanAbout() {
       )}
 
       <div className={`about-overlay-text${isMobile ? ' mobile' : ''}`}>
-        {["DOM's Cleaning – We bring sparkle to your space.",
-          'From roof to floor – Every detail matters.',
-          'For those I love – My purpose in every sweep.'][activeTextIndex]}
-           <div className="cta-container">
-    <button
-      className="cta-button"
-      onClick={() => navigate('/portfolios/cleaningService/services')}
-    >
-      Get Started
-    </button>
-  </div>
-      </div>
+        {!portfolioId && (
+          <div style={{
+            padding: '0.5rem 1rem',
+            background: 'rgba(59, 130, 246, 0.9)',
+            color: 'white',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            fontSize: '0.9rem'
+          }}>
+            📋 Demo Mode - Sign up to create your own!
+          </div>
+        )}
         
-      
+        <Editable
+          type="text"
+          value={taglines[activeTextIndex]}
+          onChange={(newValue) => handleTaglineChange(activeTextIndex, newValue)}
+          className={`tagline${activeTextIndex + 1}`}
+        />
+        
+        <div className="cta-container">
+          <button
+            className="cta-button"
+            onClick={() => {
+              if (portfolioId) {
+                navigate(`/portfolios/cleaningService/${portfolioId}/services`);
+              } else {
+                navigate(`/portfolios/cleaningService/services`);
+              }
+            }}
+          >
+            Get Started
+          </button>
+        </div>
+      </div>
     </section>
   );
 }

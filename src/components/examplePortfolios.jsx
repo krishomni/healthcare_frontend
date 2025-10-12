@@ -41,7 +41,7 @@ export default function ExamplePortfolios() {
      {
       title: "Cleaner/Local Cleaning Services",
       summary: "Porftolio showcasing Cleaning services",
-      location: "/portfolios/cleaningService",
+      location: "/portfolios/cleaningService/about"
     },
   ];
 
