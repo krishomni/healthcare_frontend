@@ -42,7 +42,7 @@ export default function Dashboard() {
       "";
     if (e) return String(e).trim().toLowerCase();
 
-    if (type === "handyman" || type === "cleaningLady") {
+    if (type === "handyman") {
       const uid = String(obj?.userId || "");
       if (uid && loggedInId && uid === loggedInId) return loggedInEmail;
     }
@@ -95,7 +95,17 @@ export default function Dashboard() {
         toCard(d, "vendor")
       );
 
-      const all = [...regular, ...handyman, ...vendors,...cleaningLady];
+// cleaning service portfolios
+      const cleaningLady = allPortfolios
+  .filter(p => p.templateType === 'cleaning-service')
+  .map(p => toCard(p, "cleaningLady"));
+
+  
+      const all = [...regular, ...handyman,...vendors,...cleaningLady];
+ console.log('🔍 Logged in email:', loggedInEmail);
+    console.log('🔍 Logged in ID:', loggedInId);
+    console.log('🔍 All portfolios after toCard:', all);
+    console.log('🔍 Cleaning lady cards:', cleaningLady);
 
       const mine = all.filter(
         (p) => p.email && p.email.toLowerCase() === loggedInEmail
@@ -128,7 +138,10 @@ export default function Dashboard() {
         .toLowerCase()
         .replace(/\s+/g, "-");
       navigate(`/portfolios/vendor/${username}/${p._id}`);
-    } else {
+    } 
+    else if (p.type === "cleaningLady") {
+    navigate(`/portfolios/cleaningService/${p._id}/about`); // add your route here
+  }else {
       const username = (p.email || "").split("@")[0];
       navigate(`/portfolios/project-manager/${username}/${p._id}`);
     }
