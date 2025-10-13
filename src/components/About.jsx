@@ -57,7 +57,7 @@ export default function About() {
       {/* Hero Section */}
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden w-full">
         {/* Background gradient */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-50 via-white to-slate-100"></div>
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-sky-50 via-white to-blue-50"></div>
 
         {/* Floating elements */}
         <div className="absolute inset-0 overflow-hidden w-full h-full">

@@ -78,7 +78,7 @@ export default function Solutions() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f7faff] to-[#f3f6fb] py-16 px-4 flex flex-col items-center">
+     <div className="min-h-screen bg-gradient-to-br from-[#f7faff] to-[#f3f6fb] py-16 px-4 flex flex-col items-center">
 
       <div className="w-full max-w-4xl mx-auto text-center mb-24">
         <div className="flex justify-center mb-6">

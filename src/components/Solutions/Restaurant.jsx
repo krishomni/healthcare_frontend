@@ -33,7 +33,7 @@ const solutions = [
       "Equipment maintenance alerts",
       "Food waste tracking and reduction"
     ],
-    benefits: "Reduce order preparation time by 25% and minimize food waste"
+    benefits: "Reduce order preparation time by up to 25% and minimize food waste"
   },
   {
     id: "pos-management",
@@ -48,7 +48,7 @@ const solutions = [
       "Delivery tracking integration",
       "Digital receipt and loyalty points"
     ],
-    benefits: "Process orders 40% faster with integrated payment solutions"
+    benefits: "Process orders up to 40% faster with integrated payment solutions"
   },
   {
     id: "staff-management",
@@ -63,7 +63,7 @@ const solutions = [
       "Communication hub",
       "Compliance tracking"
     ],
-    benefits: "Reduce staff turnover by 30% with better scheduling and training"
+    benefits: "Reduce staff turnover by up to 30% with better scheduling and training"
   },
   {
     id: "customer-experience",
@@ -78,7 +78,7 @@ const solutions = [
       "Feedback collection and analysis",
       "Personalized marketing campaigns"
     ],
-    benefits: "Increase customer retention by 45% with personalized experiences"
+    benefits: "Increase customer retention by up to 45% with personalized experiences"
   },
   {
     id: "analytics",
@@ -93,7 +93,7 @@ const solutions = [
       "Profit margin analysis",
       "Custom reporting and alerts"
     ],
-    benefits: "Improve profit margins by 15% with actionable insights"
+    benefits: "Improve profit margins by up to 15% with actionable insights"
   }
 ];
 
@@ -105,19 +105,19 @@ const trustIndicators = [
 
 const testimonials = [
   {
-    quote: "FindVirtual.me transformed our operations. We reduced food waste by 40% and increased our profit margins significantly.",
+    quote: "FindVirtual.me transformed our operations. We reduced food waste by up to 40% and increased our profit margins significantly.",
     author: "Maria Santos",
     restaurant: "Casa Italiana",
     location: "New York, NY"
   },
   {
-    quote: "The staff scheduling feature alone saved us 10 hours per week. Our team is happier and more productive.",
+    quote: "The staff scheduling feature alone saved us up to 10 hours per week. Our team is happier and more productive.",
     author: "James Chen",
     restaurant: "Dragon Palace",
     location: "San Francisco, CA"
   },
   {
-    quote: "Customer loyalty has never been stronger. The automated marketing campaigns brought back 60% more repeat customers.",
+    quote: "Customer loyalty has never been stronger. The automated marketing campaigns brought back up to 60% more repeat customers.",
     author: "Sarah Williams",
     restaurant: "The Cozy Corner",
     location: "Austin, TX"
