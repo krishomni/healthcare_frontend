@@ -580,6 +580,7 @@
             {/* Testimonials */}
             <div className="p-4 border rounded space-y-3">
             <h2 className="text-xl font-semibold">Testimonials</h2>
+
             <label>Section Title</label>
             <input
                 className="w-full p-2 border rounded"
@@ -587,19 +588,32 @@
                 value={formData.testimonialsSectionTitle || ''}
                 onChange={handleInputChange}
             />
+
             {formData.testimonials.map((t, idx) => (
                 <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                 <input
-                    className="p-2 border rounded col-span-7"
+                    className="p-2 border rounded col-span-6"
                     placeholder="Quote"
                     value={t.quote}
                     onChange={(e) => handleTestimonialChange(idx, 'quote', e.target.value)}
                 />
                 <input
-                    className="p-2 border rounded col-span-4"
+                    className="p-2 border rounded col-span-3"
                     placeholder="Name"
                     value={t.name}
                     onChange={(e) => handleTestimonialChange(idx, 'name', e.target.value)}
+                />
+                <input
+                    className="p-2 border rounded col-span-2"
+                    placeholder="Town / Neighborhood"
+                    value={t.location || ''}
+                    onChange={(e) => handleTestimonialChange(idx, 'location', e.target.value)}
+                />
+                <input
+                    className="p-2 border rounded col-span-1"
+                    placeholder="Service"
+                    value={t.service || ''}
+                    onChange={(e) => handleTestimonialChange(idx, 'service', e.target.value)}
                 />
                 <button
                     type="button"
@@ -610,10 +624,16 @@
                 </button>
                 </div>
             ))}
-            <button type="button" className="bg-blue-500 text-white p-2 rounded" onClick={addTestimonial}>
+
+            <button
+                type="button"
+                className="bg-blue-500 text-white p-2 rounded"
+                onClick={addTestimonial}
+            >
                 Add Testimonial
             </button>
             </div>
+
 
             {/* Contact copy */}
                 <div className="p-4 border rounded">
