@@ -92,6 +92,7 @@ export default function AdminDashboard() {
 }
 const saveData = async () => {
   setSaving(true)
+  setSaveStatus('Saving...')
   
   console.log('=== SAVING ALL SERVICES ===')
   userData.services?.forEach((service, index) => {
@@ -103,23 +104,18 @@ const saveData = async () => {
   try {
     const token = localStorage.getItem('adminToken')
     
-    const response = await fetch('/api/admin/data', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(userData)
-    })
+    const result = await api.saveAdminData(userData, token)
 
-    if (response.ok) {
+    if (result.success) {
       console.log('=== Saved successfully ===')
-      setSaveStatus('Changes saved successfully!')
+      setSaveStatus('✅ Changes saved successfully!')
       setTimeout(() => setSaveStatus(''), 3000)
+    } else {
+      setSaveStatus('❌ Error: ' + (result.error || 'Save failed'))
     }
   } catch (error) {
     console.error('Save error:', error)
-    setSaveStatus('Error saving changes')
+    setSaveStatus('❌ Error saving changes: ' + error.message)
   } finally {
     setSaving(false)
   }
