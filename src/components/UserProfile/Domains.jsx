@@ -27,6 +27,9 @@ export default function Domains({ getAuthHeaders }) {
     const seen = new Set();
     const options = [];
 
+    // Builds a deduplicated array of portfolio options for a select.
+    // Accepts portfolios either as IDs or objects.
+
     if (Array.isArray(userData?.portfolios)) {
       userData.portfolios.forEach((portfolio, index) => {
         if (typeof portfolio === "string") {
@@ -748,10 +751,8 @@ export default function Domains({ getAuthHeaders }) {
                         {domain.domain}
                       </p>
                       <p className="text-sm text-gray-500 capitalize">
-                        {domain.type} •{" "}
-                        {domain.dnsConfigured
-                          ? "DNS Configured"
-                          : "DNS Pending"}
+                        {domain.type} •{" "} {domain.portfolioId}  •{" "}
+                        {domain.dnsConfigured ? "DNS Configured" : "DNS Pending"}
                       </p>
                     </div>
                   </div>

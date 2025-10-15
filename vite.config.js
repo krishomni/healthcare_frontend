@@ -6,9 +6,13 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   define: {
-    // Make environment variables available
     "import.meta.env.VITE_BACKEND_API": JSON.stringify(
       process.env.VITE_BACKEND_API || "http://localhost:5000"
-    ),
+    )
   },
-});
+  server: {
+    port: 5173,
+    allowedHosts: true,
+    host: true
+  }
+})
