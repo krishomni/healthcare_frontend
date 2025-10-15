@@ -32,7 +32,8 @@
     "react-slick": "^0.31.0",
     "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
