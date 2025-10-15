@@ -1,20 +1,32 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { motion } from 'framer-motion'
-import { FaTooth, FaUserMd, FaHeartbeat, FaMicroscope, FaShieldAlt, FaProcedures, FaPhone, FaEnvelope, FaMapMarkerAlt, FaCheck, FaImage } from 'react-icons/fa'
+import { FaSearch, FaFileAlt, FaCog, FaArrowLeft } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import ScrollToTop from '../components/ScrollToTop'
 import { api } from '../lib/api'
 
-export default function Services() {
+export default function SearchResults() {
+  const router = useRouter()
+  const { q } = router.query
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [selectedService, setSelectedService] = useState(null)
+  const [searchResults, setSearchResults] = useState({
+    services: [],
+    blogPosts: []
+  })
 
   useEffect(() => {
     loadData()
   }, [])
+
+  useEffect(() => {
+    if (userData && q) {
+      performSearch(q)
+    }
+  }, [userData, q])
 
   const loadData = async () => {
     try {
@@ -22,61 +34,39 @@ export default function Services() {
       setUserData(data)
     } catch (error) {
       console.error('Error loading data:', error)
-      setUserData({
-        practice: { name: 'Healthcare Practice' },
-        contact: { phone: '+1234567890', email: 'info@practice.com' },
-        services: [],
-        ui: {
-          services: {
-            consultationButtonText: 'Schedule Consultation',
-            consultationAction: 'phone'
-          }
-        }
-      })
     } finally {
       setLoading(false)
     }
   }
 
-  const getServiceIcon = (iconName) => {
-    const icons = {
-      'tooth': FaTooth,
-      'user-md': FaUserMd,
-      'heartbeat': FaHeartbeat,
-      'microscope': FaMicroscope,
-      'shield-alt': FaShieldAlt,
-      'procedures': FaProcedures
-    }
-    return icons[iconName] || FaUserMd
+  const performSearch = (query) => {
+    if (!query || !userData) return
+
+    const searchQuery = query.toLowerCase().trim()
+    
+    // Search Services
+    const matchingServices = (userData.services || []).filter(service =>
+      service.title?.toLowerCase().includes(searchQuery) ||
+      service.description?.toLowerCase().includes(searchQuery) ||
+      service.features?.some(feature => feature?.toLowerCase().includes(searchQuery))
+    )
+
+    // Search Blog Posts
+    const matchingBlogPosts = (userData.blogPosts || []).filter(post =>
+      post.title?.toLowerCase().includes(searchQuery) ||
+      post.excerpt?.toLowerCase().includes(searchQuery) ||
+      post.content?.toLowerCase().includes(searchQuery) ||
+      post.tags?.some(tag => tag?.toLowerCase().includes(searchQuery)) ||
+      post.category?.toLowerCase().includes(searchQuery)
+    )
+
+    setSearchResults({
+      services: matchingServices,
+      blogPosts: matchingBlogPosts
+    })
   }
 
-  const handleScheduleConsultation = (service) => {
-    const action = userData.ui?.services?.consultationAction || 'phone'
-    
-    switch(action) {
-      case 'phone':
-        window.location.href = `tel:${userData.contact?.phone}`
-        break
-      case 'contact':
-        window.location.href = '/contact'
-        break
-      case 'email':
-        window.location.href = `mailto:${userData.contact?.email}`
-        break
-      case 'custom':
-        const customLink = userData.ui?.services?.customLink
-        if (customLink) {
-          if (customLink.startsWith('http')) {
-            window.open(customLink, '_blank')
-          } else {
-            window.location.href = customLink
-          }
-        }
-        break
-      default:
-        window.location.href = `tel:${userData.contact?.phone}`
-    }
-  }
+  const totalResults = searchResults.services.length + searchResults.blogPosts.length
 
   if (loading) {
     return (
@@ -86,249 +76,213 @@ export default function Services() {
     )
   }
 
-  if (!userData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-red-600">Error loading services</p>
-      </div>
-    )
-  }
-
   return (
     <>
       <Head>
-        <title>Our Services - {userData.practice?.name}</title>
-        <meta name="description" content="Comprehensive healthcare services offered by our experienced medical team." />
+        <title>Search Results for "{q}" - {userData?.practice?.name}</title>
+        <meta name="description" content={`Search results for ${q}`} />
       </Head>
-      
+
       <div className="min-h-screen bg-gray-50">
         <Navbar userData={userData} />
-        
+
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white pt-24 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Link 
+              href="/"
+              className="inline-flex items-center text-blue-100 hover:text-white mb-6 transition-colors"
+            >
+              <FaArrowLeft className="mr-2" />
+              Back to Home
+            </Link>
+            
             <div className="text-center">
+              <motion.div
+                className="flex justify-center mb-4"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="bg-white/20 rounded-full p-4">
+                  <FaSearch className="text-4xl" />
+                </div>
+              </motion.div>
+              
               <motion.h1 
-                className="text-4xl md:text-5xl font-bold mb-6"
+                className="text-4xl md:text-5xl font-bold mb-4"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8 }}
               >
-                Our Medical Services
+                Search Results
               </motion.h1>
+              
               <motion.p 
-                className="text-xl text-blue-100 max-w-3xl mx-auto"
+                className="text-xl text-blue-100 mb-2"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Comprehensive healthcare services delivered by experienced professionals using state-of-the-art technology
+                Showing results for: <strong>"{q}"</strong>
+              </motion.p>
+              
+              <motion.p
+                className="text-blue-200"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                {totalResults} {totalResults === 1 ? 'result' : 'results'} found
               </motion.p>
             </div>
           </div>
         </section>
 
-        {/* Services Grid */}
+        {/* Search Results */}
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {userData.services && userData.services.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {userData.services.map((service, index) => {
-                  const Icon = getServiceIcon(service.icon)
-                  return (
-                    <motion.div 
-                      key={service.id || index} 
-                      className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: index * 0.1 }}
-                      whileHover={{ y: -5 }}
+            
+            {totalResults === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-white rounded-xl shadow-lg p-12">
+                  <FaSearch className="text-6xl text-gray-300 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">No Results Found</h2>
+                  <p className="text-gray-600 mb-6">
+                    We couldn't find any results matching "<strong>{q}</strong>"
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link
+                      href="/services"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                     >
-                      {/* Service Image */}
-                      <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 relative overflow-hidden">
-                        {service.image ? (
-                          <img 
-                            src={service.image} 
-                            alt={service.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Icon className="text-blue-600 text-6xl opacity-30" />
-                          </div>
-                        )}
-                        {/* Icon Overlay */}
-                        <div className="absolute top-4 left-4 bg-blue-600 rounded-lg w-12 h-12 flex items-center justify-center shadow-lg">
-                          <Icon className="text-white text-xl" />
-                        </div>
-                      </div>
-
-                      {/* Service Header */}
-                      <div className="p-6">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{service.title}</h3>
-                        
-                        {(service.price || service.duration) && (
-                          <div className="flex items-center space-x-4 text-sm text-blue-700 mb-4">
-                            {service.price && <span className="font-semibold">{service.price}</span>}
-                            {service.duration && <span>{service.duration}</span>}
-                          </div>
-                        )}
-
-                        <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                        
-                        {/* Features */}
-                        {service.features && service.features.length > 0 && (
-                          <div className="mb-6">
-                            <h4 className="font-semibold text-gray-900 mb-3">What's Included:</h4>
-                            <ul className="space-y-2">
-                              {service.features.slice(0, 3).map((feature, featureIndex) => (
-                                <li key={featureIndex} className="flex items-start">
-                                  <FaCheck className="text-green-500 mt-0.5 mr-3 flex-shrink-0" />
-                                  <span className="text-gray-600 text-sm">{feature}</span>
-                                </li>
-                              ))}
-                              {service.features.length > 3 && (
-                                <li className="text-blue-600 text-sm font-medium">
-                                  +{service.features.length - 3} more features
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="space-y-3">
-                          <button
-                            onClick={() => handleScheduleConsultation(service)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center"
-                          >
-                            <FaPhone className="mr-2" />
-                            {userData.ui?.services?.consultationButtonText || 'Schedule Consultation'}
-                          </button>
-                          
-                          <button
-                            onClick={() => setSelectedService(service)}
-                            className="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 px-6 rounded-lg font-semibold transition-colors"
-                          >
-                            Learn More
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )
-                })}
+                      Browse Services
+                    </Link>
+                    <Link
+                      href="/blog"
+                      className="border border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Read Blog
+                    </Link>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg mb-4">No services configured yet.</p>
-                <Link href="/admin/login" className="text-blue-600 hover:text-blue-700">
-                  Add services through admin panel →
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Contact CTA */}
-        <section className="bg-blue-600 text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Contact us today to schedule your consultation and take the first step towards better health.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a
-                href={`tel:${userData.contact?.phone}`}
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-bold text-lg transition-colors flex items-center"
-              >
-                <FaPhone className="mr-2" />
-                Call {userData.contact?.phone}
-              </a>
-              
-              <a
-                href={`mailto:${userData.contact?.email}`}
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-lg font-bold text-lg transition-colors flex items-center"
-              >
-                <FaEnvelope className="mr-2" />
-                Email Us
-              </a>
-            </div>
-
-            {userData.contact?.address && (
-              <div className="mt-8 flex items-center justify-center text-blue-100">
-                <FaMapMarkerAlt className="mr-2" />
-                <span>
-                  {userData.contact.address.street}, {userData.contact.address.city}, {userData.contact.address.state}
-                </span>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Service Detail Modal */}
-        {selectedService && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedService(null)}>
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              {/* Modal Image */}
-              {selectedService.image && (
-                <div className="h-64 bg-gray-200">
-                  <img 
-                    src={selectedService.image} 
-                    alt={selectedService.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900">{selectedService.title}</h3>
-                  <button
-                    onClick={() => setSelectedService(null)}
-                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none"
-                  >
-                    ×
-                  </button>
-                </div>
+              <div className="space-y-12">
                 
-                <p className="text-gray-600 mb-6 leading-relaxed">{selectedService.description}</p>
-                
-                {selectedService.features && selectedService.features.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Service Includes:</h4>
-                    <ul className="space-y-2">
-                      {selectedService.features.map((feature, index) => (
-                        <li key={index} className="flex items-start">
-                          <FaCheck className="text-green-500 mt-0.5 mr-3 flex-shrink-0" />
-                          <span className="text-gray-600">{feature}</span>
-                        </li>
+                {/* Services Results */}
+                {searchResults.services.length > 0 && (
+                  <div>
+                    <div className="flex items-center mb-6">
+                      <FaCog className="text-blue-600 text-2xl mr-3" />
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        Services ({searchResults.services.length})
+                      </h2>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {searchResults.services.map((service, index) => (
+                        <motion.div
+                          key={service.id || index}
+                          className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                        >
+                          {service.image && (
+                            <div className="h-48 overflow-hidden">
+                              <img 
+                                src={service.image} 
+                                alt={service.title}
+                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                          )}
+                          
+                          <div className="p-6">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              {service.title}
+                            </h3>
+                            <p className="text-gray-600 mb-4 line-clamp-3">
+                              {service.description}
+                            </p>
+                            <Link
+                              href="/services"
+                              className="text-blue-600 hover:text-blue-700 font-semibold flex items-center"
+                            >
+                              View Service
+                              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </motion.div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
 
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => {
-                      handleScheduleConsultation(selectedService)
-                      setSelectedService(null)
-                    }}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
-                  >
-                    {userData.ui?.services?.consultationButtonText || 'Schedule Consultation'}
-                  </button>
-                  <button
-                    onClick={() => setSelectedService(null)}
-                    className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 py-3 px-6 rounded-lg font-semibold transition-colors"
-                  >
-                    Close
-                  </button>
-                </div>
+                {/* Blog Posts Results */}
+                {searchResults.blogPosts.length > 0 && (
+                  <div>
+                    <div className="flex items-center mb-6">
+                      <FaFileAlt className="text-blue-600 text-2xl mr-3" />
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        Blog Articles ({searchResults.blogPosts.length})
+                      </h2>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {searchResults.blogPosts.map((post, index) => (
+                        <motion.div
+                          key={post.id || index}
+                          className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                        >
+                          {post.image && (
+                            <div className="h-48 overflow-hidden">
+                              <img 
+                                src={post.image} 
+                                alt={post.title}
+                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                          )}
+                          
+                          <div className="p-6">
+                            {post.category && (
+                              <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium mb-3 inline-block">
+                                {post.category}
+                              </span>
+                            )}
+                            
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              {post.title}
+                            </h3>
+                            <p className="text-gray-600 mb-4 line-clamp-3">
+                              {post.excerpt}
+                            </p>
+                            <Link
+                              href={`/blog/${post.slug || post.id}`}
+                              className="text-blue-600 hover:text-blue-700 font-semibold flex items-center"
+                            >
+                              Read Article
+                              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </section>
 
         <ScrollToTop />
       </div>

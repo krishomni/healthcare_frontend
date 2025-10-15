@@ -32,13 +32,13 @@ export default function Navbar({ userData = null }) {
   ]
 
   const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
-      setShowSearch(false)
-      setSearchQuery('')
-    }
+  e.preventDefault()
+  if (searchQuery.trim()) {
+    router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+    setShowSearch(false)
+    setSearchQuery('')
   }
+}
 
   return (
     <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${
