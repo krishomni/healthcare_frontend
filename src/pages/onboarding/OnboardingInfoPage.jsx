@@ -97,6 +97,10 @@ export default function OnboardingInfoPage() {
           const handyman_portfolio = user;
           const res = await handymanAPI.post(`/api/handyman-template`, {
             hero: { phoneNumber: user?.phone ?? user?.hero?.phoneNumber ?? "" },
+            contact: {
+              phone:  user?.phone  ?? "",
+              email:  user?.email  ?? ""
+            }
           });
 
           console.log("response: ", res.data);
