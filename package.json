@@ -35,12 +35,10 @@
     "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
     "tailwindcss": "^4.1.11",
-<<<<<<< HEAD
+
     "three": "^0.180.0",
-    "three-stdlib": "^2.36.0"
-=======
+    "three-stdlib": "^2.36.0",
     "uuid": "^13.0.0"
->>>>>>> main
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",

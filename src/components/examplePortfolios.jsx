@@ -41,12 +41,7 @@ export default function ExamplePortfolios() {
      {
       title: "Cleaner/Local Cleaning Services",
       summary: "Porftolio showcasing Cleaning services",
-<<<<<<< HEAD
-      location: "/portfolios/cleaningService/about"
-=======
-      location: "/portfolios/cleaningService",
->>>>>>> cc649bc (Added cleaninglady into examples)
-    },
+            location: "/portfolios/cleaningService/about"    },
   ];
 
   const navigate = useNavigate();
