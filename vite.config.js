@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+<<<<<<< HEAD
   plugins: [react(), tailwindcss()],
   define: {
     "import.meta.env.VITE_BACKEND_API": JSON.stringify(
@@ -16,3 +17,17 @@ export default defineConfig({
     host: true
   }
 })
+=======
+    plugins: [react(), tailwindcss(), ],
+    test: {
+        environment: 'jsdom',            
+        setupFiles: ['./setupTests.js'],  
+        globals: true,                   
+        css: true,                       
+        coverage: {                      
+          reporter: ['text', 'html'],
+          reportsDirectory: 'coverage',
+        },
+      },
+})
+>>>>>>> origin/main

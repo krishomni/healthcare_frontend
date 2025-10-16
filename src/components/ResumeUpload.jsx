@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ResumeUpload() {
   const apiUrl = import.meta.env.VITE_BACKEND_API;
@@ -9,6 +10,16 @@ export default function ResumeUpload() {
   const [loading, setLoading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const navigate = useNavigate(); 
+
+  // session ID
+  const [sessionId] = useState(() => {
+    let id = localStorage.getItem("onboardingSessionId");
+    if (!id) {
+      id = uuidv4();
+      localStorage.setItem("onboardingSessionId", id);
+    }
+    return id;
+  });
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -42,15 +53,7 @@ export default function ResumeUpload() {
     if (email) {
       formData.append("email", email);
     }
-
-    /* creates resume token to track uploaded resume prior to sign up
-    let resumeToken = localStorage.getItem("resumeToken");
-    if (!resumeToken) {
-      resumeToken = uuidv4();
-      localStorage.setItem("resumeToken", resumeToken);
-    }
-    formData.append("resumeToken", resumeToken);
-    */
+    formData.append("sessionId", sessionId);
 
     try {
       const res = await axios.post(`${apiUrl}/portfolio/upload-pdf`, formData, {
@@ -60,6 +63,7 @@ export default function ResumeUpload() {
       setUploaded(true);
       setFile(null);
       setFileContent(null);
+      localStorage.removeItem("onboardingSessionId"); // remove sessionId after successful upload
       navigate("/dashboard"); // Redirect after upload
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -76,6 +80,7 @@ export default function ResumeUpload() {
       localStorage.removeItem("resumeToken");
     }
   };
+  localStorage.removeItem("onboardingSessionId");
 */
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">

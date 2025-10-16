@@ -1,80 +1,99 @@
-.hero-section {
-  background: url('https://images.unsplash.com/photo-1555949963-ff98c872d27b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjA3fDB8MXxjb2xsZWN0aW9ufDF8MTM5NTk2fHx8fHwyfHwxNjE2NjE0Mzc3&ixlib=rb-1.2.1&q=80&w=1080') no-repeat center center/cover;
-  color: white;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0 1rem;
+.hero-v2{
+  background: radial-gradient(1200px 600px at 10% 10%, #eef4ff, #f7f9ff);
+  padding: 0; /* padding moves to .hero-inner so background can be full width */
 }
 
-.hero-content {
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 2rem;
-  border-radius: 10px;
+/* Inner container controls max width + grid */
+.hero-inner{
+  padding: 4.5rem 2rem 3.5rem;
+  display:grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap:2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items:center;
 }
 
-.hero-content h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+/* ⬅️ ensure text is left-aligned regardless of global styles */
+.hero-left{ text-align:left; }
+
+.hero-h1{
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  line-height:1.1;
+  margin:0 0 1rem 0;
+  font-weight:800;
+  color:#0b1324;
+}
+.hero-sub{
+  margin:0 0 1.25rem 0;
+  color:#4b5563;
+  font-size:1.05rem;
 }
 
-.hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
+.hero-badges{
+  list-style:none;
+  padding:0; margin:0 0 1.25rem 0;
+  display:flex; gap:.75rem; flex-wrap:wrap;
+}
+.hero-badges li{
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid #e5e7eb; padding:.55rem .8rem; border-radius:.75rem;
+  background:#fff; color:#0b1324; font-weight:600;
 }
 
-.hero-button {
-  background-color: #007bff;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.hero-cta-row{
+  display:flex; gap:.9rem; align-items:center; flex-wrap:wrap;
+}
+.hero-btn-primary{
+  background:#1d4ed8; color:#fff; text-decoration:none;
+  padding:.9rem 1.2rem; border-radius:.9rem; font-weight:700;
+  box-shadow:0 10px 30px rgba(29,78,216,.25);
+}
+.hero-phone-pill{
+  display:inline-flex; align-items:center; gap:.55rem;
+  border:1px solid #d1d5db;
+  background:#fff;
+  padding:.8rem 1rem;
+  border-radius:.7rem;
+  text-decoration:none; color:#111827; font-weight:600;
+}
+.hero-phone-icn{ font-size:1.05rem; }
+
+.hero-right{ width:100%; }
+
+/* Photo */
+.hero-photo-wrap{
+  position:relative;
+  border-radius:1rem;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  margin-bottom: .25rem;          /* ⬆️ nudge photo a touch upward visually */
+}
+.hero-photo{
+  width:100%; height:auto; display:block;
 }
 
-.hero-button:hover {
-  background-color: #0056b3;
+/* Stats box — now BELOW the image */
+.hero-stats{
+  position:relative;               /* no longer absolute overlay */
+  inset:auto;
+  transform:none;
+  display:flex; gap:1.25rem; justify-content:space-between;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:.9rem;
+  padding:.9rem 1rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+  margin-top:.9rem;                /* spacing under the photo */
 }
-
-@media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero-content p {
-    font-size: 1rem;
-  }
-
-  .hero-button {
-    font-size: 1rem;
-    padding: 0.6rem 1.2rem;
-  }
+.hero-stats div{
+  display:flex; flex-direction:column; align-items:center;
 }
-.hero-subheading {
-  font-size: 1.2rem;
-  font-weight: 300;
-  margin-bottom: 2rem;
-}
+.hero-stats strong{ font-size:1.1rem; }
+.hero-stats span{ font-size:.8rem; color:#6b7280; }
 
-.hero-cta-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.hero-phone {
-  color: #ffffff;
-  font-size: 1.3rem;
-  font-weight: bold;
-  text-decoration: none;
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 0.8rem 1.5rem;
-  border-radius: 5px;
-  border: 1px solid #fff;
+/* Mobile */
+@media (max-width: 900px){
+  .hero-inner{ grid-template-columns:1fr; padding:2.5rem 1.25rem; }
+  .hero-stats{ margin-top:.75rem; }
 }

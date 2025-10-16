@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import About from "./components/About";
+import AdminRoute from "./components/AdminRoute.jsx";
 import CookieConsent from "./components/CookieConsent";
 import CookieSettings from "./components/CookieSettings";
 import Dashboard from "./components/Dashboard";
@@ -188,7 +189,14 @@ export default function App() {
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route path="/onboarding_info" element={<OnboardingInfoPage />} />
+        <Route
+          path="/onboarding_info"
+          element={
+            <VendorProvider>
+              <OnboardingInfoPage />
+            </VendorProvider>
+          }
+        />
         <Route
           path="/portfolios/vendor/:username/:id"
           element={
@@ -198,7 +206,7 @@ export default function App() {
           }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/itadmin/ticketing-system" element={<TicketingPage />} />
+        <Route path="/itadmin/ticketing-system" element={<AdminRoute><TicketingPage /></AdminRoute>} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/solutions" element={<Solutions />} />
         <Route path="/solutions/vendors" element={<Vendors />} />

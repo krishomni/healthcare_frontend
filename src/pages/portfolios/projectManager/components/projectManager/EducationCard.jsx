@@ -1,9 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaPen, FaPlus, FaTimes, FaTrash, FaSave } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../../../../context/AuthContext";
+import axios from "axios";
+
+//attach token to each axios request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const EducationCard = ({ portfolio }) => {
+  const { user } = useContext(AuthContext);
   const education = portfolio.education;
   const [editIdx, setEditIdx] = useState(null);
   const [editEdu, setEditEdu] = useState({});
@@ -30,29 +45,10 @@ const EducationCard = ({ portfolio }) => {
   // Mutation for saving education data
   const saveEducationMutation = useMutation({
     mutationFn: async (educationData) => {
-      console.log("Saving education data:", educationData);
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${apiUrl}/portfolio/edit?email=${portfolio.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            portfolio: {
-              education: educationData,
-            },
-          }),
-        }
-      );
-
-      const result = await response.json();
-      console.log("Server response:", result);
-
-      if (!response.ok) throw new Error("Failed to save education");
-      return result;
+      const response = await axios.patch(`${apiUrl}/portfolio/edit`, {
+        portfolio: { education: educationData },
+      });
+      return response.data;
     },
     onSuccess: (data) => {
       console.log("Save successful:", data);
@@ -145,10 +141,8 @@ const EducationCard = ({ portfolio }) => {
     <div className="mt-6">
       {/* Mobile-optimized header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-          Education
-        </h2>
-        {portfolio.email === localStorage.getItem("email") && (
+        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">Education</h2>
+        {portfolio.email === user?.email && (
           <button
             onClick={() => setAdding(true)}
             className="self-start sm:self-auto px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors shadow-lg border border-blue-500 text-sm sm:text-base"
@@ -225,9 +219,7 @@ const EducationCard = ({ portfolio }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                      End Date
-                    </label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">End Date</label>
                     <input
                       name="endDate"
                       type="date"
@@ -266,7 +258,7 @@ const EducationCard = ({ portfolio }) => {
               </div>
             ) : (
               <>
-                {portfolio.email === localStorage.getItem("email") && (
+                {portfolio.email === user?.email && (
                   <button
                     onClick={() => handleEdit(idx)}
                     className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 text-blue-400 hover:text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors"
@@ -289,8 +281,7 @@ const EducationCard = ({ portfolio }) => {
                     <div className="mt-2">
                       <div className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 bg-slate-700/50 rounded-full border border-white/20">
                         <span className="text-xs sm:text-sm text-slate-300 font-mono">
-                          {new Date(edu.startDate).toLocaleDateString()} –{" "}
-                          {new Date(edu.endDate).toLocaleDateString()}
+                          {new Date(edu.startDate).toLocaleDateString()} – {new Date(edu.endDate).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -305,9 +296,7 @@ const EducationCard = ({ portfolio }) => {
                   <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-4">
                     {edu.degrees?.length > 0 && (
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xs sm:text-sm font-semibold text-blue-300 mb-1 sm:mb-2">
-                          Degrees
-                        </h4>
+                        <h4 className="text-xs sm:text-sm font-semibold text-blue-300 mb-1 sm:mb-2">Degrees</h4>
                         <div className="flex flex-wrap gap-1 sm:gap-2">
                           {edu.degrees.map((degree, i) => (
                             <span
@@ -323,9 +312,7 @@ const EducationCard = ({ portfolio }) => {
 
                     {edu.awards?.length > 0 && (
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xs sm:text-sm font-semibold text-amber-300 mb-1 sm:mb-2">
-                          Awards
-                        </h4>
+                        <h4 className="text-xs sm:text-sm font-semibold text-amber-300 mb-1 sm:mb-2">Awards</h4>
                         <div className="flex flex-wrap gap-1 sm:gap-2">
                           {edu.awards.map((award, i) => (
                             <span
@@ -379,9 +366,7 @@ const EducationCard = ({ portfolio }) => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                    Start Date
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">Start Date</label>
                   <input
                     name="startDate"
                     type="date"
@@ -391,9 +376,7 @@ const EducationCard = ({ portfolio }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">
-                    End Date
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2">End Date</label>
                   <input
                     name="endDate"
                     type="date"
@@ -435,9 +418,7 @@ const EducationCard = ({ portfolio }) => {
                 className="w-full mt-4 sm:mt-6 px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 disabled:opacity-50 text-sm sm:text-base"
                 disabled={saveEducationMutation.isPending}
               >
-                {saveEducationMutation.isPending
-                  ? "Saving..."
-                  : "Add Education"}
+                {saveEducationMutation.isPending ? "Saving..." : "Add Education"}
               </button>
             </div>
           </div>
@@ -446,9 +427,7 @@ const EducationCard = ({ portfolio }) => {
 
       {eduList.length === 0 && !adding && (
         <div className="text-center py-8 sm:py-12">
-          <div className="text-slate-400 text-base sm:text-lg mb-4">
-            No education entries yet
-          </div>
+          <div className="text-slate-400 text-base sm:text-lg mb-4">No education entries yet</div>
           <button
             onClick={() => setAdding(true)}
             className="px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 text-sm sm:text-base"

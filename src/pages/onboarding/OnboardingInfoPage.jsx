@@ -6,13 +6,16 @@ import { toast } from "react-toastify";
 
 import { AuthContext } from "../../context/AuthContext";
 import handymanAPI from "../../pages/portfolios/handyman/api.js";
-
+import { useVendor } from "../../context/VendorContext.jsx";
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 
 
 export default function OnboardingInfoPage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { setVendorId } = useVendor();
+  const { pendingFile, setPendingFile } = useContext(AuthContext);
+  const [creatingVendor, setCreatingVendor] = useState(false);
 
   const handleCardClick = async (index) => {
     switch (index) {
@@ -32,13 +35,33 @@ export default function OnboardingInfoPage() {
 
       case 3: // Local Food Vendor
         try {
+          setCreatingVendor(true); // ⏳ show loader
           let res;
-          if (user.file) {
+          const fileToSend = user?.file || pendingFile;
+          if (fileToSend) {
+            console.log("Injecting vendor file:", fileToSend.name);
             const formData = new FormData();
-            formData.append("file", user.file);
+            formData.append("file", fileToSend); // must match `upload.single("file")`
+
+            // optionally extra metadata if uploaded doesn't have these values, so json doesnt fail
+            formData.append("name", `${user.firstName} ${user.lastName}`);
+            formData.append("email", user.email);
+            formData.append("phone", user.phone || "");
+            formData.append("description", user.bio || "My business portfolio");
+
+            toast.info(
+              "We’re generating your site using your uploaded file. This may take a few moments..."
+            );
+
             res = await axios.post(`${backendUrl}/vendor/inject`, formData, {
               headers: { "Content-Type": "multipart/form-data" },
             });
+            if (res.status === 201 || res.status === 200) {
+              toast.success("Vendor portfolio created successfully!");
+              // setPendingFile(null);
+            }
+
+            console.log("inject response:", res.data);
           } else {
             const vendorData = {
               name: `${user.firstName} ${user.lastName}`,
@@ -47,15 +70,28 @@ export default function OnboardingInfoPage() {
               description: user.bio || "My business portfolio",
             };
             res = await axios.post(`${backendUrl}/vendor`, vendorData);
+            toast.info("Vendor created without uploaded file.");
           }
 
-          const vendor = res.data.vendor || res.data;
-          const username =
-            vendor.username || vendor.name.toLowerCase().replace(/\s+/g, "-");
-          navigate(`/portfolios/vendor/${username}/${vendor._id}`);
+          if (res.status === 200 || res.status === 201) {
+            const vendor = res.data.vendor || res.data;
+            const username =
+              vendor.username || vendor.name.toLowerCase().replace(/\s+/g, "-");
+
+            // ✅ Store the vendor ID in context for global use
+            setVendorId(vendor._id);
+
+            // ✅ Clear pending file after successful injection
+            setPendingFile(null);
+
+            toast.success("Vendor portfolio created successfully!");
+            navigate(`/portfolios/vendor/${username}/${vendor._id}`);
+          }
         } catch (err) {
           console.error("Vendor portfolio creation failed:", err);
           toast.error("Could not create vendor portfolio");
+        } finally {
+          setCreatingVendor(false); // ✅ always stop loader
         }
         break;
 
@@ -64,6 +100,10 @@ export default function OnboardingInfoPage() {
           const handyman_portfolio = user;
           const res = await handymanAPI.post(`/api/handyman-template`, {
             hero: { phoneNumber: user?.phone ?? user?.hero?.phoneNumber ?? "" },
+            contact: {
+              phone:  user?.phone  ?? "",
+              email:  user?.email  ?? ""
+            }
           });
 
           console.log("response: ", res.data);
@@ -123,6 +163,20 @@ export default function OnboardingInfoPage() {
   ];
 
   if (user === null) return <p className="text-gray-600">No user found.</p>;
+
+  if (creatingVendor) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 className="text-lg font-semibold text-slate-700 animate-pulse">
+          Creating your vendor site...
+        </h2>
+        <p className="text-slate-500 text-sm mt-2">
+          This may take up to a minute as we process your file.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">

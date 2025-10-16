@@ -1,17 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  FaGithub,
-  FaLinkedin,
-  FaGlobe,
-  FaPen,
-  FaSave,
-  FaTimes,
-  FaCamera,
-} from "react-icons/fa";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { FaGithub, FaLinkedin, FaGlobe, FaPen, FaSave, FaTimes, FaCamera } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../../../../context/AuthContext";
+import axios from "axios";
+
+//attach token to each axios request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const SummaryCard = ({ portfolio }) => {
+  const { user } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState(portfolio || {});
   const [imagePreview, setImagePreview] = useState(null);
@@ -28,43 +35,23 @@ const SummaryCard = ({ portfolio }) => {
   // Mutation for saving summary data
   const saveSummaryMutation = useMutation({
     mutationFn: async (summaryData) => {
-      console.log("Saving summary data:", summaryData); // DEBUG
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${apiUrl}/portfolio/edit?email=${portfolio.email}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            portfolio: summaryData,
-          }),
-        }
-      );
-
-      const result = await response.json();
-      console.log("Server response:", result); // DEBUG
-
-      if (!response.ok) throw new Error("Failed to save summary");
-      return result;
+      const response = await axios.patch(`${apiUrl}/portfolio/edit`, {
+        portfolio: { summary: summaryData },
+      });
+      return response.data;
     },
     onSuccess: (data) => {
-      console.log("Save successful:", data); // DEBUG
-      toast.success("Profile saved successfully!");
+      console.log("Save successful:", data);
+      toast.success("Summary saved successfully!");
       queryClient.invalidateQueries(["portfolio"]);
-      setIsEditing(false);
     },
     onError: (error) => {
-      console.error("Save failed:", error); // DEBUG
-      toast.error("Failed to save profile");
+      console.error("Save failed:", error);
+      toast.error("Failed to save Summary");
     },
   });
 
-  const { name, summary, email, phone, location, socialLinks } = isEditing
-    ? editData
-    : portfolio || {};
+  const { name, summary, email, phone, location, socialLinks } = isEditing ? editData : portfolio || {};
 
   const handleChange = (e) => {
     setEditData({ ...editData, [e.target.name]: e.target.value });
@@ -95,7 +82,7 @@ const SummaryCard = ({ portfolio }) => {
   };
 
   return (
-    portfolio.email === localStorage.getItem("email") && (
+    portfolio.email === user?.email && (
       <div className="bg-slate-800 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl hover:border-white/30">
         <div className="relative">
           {!isEditing && (
@@ -116,11 +103,7 @@ const SummaryCard = ({ portfolio }) => {
               {/* Profile Image or Fallback */}
               <div className="w-full h-full rounded-full overflow-hidden border border-blue-400/30 shadow-lg">
                 {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt={name || "Profile"}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={imagePreview} alt={name || "Profile"} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-blue-500/20 flex items-center justify-center text-blue-200 font-bold text-4xl">
                     {name?.[0]?.toUpperCase() || "U"}
@@ -180,18 +163,14 @@ const SummaryCard = ({ portfolio }) => {
                   <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-sm mb-2">
                     {name || "Your Name"}
                   </h2>
-                  <p className="text-slate-300 drop-shadow-sm">
-                    📍 {location || "Location"}
-                  </p>
+                  <p className="text-slate-300 drop-shadow-sm">📍 {location || "Location"}</p>
                 </>
               )}
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">
-              About
-            </h3>
+            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">About</h3>
             {isEditing ? (
               <textarea
                 name="summary"
@@ -202,16 +181,12 @@ const SummaryCard = ({ portfolio }) => {
                 rows={4}
               />
             ) : (
-              <p className="text-slate-200 leading-relaxed drop-shadow-sm">
-                {summary || "No summary provided yet."}
-              </p>
+              <p className="text-slate-200 leading-relaxed drop-shadow-sm">{summary || "No summary provided yet."}</p>
             )}
           </div>
 
           <div className="mb-6 pt-6 border-t border-blue-400/30">
-            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">
-              Contact
-            </h3>
+            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">Contact</h3>
             <div className="space-y-3">
               {isEditing ? (
                 <>
@@ -234,12 +209,10 @@ const SummaryCard = ({ portfolio }) => {
               ) : (
                 <>
                   <p className="text-slate-200 drop-shadow-sm">
-                    <span className="text-white font-medium">Email:</span>{" "}
-                    {email || "Not provided"}
+                    <span className="text-white font-medium">Email:</span> {email || "Not provided"}
                   </p>
                   <p className="text-slate-200 drop-shadow-sm">
-                    <span className="text-white font-medium">Phone:</span>{" "}
-                    {phone || "Not provided"}
+                    <span className="text-white font-medium">Phone:</span> {phone || "Not provided"}
                   </p>
                 </>
               )}
@@ -247,9 +220,7 @@ const SummaryCard = ({ portfolio }) => {
           </div>
 
           <div className="mb-6 pt-6 border-t border-blue-400/30">
-            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">
-              Social Links
-            </h3>
+            <h3 className="text-lg font-semibold text-blue-300 mb-3 drop-shadow-sm">Social Links</h3>
             {isEditing ? (
               <div className="space-y-3">
                 <input
@@ -260,17 +231,13 @@ const SummaryCard = ({ portfolio }) => {
                 />
                 <input
                   value={socialLinks?.linkedin || ""}
-                  onChange={(e) =>
-                    handleSocialChange("linkedin", e.target.value)
-                  }
+                  onChange={(e) => handleSocialChange("linkedin", e.target.value)}
                   className="w-full bg-slate-700 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 px-4 py-3"
                   placeholder="LinkedIn URL"
                 />
                 <input
                   value={socialLinks?.website || ""}
-                  onChange={(e) =>
-                    handleSocialChange("website", e.target.value)
-                  }
+                  onChange={(e) => handleSocialChange("website", e.target.value)}
                   className="w-full bg-slate-700 border border-white/20 rounded-lg text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 px-4 py-3"
                   placeholder="Website URL"
                 />
@@ -310,11 +277,9 @@ const SummaryCard = ({ portfolio }) => {
                     <FaGlobe />
                   </a>
                 )}
-                {!socialLinks?.github &&
-                  !socialLinks?.linkedin &&
-                  !socialLinks?.website && (
-                    <p className="text-slate-400">No social links added yet</p>
-                  )}
+                {!socialLinks?.github && !socialLinks?.linkedin && !socialLinks?.website && (
+                  <p className="text-slate-400">No social links added yet</p>
+                )}
               </div>
             )}
           </div>
