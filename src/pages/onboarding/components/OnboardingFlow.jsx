@@ -31,10 +31,15 @@ export default function OnboardingFlow() {
     file: null,
   });
 
+
+  /* 
+  ** Version that was skipping to user info from file upload:
+  **
   // handle selection of main goal
   const handleGoalSelect = (goal) => {
     setData((prev) => ({ ...prev, goal }));
     // if user is a business, skip to complete
+   /
     if (data.file) {
       // If file uploaded, skip directly to user info
       setCurrentStep("userInfo");
@@ -46,14 +51,28 @@ export default function OnboardingFlow() {
         setCurrentStep("industry");
       }
     }
+      
   };
 
-  const handleFileUpload = (file) => {
+   const handleFileUpload = (file) => {
     setData((prev) => ({ ...prev, file }));
     // set in auth context so it's available after login/navigation
     if (typeof setPendingFile === "function") setPendingFile(file);
     setCurrentStep("userInfo"); // skip straight ahead
   };
+  */
+ const handleGoalSelect = (goal) => {
+    setData((prev) => ({ ...prev, goal }));
+    // if user is a business, skip to complete
+    if (goal === "grow-business") {
+
+      setCurrentStep("userInfo");
+    } else {
+      setCurrentStep("industry");
+    }
+  };
+
+ 
 
   // handle selection of industry
   const handleIndustrySelect = (industry) => {
@@ -284,7 +303,6 @@ export default function OnboardingFlow() {
           {currentStep === "goal" && (
             <GoalSelection
               onSelect={handleGoalSelect}
-              onFileUpload={handleFileUpload}
             />
           )}
           {/* show industry selection step */}

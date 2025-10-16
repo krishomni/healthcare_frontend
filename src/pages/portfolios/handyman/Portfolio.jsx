@@ -1,94 +1,130 @@
-// Portfolio.jsx
-import React, { useState, useEffect } from 'react';
-import handymanAPI from './api';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import './Portfolio.css';
+import React, { useEffect, useMemo, useState } from "react";
+import handymanAPI from "./api.js";
+import "./Portfolio.css";
 
-const Portfolio = ({ templateId, title, allLabel }) => {   // 👈 accept title + allLabel
-  const [projects, setProjects] = useState([]);
-  const [filter, setFilter] = useState('__ALL__');
+/**
+ * Props:
+ * - title: section heading
+ * - subtitle: section sub-text
+ * - allLabel: label for "All" filter button
+ * - templateId?: when provided and no 'items' are passed, fetch projects for this template
+ * - items?: static array of projects to render (skips fetching when provided)
+ *
+ * Project item shape expected:
+ * { title, subtitle?, category, beforeImageUrl, afterImageUrl }
+ */
+export default function Portfolio({
+  title = "Quality Craftsmanship You Can See",
+  subtitle = "",
+  allLabel = "All",
+  templateId,
+  items, // when present -> static mode
+}) {
+  const isStatic = Array.isArray(items) && items.length >= 0;
 
+  const [projects, setProjects] = useState(items || []);
+  const [active, setActive] = useState(allLabel);
+
+  // Fetch only when not in static mode and we have a templateId
   useEffect(() => {
-    const fetchProjects = async () => {
+    if (isStatic) return;
+    if (!templateId) return;
+    let ignore = false;
+
+    (async () => {
       try {
-        const { data } = await handymanAPI.get('/api/handyman/portfolio', { params: { templateId } });
-        setProjects(Array.isArray(data) ? data : (data?.projects ?? []));
-      } catch (err) {
-        console.error('Error fetching projects:', err);
+        const { data } = await handymanAPI.get("/api/handyman/portfolio", {
+          params: { templateId },
+        });
+        if (!ignore) {
+          const list = Array.isArray(data) ? data : data?.projects ?? [];
+          setProjects(list);
+        }
+      } catch (e) {
+        console.error("Failed to load projects", e);
         setProjects([]);
       }
+    })();
+
+    return () => {
+      ignore = true;
     };
-    if (templateId) fetchProjects();
-  }, [templateId]);
+  }, [isStatic, templateId]);
 
-  const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
-  const visible = filter === '__ALL__' ? projects : projects.filter(p => p.category === filter);
+  // Build category list from current projects
+  const categories = useMemo(() => {
+    const cats = new Set();
+    projects.forEach((p) => p?.category && cats.add(p.category));
+    return [allLabel, ...Array.from(cats)];
+  }, [projects, allLabel]);
 
-  const settings = {
-    className: 'center',
-    centerMode: true,
-    infinite: true,
-    centerPadding: '60px',
-    slidesToShow: 3,
-    speed: 500,
-    adaptiveHeight: true,
-    responsive: [{ breakpoint: 768, settings: { slidesToShow: 1, centerPadding: '40px' } }],
-  };
+  const filtered = useMemo(() => {
+    if (active === allLabel) return projects;
+    return projects.filter((p) => p.category === active);
+  }, [projects, active, allLabel]);
 
   return (
     <section id="portfolio" className="portfolio-section">
-      {/* 👇 editable title */}
-      <h2>{title || 'Quality Craftsmanship You Can See'}</h2>
+      <h2 className="portfolio-title">{title}</h2>
+      {subtitle ? <p className="portfolio-subtext">{subtitle}</p> : null}
 
+      {/* Filters */}
       <div className="portfolio-filters">
-        {/* 👇 editable ALL label */}
-        <button
-          className={filter === '__ALL__' ? 'active' : ''}
-          onClick={() => setFilter('__ALL__')}
-        >
-          {allLabel || 'All'}
-        </button>
-
-        {categories.map(cat => (
+        {categories.map((c) => (
           <button
-            key={cat}
-            className={filter === cat ? 'active' : ''}
-            onClick={() => setFilter(cat)}
+            key={c}
+            className={c === active ? "active" : ""}
+            onClick={() => setActive(c)}
+            type="button"
           >
-            {cat}
+            {c}
           </button>
         ))}
       </div>
 
-      <div className="portfolio-slider">
-        {visible.length > 0 ? (
-          <Slider {...settings}>
-            {visible.map(project => (
-              <div key={project._id} className="project-slide">
-                <div className="project-card">
-                  <h3>{project.title}</h3>
-                  <div className="project-pair">
-                    <div className="project-image">
-                      <img src={project.beforeImageUrl} alt="Before work" />
-                      <div className="image-overlay">Before</div>
-                    </div>
-                    <div className="project-image">
-                      <img src={project.afterImageUrl} alt="After work" />
-                      <div className="image-overlay">After</div>
-                    </div>
-                  </div>
-                </div>
+      {/* Grid */}
+      {filtered.length === 0 ? (
+        <p className="portfolio-empty">No projects yet.</p>
+      ) : (
+        <div className="projects-grid">
+          {filtered.map((p, i) => (
+            <article key={i} className="project-card">
+              {/* Category pill (top-right) */}
+              {p.category && <span className="category-pill">{p.category}</span>}
+
+              {/* Header */}
+              <header className="project-header">
+                <h3 className="project-title">{p.title}</h3>
+                {p.subtitle ? (
+                  <p className="project-subtitle">{p.subtitle}</p>
+                ) : null}
+              </header>
+
+              {/* Before / After pair */}
+              <div className="project-pair">
+                <a
+                  className="project-image"
+                  href={p.beforeImageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={p.beforeImageUrl} alt={`${p.title} before`} />
+                  <span className="badge badge--before">Before</span>
+                </a>
+                <a
+                  className="project-image"
+                  href={p.afterImageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={p.afterImageUrl} alt={`${p.title} after`} />
+                  <span className="badge badge--after">After</span>
+                </a>
               </div>
-            ))}
-          </Slider>
-        ) : (
-          <p>No projects yet.</p>
-        )}
-      </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
-};
-
-export default Portfolio;
+}
