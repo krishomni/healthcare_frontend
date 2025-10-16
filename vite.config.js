@@ -4,7 +4,6 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-<<<<<<< HEAD
   plugins: [react(), tailwindcss()],
   define: {
     "import.meta.env.VITE_BACKEND_API": JSON.stringify(
@@ -14,11 +13,7 @@ export default defineConfig({
   server: {
     port: 5173,
     allowedHosts: true,
-    host: true
-  }
-})
-=======
-    plugins: [react(), tailwindcss(), ],
+    host: true },
     test: {
         environment: 'jsdom',            
         setupFiles: ['./setupTests.js'],  
@@ -29,5 +24,4 @@ export default defineConfig({
           reportsDirectory: 'coverage',
         },
       },
-})
->>>>>>> origin/main
+  })
