@@ -38,6 +38,10 @@ export default function ExamplePortfolios() {
       summary: "Porftolio showcasing Handyman and Repair services",
       location: "/portfolios/handyman",
     },
+     {
+      title: "Cleaner/Local Cleaning Services",
+      summary: "Porftolio showcasing Cleaning services",
+            location: "/portfolios/cleaningService/about"    },
   ];
 
   const navigate = useNavigate();
@@ -50,7 +54,7 @@ export default function ExamplePortfolios() {
   if (location.state?.from === "about") {
     displayPortfolios = portfolios.slice(0, 3);
   } else if (location.state?.from === "occupations") {
-    displayPortfolios = portfolios.slice(-3);
+    displayPortfolios = portfolios.slice(-4);
   }
 
   return (

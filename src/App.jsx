@@ -162,8 +162,11 @@ export default function App() {
           path="/portfolios/data-scientist/*"
           element={<DataScientistPage />}
         />
-        <Route path="/portfolios/cleaning-services" />
         {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
+        <Route
+          path="/portfolios/cleaningService/*"
+          element={<CleaningPage />}
+        />
         <Route
           path="/portfolios/localVendor"
           element={
@@ -176,6 +179,11 @@ export default function App() {
           path="/portfolios/photographer/*"
           element={<PhotographerPage />}
         />
+        <Route
+          path="/portfolios/cleaningService/*"
+          element={<CleaningPage />}
+        />
+        <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
         <Route path="/portfolios/handyman/:id" element={<HandymanPage />} />

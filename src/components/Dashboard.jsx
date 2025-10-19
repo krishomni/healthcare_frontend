@@ -41,7 +41,7 @@ export default function Dashboard() {
       "";
     if (e) return String(e).trim().toLowerCase();
 
-    if (type === "handyman") {
+    if (type === "handyman" || type === "cleaningLady") {
       const uid = String(obj?.userId || "");
       if (uid && loggedInId && uid === loggedInId) return loggedInEmail;
     }
@@ -52,37 +52,46 @@ export default function Dashboard() {
   const toCard = (obj, type = "general") => {
     const email = ownerEmail(obj, type);
     const title =
+    obj?.businessName ||
       obj?.title || obj?.portfolioTitle || obj?.role || "Untitled Portfolio";
     const name =
       obj?.name ||
       [obj?.firstName, obj?.lastName].filter(Boolean).join(" ") ||
       (email ? email.split("@")[0] : "") ||
-      (type === "handyman" ? "Handyman" : "User");
+      (type === "cleaningLady" ? "Cleaning Service" :type === "handyman" ? "Handyman" : "User");
     return { _id: obj?._id, title, name, email, type };
   };
 
   const fetchPortfolios = async () => {
+    
     try {
       // regular portfolios
-      const res = await axios.get(`${backendUrl}/portfolio/all-portfolios`);
-      const regular = (Array.isArray(res.data) ? res.data : []).map((p) =>
-        toCard(p, "general")
-      );
+      const res = await axios.get(`${backendUrl}/api/portfolios/all-portfolios?t=${Date.now()}`);
 
+      const allPortfolios = Array.isArray(res.data) ? res.data : [];
+
+     const regular = (Array.isArray(res.data) ? res.data : [])
+  .filter(p => !p.templateType || p.templateType !== 'cleaning-service')
+  .map((p) => toCard(p, "general"))
       // handyman portfolios
       const h = await axios.get(`${backendUrl}/api/handyman-template`);
       const handyman = (Array.isArray(h.data) ? h.data : []).map((d) =>
         toCard(d, "handyman")
       );
+// cleaning service portfolios
+      const cleaningLady = allPortfolios
+  .filter(p => p.templateType === 'cleaning-service')
+  .map(p => toCard(p, "cleaningLady"));
+      
+ 
 
       // vendor portfolios
       const v = await axios.get(`${backendUrl}/vendor`);
       const vendors = (Array.isArray(v.data) ? v.data : []).map((d) =>
         toCard(d, "vendor")
-      );
-
-      const all = [...regular, ...handyman, ...vendors];
-
+      );  
+      const all = [...regular, ...handyman,...vendors,...cleaningLady]
+      
       const mine = all.filter(
         (p) => p.email && p.email.toLowerCase() === loggedInEmail
       );
@@ -106,6 +115,9 @@ export default function Dashboard() {
   const handleCardClick = (p) => {
     if (p.type === "handyman") {
       navigate(`/portfolios/handyman/${p._id}`);
+    } else if (p.type === "cleaningLady") {
+    navigate(`/portfolios/cleaningService/${p._id}/about`); // add your route here
+  
     } else if (p.type === "vendor") {
       const username = (p.name || p.email || "vendor")
         .toLowerCase()
