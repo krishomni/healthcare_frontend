@@ -124,8 +124,7 @@ export default function Dashboard() {
         .toLowerCase()
         .replace(/\s+/g, "-");
       navigate(`/portfolios/vendor/${username}/${p._id}`);
-    } 
-    else {
+    } else {
       const username = (p.email || "").split("@")[0];
       navigate(`/portfolios/project-manager/${username}/${p._id}`);
     }
