@@ -56,6 +56,8 @@ export function AuthProvider({ children }) {
       });
       setUser((prev) => ({ ...prev, ...res.data.user }));
       setToken(res.data.token);
+      localStorage.setItem("email", res.data.user.email);              // ADD THIS LINE
+    localStorage.setItem("userId", res.data.user._id || res.data.user.id);  
       localStorage.setItem("token", res.data.token);
       console.log("logged In");
       toast.success("Logged In!");
@@ -70,6 +72,8 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("email");    // ADD THIS LINE
+  localStorage.removeItem("userId"); 
     // clear all React Query caches
     queryClient.clear();
     console.log("Logged Out");
