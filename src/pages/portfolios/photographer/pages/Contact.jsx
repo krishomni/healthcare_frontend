@@ -61,11 +61,45 @@ export default function Contact() {
     message: ''
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    const submitData = {
+      name: formData.name,
+      email: formData.email,
+      message: formData.message
+      // portfolioId will be auto-injected by PortfolioProvider!
+    };
+    
+    console.log('Submitting:', submitData);
+    
+    const response = await fetch(`${backendUrl}/photographer/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submitData)
+    });
+    
+    const data = await response.json();
+    console.log('Backend response:', data);
+    
+    if (response.ok && data.success) {
+      alert('Thank you! Your message has been sent successfully.');
+      setFormData({
+        name: '',
+        email: '',
+        message: ''
+      });
+    } else {
+      alert(data.message || 'Failed to send message. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+    alert('Failed to send message. Please try again.');
+  }
+};
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

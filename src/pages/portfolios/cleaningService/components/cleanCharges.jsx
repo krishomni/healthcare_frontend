@@ -136,56 +136,62 @@ const Charges = () => {
     );
   };
 
-  const submitQuote = async (e) => {
-    e.preventDefault();
-    if (!selectedServices.length) return toast.error('Select at least one service');
-    if (!contact.name || !contact.email || !contact.phone || !dueDate)
-      return toast.error('Please fill all required fields');
+ const submitQuote = async (e) => {
+  e.preventDefault();
+  
+  // Only require services if services exist
+  if (services.length > 0 && !selectedServices.length) {
+    return toast.error('Select at least one service');
+  }
+  
+  if (!contact.name || !contact.email || !contact.phone || !dueDate) {
+    return toast.error('Please fill all required fields');
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // If we have an estimate, prepend it to details
-      const detailsWithEstimate = quoteEstimate
-        ? `Estimated Price: $${quoteEstimate}. ${details || ''}`.trim()
-        : details;
+    // If we have an estimate, prepend it to details
+    const detailsWithEstimate = quoteEstimate
+      ? `Estimated Price: $${quoteEstimate}. ${details || ''}`.trim()
+      : details;
 
-      await axios.post(`${backendUrl}/api/portfolios/quotes`, {
-        services: selectedServices,
-        details: detailsWithEstimate,
-        dueDate,
-        name: contact.name,
-        email: contact.email,
-        phone: contact.phone,
-        portfolioId,
-      });
+    await axios.post(`${backendUrl}/api/portfolios/quotes`, {
+      services: selectedServices,
+      details: detailsWithEstimate,
+      dueDate,
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone,
+      portfolioId,
+    });
 
-      toast.success('Quote request submitted!');
+    toast.success('Quote request submitted!');
 
-      // Reset form
-      setSelectedServices([]);
-      setDetails('');
-      setDueDate('');
-      setContact({ name: '', email: '', phone: '' });
-      setQuoteEstimate(null);
-      setQuoteBreakdown([]);
-      localStorage.removeItem('quoteDraft');
-      
-      // Refetch quotes if admin
-      if (isAdmin && portfolioId) {
-        const q = await axios.get(
-          `${backendUrl}/api/portfolios/my-portfolio/quotes`,
-          authHeaders
-        );
-        setQuotes(q.data);
-      }
-    } catch (err) {
-      console.error('Submit quote error:', err);
-      toast.error(err?.response?.data?.message || 'Failed to submit quote');
-    } finally {
-      setLoading(false);
+    // Reset form
+    setSelectedServices([]);
+    setDetails('');
+    setDueDate('');
+    setContact({ name: '', email: '', phone: '' });
+    setQuoteEstimate(null);
+    setQuoteBreakdown([]);
+    localStorage.removeItem('quoteDraft');
+    
+    // Refetch quotes if admin
+    if (isAdmin && portfolioId) {
+      const q = await axios.get(
+        `${backendUrl}/api/portfolios/my-portfolio/quotes`,
+        authHeaders
+      );
+      setQuotes(q.data);
     }
-  };
+  } catch (err) {
+    console.error('Submit quote error:', err);
+    toast.error(err?.response?.data?.message || 'Failed to submit quote');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const clearEstimate = () => {
     setQuoteEstimate(null);
