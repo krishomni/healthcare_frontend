@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+
 :root {
     --primary: #1a73e8;
     --secondary: #f6f3f3;
@@ -38,7 +39,6 @@ body {
     max-width: none;
     margin: 0;
     padding: 0;
-    text-align: center;
 }
 
 @keyframes logo-spin {
@@ -53,5 +53,299 @@ body {
 @media (prefers-reduced-motion: no-preference) {
     a:nth-of-type(2) .logo {
         animation: logo-spin infinite 20s linear;
+    }
+}
+
+/* ========================================
+   HEALTHCARE SPECIFIC STYLES
+   ======================================== */
+
+/* Loading Spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.healthcare-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #f9fafb;
+}
+
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1e40af;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+/* Admin Link */
+.admin-link {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    background: rgba(31, 41, 55, 0.8);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    opacity: 0.3;
+    transition: all 0.3s;
+    z-index: 999;
+    font-size: 0.875rem;
+    backdrop-filter: blur(10px);
+}
+
+.admin-link:hover {
+    opacity: 1;
+    background: rgba(31, 41, 55, 0.95);
+    transform: scale(1.05);
+}
+
+/* Scroll to Top Button */
+.scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #1e40af;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+    transition: all 0.3s;
+    z-index: 999;
+    border: none;
+}
+
+.scroll-to-top:hover {
+    background: #1e3a8a;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.6);
+}
+
+/* Healthcare Navbar Specific */
+.healthcare-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+.healthcare-navbar.scrolled {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    padding: 0 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: #1e40af;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.logo-icon {
+    background: #1e40af;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #1e40af;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+}
+
+.search-btn:hover {
+    color: #1e40af;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #1e40af;
+}
+
+/* Healthcare Buttons */
+.btn-primary {
+    background: #1e40af;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #1e3a8a;
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: #1e40af;
+}
+
+.btn-contact {
+    background: #1e40af;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-contact:hover {
+    background: #1e3a8a;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.mobile-link {
+    padding: 0.75rem;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.mobile-link:hover,
+.mobile-link.active {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.mobile-search {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mobile-search input,
+.search-bar input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.mobile-search button,
+.search-bar button {
+    background: #1e40af;
+    color: white;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.search-bar {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.search-bar form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-links,
+    .nav-actions {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .nav-content {
+        padding: 0 1rem;
     }
 }
