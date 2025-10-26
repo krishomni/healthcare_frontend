@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useMemo } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
-import emailjs from "@emailjs/browser";
+// import emailjs from "@emailjs/browser";
 import { toast } from "react-toastify";
 
 const API_BASE = import.meta.env.VITE_BACKEND_API;
@@ -54,10 +54,10 @@ export default function ITForm() {
     setIsSubmitting(true);
 
     try {
-      const serviceId = import.meta.env.VITE_FORM_SERVICE_ID;
-      const publicKey = import.meta.env.VITE_FORM_PUBLIC_KEY;
-      const companyTemplateId = import.meta.env.VITE_FORM_COMPANY_TID;
-      const userTemplateId = import.meta.env.VITE_FORM_USER_TID;
+      // const serviceId = import.meta.env.VITE_FORM_SERVICE_ID;
+      // const publicKey = import.meta.env.VITE_FORM_PUBLIC_KEY;
+      // const companyTemplateId = import.meta.env.VITE_FORM_COMPANY_TID;
+      // const userTemplateId = import.meta.env.VITE_FORM_USER_TID;
       // Get user details
       const userName = user ? stored.name || stored.email : form.name;
       const userEmail = user ? stored.email : form.email;
@@ -72,7 +72,7 @@ export default function ITForm() {
       }
 
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}/support-form`, {
+      const res = await fetch(`${API_BASE}/support-form/with-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,67 +80,70 @@ export default function ITForm() {
         },
         body: JSON.stringify(payload),
       });
-
+      const data = await res.json();
+      if(res.ok){
+        toast.success("Request submitted successfully. Check your email for the confirmation.")
+      }
       //template parameters for company email
-      const companyTemplateParams = {
-        user_name: userName,
-        user_email: userEmail,
-        request_type: form.requestType,
-        portfolio_id: form.portfolioId || "Not specified",
-        message: form.message,
-        submission_date: new Date().toLocaleString(),
-        user_status: user ? "Logged In User" : "Guest User",
-        company_message: `New support request received:
+//       const companyTemplateParams = {
+//         user_name: userName,
+//         user_email: userEmail,
+//         request_type: form.requestType,
+//         portfolio_id: form.portfolioId || "Not specified",
+//         message: form.message,
+//         submission_date: new Date().toLocaleString(),
+//         user_status: user ? "Logged In User" : "Guest User",
+//         company_message: `New support request received:
 
-User Details:
-- Name: ${userName}
-- Email: ${userEmail}
-- Status: ${user ? "Logged In User" : "Guest User"}
+// User Details:
+// - Name: ${userName}
+// - Email: ${userEmail}
+// - Status: ${user ? "Logged In User" : "Guest User"}
 
-Request Details:
-- Type: ${form.requestType}
-- Portfolio ID: ${form.portfolioId || "Not specified"}
-- Submitted: ${new Date().toLocaleString()}
+// Request Details:
+// - Type: ${form.requestType}
+// - Portfolio ID: ${form.portfolioId || "Not specified"}
+// - Submitted: ${new Date().toLocaleString()}
 
-Message:
-${form.message}
+// Message:
+// ${form.message}
 
----
-This is an automated message from your support system.`,
-      };
+// ---
+// This is an automated message from your support system.`,
+//       };
       //template parameters for user confirmation emao;
-      const userTemplateParams = {
-        name: userName,
-        user_email: userEmail,
-        team_name: "Find Virtual Me Support Team",
-        custom_message: `Thank you for contacting Find Virtual Me Support Team! We have received your support request and will get back to you soon.
+//       const userTemplateParams = {
+//         name: userName,
+//         user_email: userEmail,
+//         team_name: "Find Virtual Me Support Team",
+//         custom_message: `Thank you for contacting Find Virtual Me Support Team! We have received your support request and will get back to you soon.
 
-Here are the details of your submission:
-Request Type: ${form.requestType}
-Portfolio ID: ${form.portfolioId || "Not specified"}
-Submitted: ${new Date().toLocaleString()}
+// Here are the details of your submission:
+// Request Type: ${form.requestType}
+// Portfolio ID: ${form.portfolioId || "Not specified"}
+// Submitted: ${new Date().toLocaleString()}
 
-Your Message:
-${form.message}
+// Your Message:
+// ${form.message}
 
-Our team will review your request and respond within 24-48 hours.`,
-      };
-      // Send email to company
-      await emailjs.send(
-        serviceId, //EmailJS service ID
-        companyTemplateId, //  company template ID
-        companyTemplateParams,
-        publicKey // r EmailJS public key
-      );
+// Our team will review your request and respond within 24-48 hours.`,
+//       };
+      // // Send email to company
+      // await emailjs.send(
+      //   serviceId, //EmailJS service ID
+      //   companyTemplateId, //  company template ID
+      //   companyTemplateParams,
+      //   publicKey // r EmailJS public key
+      // );
 
-      // Send confirmation email to user
-      await emailjs.send(
-        serviceId, //  EmailJS service ID
-        userTemplateId, //  user template ID
-        userTemplateParams,
-        publicKey //  EmailJS public key
-      );
-      alert("Request submitted successfully! You will receive a confirmation email shortly.");
+      // // Send confirmation email to user
+      // await emailjs.send(
+      //   serviceId, //  EmailJS service ID
+      //   userTemplateId, //  user template ID
+      //   userTemplateParams,
+      //   publicKey //  EmailJS public key
+      // );
+      // alert("Request submitted successfully! You will receive a confirmation email shortly.");
 
       // Reset form
       setForm({
@@ -152,7 +155,7 @@ Our team will review your request and respond within 24-48 hours.`,
         message: "",
       });
     } catch (error) {
-      console.error("Error in storeing data into collection or sending emails:", error);
+      console.error("Error submitting form", error);
       alert("There was an error submitting your request. Please try again.");
     } finally {
       setIsSubmitting(false);
