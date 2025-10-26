@@ -17,9 +17,7 @@ const AdminRoute = ({ children }) => {
   }
 
   // case3: logged in，check user's role
-  return user && user.role === "admin"
-    ? children
-    : <Navigate to="/" replace />;
+  return user && user.role === "admin" ? children : <Navigate to="/" replace />;
 };
 
 export default AdminRoute;
