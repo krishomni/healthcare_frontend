@@ -30,26 +30,95 @@ const ContactPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // In a real app, you would send this data to your backend
-    console.log('Form submitted:', formData);
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   // In a real app, you would send this data to your backend
+  //   console.log('Form submitted:', formData);
     
-    // Show success message
+  //   // Show success message
+  //   setSnackbar({
+  //     open: true,
+  //     message: 'Your message has been sent! I\'ll get back to you soon.',
+  //     severity: 'success'
+  //   });
+    
+  //   // Reset form
+  //   setFormData({
+  //     name: '',
+  //     email: '',
+  //     message: ''
+  //   });
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    console.log('Full portfolio object:', portfolio);
+    
+    // Try multiple ways to get portfolio ID
+    const portfolioId = portfolio?._id || portfolio?.id;
+    
+    console.log('Portfolio ID:', portfolioId);
+    
+    if (!portfolioId) {
+      console.error('Portfolio ID is missing!');
+      console.error('Portfolio object:', portfolio);
+      setSnackbar({
+        open: true,
+        message: 'Unable to send message. Please refresh the page and try again.',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    const submitData = {
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+      portfolioId: portfolioId
+    };
+    
+    console.log('Submitting:', submitData);
+    
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/datascience-portfolio/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submitData)
+    });
+    
+    const data = await response.json();
+    console.log('Backend response:', data);
+    
+    if (response.ok && data.success) {
+      setSnackbar({
+        open: true,
+        message: 'Your message has been sent! I\'ll get back to you soon.',
+        severity: 'success'
+      });
+      
+      setFormData({
+        name: '',
+        email: '',
+        message: ''
+      });
+    } else {
+      setSnackbar({
+        open: true,
+        message: data.message || 'Failed to send message. Please try again.',
+        severity: 'error'
+      });
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
     setSnackbar({
       open: true,
-      message: 'Your message has been sent! I\'ll get back to you soon.',
-      severity: 'success'
+      message: 'Failed to send message. Please try again.',
+      severity: 'error'
     });
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      message: ''
-    });
-  };
-
+  }
+};
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({
       ...prev,
