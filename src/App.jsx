@@ -25,7 +25,7 @@ import TelemetryVisit from "./components/TelemetryVisit";
 import Payment from "./components/Payment";
 import SuccessPage from "./components/SuccessPage.jsx";
 import FloatingHelpButton from "./components/FloatingHelpButton";
-import ITForm from "./components/ITForm"; // Make sure this import is present
+import ITForm from "./components/ITForm";
 import OnboardingFlow from "./pages/onboarding/components/OnboardingFlow";
 import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
@@ -39,12 +39,25 @@ import Property from "./components/Solutions/Property";
 import Farmers from "./components/Solutions/Farmers";
 import AdminRoute from "./components/AdminRoute.jsx";
 
+import HealthcareHome from "./pages/portfolios/healthcare/pages/Home.jsx";
+import HealthcareServices from "./pages/portfolios/healthcare/pages/Services.jsx";
+import HealthcareBlog from "./pages/portfolios/healthcare/pages/blog/Blog.jsx";
+import HealthcareBlogPost from "./pages/portfolios/healthcare/pages/blog/BlogPost.jsx";
+import HealthcareContact from "./pages/portfolios/healthcare/pages/Contact.jsx";
+import HealthcareGallery from "./pages/portfolios/healthcare/pages/Gallery.jsx";
+import HealthcareRegister from './pages/portfolios/healthcare/pages/auth/Register.jsx';
+import HealthcareSearch from "./pages/portfolios/healthcare/pages/SearchResults.jsx";
+import HealthcareLogin from "./pages/portfolios/healthcare/pages/auth/Login.jsx";
+import HealthcareAdminDashboard from "./pages/portfolios/healthcare/pages/admin/AdminDashboard.jsx";
+import Landing from "./pages/portfolios/healthcare/pages/Landing.jsx";
+
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
 
   const handleGetStarted = () => {
     if (loggedIn) return;
     // Show tip/suggestion for plus button
+
   };
 
   const handleRequestAdmin = () => {
@@ -73,6 +86,7 @@ export default function App() {
           element={<DataScientistPage />}
         />
         {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
+
         <Route
           path="/portfolios/cleaningService/*"
           element={<CleaningPage />}
@@ -103,6 +117,7 @@ export default function App() {
           element={<EditHandymanPortfolio />}
         />
         {/*successfull subscription page} */}
+
         <Route path={"/success"} element={<SuccessPage />} />
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
@@ -131,6 +146,19 @@ export default function App() {
         <Route path="/solutions/restaurant" element={<Restaurant />} />
         <Route path="/solutions/property" element={<Property />} />
         <Route path="/solutions/farmers" element={<Farmers />} />
+        
+        <Route path="/portfolios/healthcare/auth/register" element={<HealthcareRegister />} />
+        <Route path="/portfolios/healthcare/:practiceId" element={<HealthcareHome />} />
+        <Route path="/portfolios/healthcare" element={<Landing />} />
+        <Route path="/portfolios/healthcare/:practiceId/services" element={<HealthcareServices />} />
+        <Route path="/portfolios/healthcare/:practiceId/blog" element={<HealthcareBlog />} />
+        <Route path="/portfolios/healthcare/:practiceId/blog/:id" element={<HealthcareBlogPost />} />
+        <Route path="/portfolios/healthcare/:practiceId/gallery" element={<HealthcareGallery />} />
+        <Route path="/portfolios/healthcare/:practiceId/contact" element={<HealthcareContact />} />
+\       <Route path="/portfolios/healthcare/search" element={<HealthcareSearch />} />
+        <Route path="/portfolios/healthcare/auth/login" element={<HealthcareLogin />} />
+        <Route path="/portfolios/healthcare/:practiceId/admin/dashboard" element={<HealthcareAdminDashboard />} />
+
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (
