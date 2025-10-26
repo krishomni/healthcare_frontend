@@ -6,9 +6,7 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   //do not use this anymore will be phased out-----------------
-  const [contextLoggedIn, setContextLoggedIn] = useState(
-    !!localStorage.getItem("token")
-  );
+  const [contextLoggedIn, setContextLoggedIn] = useState(!!localStorage.getItem("token"));
   const contextLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -35,7 +33,7 @@ export function AuthProvider({ children }) {
         .get(`${backendUrl}/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then((res) => setUser(res.data))
+        .then((res) => setUser(res.data.user))
         .catch(() => {
           setToken(null);
           setUser(null);
@@ -48,6 +46,9 @@ export function AuthProvider({ children }) {
     if (pendingFile) console.log("✅ pendingFile stored:", pendingFile.name);
   }, [pendingFile]);
 
+  // useEffect(() => {
+  //   console.log("User++++++++++++++++++++", user);
+  // }, [user]);
   const login = async (email, password) => {
     try {
       const res = await axios.post(`${backendUrl}/user/login`, {
@@ -56,8 +57,8 @@ export function AuthProvider({ children }) {
       });
       setUser((prev) => ({ ...prev, ...res.data.user }));
       setToken(res.data.token);
-      localStorage.setItem("email", res.data.user.email);              // ADD THIS LINE
-    localStorage.setItem("userId", res.data.user._id || res.data.user.id);  
+      localStorage.setItem("email", res.data.user.email); // ADD THIS LINE
+      localStorage.setItem("userId", res.data.user._id || res.data.user.id);
       localStorage.setItem("token", res.data.token);
       console.log("logged In");
       toast.success("Logged In!");
@@ -72,8 +73,8 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("email");    // ADD THIS LINE
-  localStorage.removeItem("userId"); 
+    localStorage.removeItem("email"); // ADD THIS LINE
+    localStorage.removeItem("userId");
     // clear all React Query caches
     queryClient.clear();
     console.log("Logged Out");
@@ -86,7 +87,7 @@ export function AuthProvider({ children }) {
       const res = await axios.get(`${backendUrl}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUser(res.data);
+      setUser(res.data.user);
       toast.success("user refreshed");
     } catch (err) {
       console.error("Error refreshing user:", err);
