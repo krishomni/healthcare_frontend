@@ -9,9 +9,9 @@ import "./App.css";
 import ResumeUpload from "./components/ResumeUpload";
 
 import CleaningPage from "./pages/portfolios/cleaningService/src/App.jsx";
-import VisitorLogin from './pages/portfolios/cleaningService/components/VisitorLogin.jsx'
-import VisitorSignup from './pages/portfolios/cleaningService/components/VisitorSignup.jsx';
-import VisitorProfile from './pages/portfolios/cleaningService/components/VisitorProfile.jsx';
+import VisitorLogin from './components/GuestAuth/VisitorLogin.jsx'
+import VisitorSignup from './components/GuestAuth/VisitorSignup.jsx';
+import VisitorProfile from './components/GuestAuth/VisitorProfile.jsx';
 
 import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";

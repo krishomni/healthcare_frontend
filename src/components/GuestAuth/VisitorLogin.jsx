@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../styles/VisitorLogin.css';
+import './styles/VisitorLogin.css';
 
 export default function VisitorLogin() {
   const [email, setEmail] = useState('');
