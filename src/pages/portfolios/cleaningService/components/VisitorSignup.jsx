@@ -428,10 +428,10 @@ export default function VisitorSignup() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+           portfolioType: 'cleaning_services',
           name: name,
           email: email,
           password: password,
-          portfolioId: portfolioId
         })
       });
 

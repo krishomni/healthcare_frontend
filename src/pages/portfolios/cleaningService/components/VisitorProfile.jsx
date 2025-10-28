@@ -39,7 +39,7 @@ export default function VisitorProfile() {
       const token = localStorage.getItem('visitorToken');
       
       const response = await fetch('http://localhost:5000/guestUser/editProfile', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -47,7 +47,8 @@ export default function VisitorProfile() {
         body: JSON.stringify({
           name: name,
           email: email,
-          phone: phone
+          phone: phone,
+
         })
       });
 
