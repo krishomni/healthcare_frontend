@@ -41,9 +41,9 @@ const Gallery = () => {
   const handleSubmit = () => {
     if (
       formData.image instanceof File &&
-      formData.image.size > 2 * 1024 * 1024
+      formData.image.size > 5 * 1024 * 1024
     ) {
-      toast.error("Please upload a valid image under 2MB");
+      toast.error("Please upload a valid image under 5MB");
       return;
     }
     const payload = new FormData();
@@ -81,13 +81,18 @@ const Gallery = () => {
 
   const galleryItems = useMemo(
     () =>
-      images.map((img) => ({
-        original: `${baseUrl}${img.imageUrl}`,
-        thumbnail: `${baseUrl}${img.imageUrl}`,
-        originalAlt: img.caption || "Gallery image",
-        thumbnailAlt: img.caption || "Gallery thumbnail",
-        caption: img.caption || "",
-      })),
+      images.map((img) => {
+        const url = img.imageUrl?.startsWith("http")
+          ? img.imageUrl
+          : `${baseUrl}${img.imageUrl}`;
+        return {
+          original: url,
+          thumbnail: url,
+          originalAlt: img.caption || "Gallery image",
+          thumbnailAlt: img.caption || "Gallery thumbnail",
+          caption: img.caption || "",
+        };
+      }),
     [images, baseUrl]
   );
 
@@ -424,7 +429,11 @@ const Gallery = () => {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={`${baseUrl}${img.imageUrl}`}
+                  src={
+                    img.imageUrl?.startsWith("http")
+                      ? img.imageUrl
+                      : `${baseUrl}${img.imageUrl}`
+                  }
                   alt={img.caption}
                   className="w-20 h-20 object-cover rounded"
                   loading="lazy"

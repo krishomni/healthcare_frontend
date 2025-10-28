@@ -39,8 +39,8 @@ const Banner = () => {
         toast.error("Please upload a valid image file");
         return;
       }
-      if (img.size > 2 * 1024 * 1024) {
-        toast.error("Please upload an image under 2MB");
+      if (img.size > 3 * 1024 * 1024) {
+        toast.error("Please upload an image under 3MB");
         return;
       }
     }
@@ -85,7 +85,11 @@ const Banner = () => {
       >
         {banner?.image && (
           <img
-            src={`${import.meta.env.VITE_BACKEND_API}${banner.image}`}
+            src={
+              banner.image.startsWith("http")
+                ? banner.image
+                : `${import.meta.env.VITE_BACKEND_API}${banner.image}`
+            }
             alt={banner.title || "Hero image"}
             className={`absolute inset-0 h-full w-full object-cover ${
               SHAPE_CLASS[banner.shape] || ""

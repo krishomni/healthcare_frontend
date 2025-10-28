@@ -1,4 +1,4 @@
-export const MAX_FILE_SIZE_MB = 2;
+export const MAX_FILE_SIZE_MB = 5;
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 
 export function validateImageFile(file) {

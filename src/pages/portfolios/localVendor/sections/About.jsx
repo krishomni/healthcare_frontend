@@ -344,10 +344,14 @@ const AboutSection = () => {
           {bottomImages.map((src) => (
             <div key={src} className="relative mb-4 break-inside-avoid">
               <img
-                src={`${import.meta.env.VITE_BACKEND_API}${src}`}
+                src={
+                  src.startsWith("http")
+                    ? src
+                    : `${import.meta.env.VITE_BACKEND_API}${src}`
+                }
                 alt=""
                 loading="lazy"
-                className="block w-full h-auto max-h-[65vh] md:max-h-[490px] lg:max-h-[500px] rounded-2xl object-cover"
+                className="block w-full h-auto ..."
               />
               {isAdminLoggedIn() && (
                 <button

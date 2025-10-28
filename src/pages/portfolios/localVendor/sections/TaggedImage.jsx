@@ -48,13 +48,15 @@ const TaggedImage = () => {
       toast.error("Please select an image to upload.");
       return;
     }
-    if (imageFile.size > 2 * 1024 * 1024) {
+    if (imageFile.size > 6 * 1024 * 1024) {
       toast.error("Please upload an image under 2MB");
       return;
     }
 
     try {
-      const res = await api.uploadTaggedImage(imageFile);
+      const formData = new FormData();
+      formData.append("image", imageFile);
+      const res = await api.uploadTaggedImage(formData);
       setImageUrl(res.imageUrl);
       setTaggedImageId(res._id);
       setTags([]);
@@ -131,7 +133,11 @@ const TaggedImage = () => {
       {imageUrl && (
         <div className="relative border inline-block" onClick={handleTagClick}>
           <img
-            src={`${import.meta.env.VITE_BACKEND_API}${imageUrl}`}
+            src={
+              imageUrl?.startsWith("http")
+                ? imageUrl
+                : `${import.meta.env.VITE_BACKEND_API}${imageUrl}`
+            }
             className="max-w-full"
             alt="Taggable"
           />

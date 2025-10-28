@@ -131,7 +131,7 @@ export default function App() {
           }
         />
         <Route
-          path="/portfolios/vendor/:username/:id"
+          path="/portfolios/vendor/:username/:id/*"
           element={
             <VendorProvider>
               <LocalVendorApp />
@@ -139,7 +139,14 @@ export default function App() {
           }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/itadmin/ticketing-system" element={<AdminRoute><TicketingPage /></AdminRoute>} />
+        <Route
+          path="/itadmin/ticketing-system"
+          element={
+            <AdminRoute>
+              <TicketingPage />
+            </AdminRoute>
+          }
+        />
         <Route path="/payment" element={<Payment />} />
         <Route path="/solutions" element={<Solutions />} />
         <Route path="/solutions/vendors" element={<Vendors />} />
