@@ -248,7 +248,11 @@ export default function TaggedShowcase() {
             >
               <img
                 ref={imgRef}
-                src={`${import.meta.env.VITE_BACKEND_API}${image}`}
+                src={
+                  image?.startsWith("http")
+                    ? image
+                    : `${import.meta.env.VITE_BACKEND_API}${image}`
+                }
                 alt="Product Showcase"
                 className="block w-full select-none"
                 onLoad={measureBase}
@@ -352,9 +356,13 @@ export default function TaggedShowcase() {
 
                   {selectedItem.image && (
                     <img
-                      src={`${import.meta.env.VITE_BACKEND_API}${
-                        selectedItem.image
-                      }`}
+                      src={
+                        selectedItem.image?.startsWith("http")
+                          ? selectedItem.image
+                          : `${import.meta.env.VITE_BACKEND_API}${
+                              selectedItem.image
+                            }`
+                      }
                       alt={selectedItem.name}
                       className="mb-2 h-32 w-full rounded-lg object-cover"
                     />

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState, useContext } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { isAdminLoggedIn } from "../services/auth";
@@ -10,14 +10,17 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
   const { user } = useContext(AuthContext);
+  const { username, id } = useParams(); //capture vendor route params
+
+  const basePath = `/portfolios/vendor/${username}/${id}`;
 
   const navLinks = [
-    { label: "Home", href: "#home" },
-    { label: "About", href: "#about" },
-    { label: "Menu", href: "#menu" },
-    { label: "Showcase", href: "#showcase" },
-    { label: "Gallery", href: "#gallery" },
-    { label: "Reviews", href: "#reviews" },
+    { label: "Home", href: `${basePath}#home` },
+    { label: "About", href: `${basePath}#about` },
+    { label: "Menu", href: `${basePath}#menu` },
+    { label: "Showcase", href: `${basePath}#showcase` },
+    { label: "Gallery", href: `${basePath}#gallery` },
+    { label: "Reviews", href: `${basePath}#reviews` },
   ];
 
   return (

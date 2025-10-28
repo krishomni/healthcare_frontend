@@ -137,9 +137,9 @@ const Menu = () => {
   const handleSubmit = () => {
     if (
       formData.image instanceof File &&
-      formData.image.size > 2 * 1024 * 1024
+      formData.image.size > 5 * 1024 * 1024
     ) {
-      toast.error("Please upload a valid image under 2MB");
+      toast.error("Please upload a valid image under 5MB");
       return;
     }
 
@@ -395,22 +395,33 @@ const Menu = () => {
               }`}
             >
               {/* image */}
-              {item.image && (
+              {item.imageUrl && (
                 <div className="relative overflow-hidden rounded-2xl">
                   <img
-                    src={`${import.meta.env.VITE_BACKEND_API}${item.image}`}
+                    src={
+                      item.imageUrl?.startsWith("http")
+                        ? item.imageUrl
+                        : `${import.meta.env.VITE_BACKEND_API}${
+                            item.imageUrl || ""
+                          }`
+                    }
                     alt={item.name}
                     className="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    loading="lazy"
+                    decoding="async"
                   />
+
                   {/* soft bottom fade for text legibility */}
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/25 to-transparent" />
-                  {/* category pill (optional) */}
-                  {item.category ? (
+
+                  {/* category pill */}
+                  {item.category && (
                     <span className="absolute left-3 bottom-3 inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-800 shadow">
                       {item.category}
                     </span>
-                  ) : null}
-                  {/* availability banner (kept from your logic) */}
+                  )}
+
+                  {/* availability banner */}
                   {isUnavailable && item.unavailableUntil && (
                     <div className="absolute top-2 left-2 rounded-md bg-red-600/90 px-2 py-1 text-[11px] font-semibold text-white shadow">
                       Available{" "}
@@ -500,9 +511,15 @@ const Menu = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="aspect-[4/3] overflow-hidden">
-              {viewItem.image && (
+              {viewItem.imageUrl && (
                 <img
-                  src={`${import.meta.env.VITE_BACKEND_API}${viewItem.image}`}
+                  src={
+                    viewItem.imageUrl?.startsWith("http")
+                      ? viewItem.imageUrl
+                      : `${import.meta.env.VITE_BACKEND_API}${
+                          viewItem.imageUrl || ""
+                        }`
+                  }
                   alt={viewItem.name}
                   className="h-full w-full object-cover"
                   loading="lazy"
