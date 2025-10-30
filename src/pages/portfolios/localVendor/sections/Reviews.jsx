@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
-import { isAdminLoggedIn } from "../services/auth";
+import { canEditPortfolio } from "../services/auth";
+import { AuthContext } from "../../../../context/AuthContext";
 import { useVendorApi } from "../services/api";
 import { useVendor } from "../../../../context/VendorContext";
 
@@ -45,6 +46,8 @@ const StarsReadOnly = ({ rating = 0 }) => (
 const Reviews = () => {
   const { vendorId } = useVendor();
   const api = useVendorApi();
+  const { user } = useContext(AuthContext);
+  const canEdit = canEditPortfolio(vendorId); // unified permission check
 
   const [reviews, setReviews] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -212,7 +215,7 @@ const Reviews = () => {
             </select>
           </div>
 
-          {isAdminLoggedIn() && (
+          {canEdit && (
             <button
               type="button"
               onClick={handleAddReview}
@@ -384,7 +387,7 @@ const Reviews = () => {
                         </div>
                       </div>
 
-                      {isAdminLoggedIn() && (
+                      {canEdit && (
                         <div className="flex gap-2">
                           <button
                             type="button"

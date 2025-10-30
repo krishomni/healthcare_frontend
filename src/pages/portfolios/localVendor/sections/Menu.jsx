@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { isAdminLoggedIn } from "../services/auth";
+import { useEffect, useRef, useState, useContext } from "react";
+import { canEditPortfolio } from "../services/auth";
+import { AuthContext } from "../../../../context/AuthContext";
 import FileUploader from "../components/FileUploader";
 import { toast } from "react-toastify";
 import { useVendorApi } from "../services/api";
@@ -10,6 +11,10 @@ const PAGE_SIZE = 6; // your limit
 const Menu = () => {
   const { vendorId } = useVendor();
   const api = useVendorApi();
+  const { user } = useContext(AuthContext);
+
+  // unified permission check
+  const canEdit = canEditPortfolio(vendorId);
 
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -207,7 +212,7 @@ const Menu = () => {
         Menu
       </h2>
 
-      {isAdminLoggedIn() && (
+      {canEdit && (
         <div className="text-center mb-4">
           <button
             onClick={() => {
@@ -270,7 +275,7 @@ const Menu = () => {
         </div>
       </div>
 
-      {isAdminLoggedIn() && showForm && (
+      {canEdit && showForm && (
         <div className="space-y-4 my-6 max-w-md mx-auto">
           {/* form fields ... unchanged */}
           <input
@@ -456,7 +461,7 @@ const Menu = () => {
                     View
                   </button> */}
 
-                  {isAdminLoggedIn() && (
+                  {canEdit && (
                     <div className="flex gap-2">
                       <button
                         className="rounded-md bg-yellow-100 px-3 py-1 text-sm text-yellow-900 hover:bg-yellow-200"

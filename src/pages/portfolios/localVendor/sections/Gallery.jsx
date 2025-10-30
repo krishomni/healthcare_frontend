@@ -1,9 +1,17 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import {
+  useEffect,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { useVendorApi } from "../services/api";
 import { useVendor } from "../../../../context/VendorContext";
-import { isAdminLoggedIn } from "../services/auth";
+import { canEditPortfolio } from "../services/auth";
+import { AuthContext } from "../../../../context/AuthContext";
 import FileUploader from "../components/FileUploader";
 import { toast } from "react-toastify";
 
@@ -12,6 +20,7 @@ const cx = (...c) => c.filter(Boolean).join(" ");
 const Gallery = () => {
   const api = useVendorApi();
   const { vendorId } = useVendor();
+  const { user } = useContext(AuthContext);
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({ image: null, caption: "" });
   const [editingId, setEditingId] = useState(null);
@@ -29,6 +38,8 @@ const Gallery = () => {
   const stageRef = useRef(null);
   const imgRef = useRef(null);
   const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+  const canEdit = canEditPortfolio(vendorId);
 
   useEffect(() => {
     if (!vendorId) return; // don’t fetch until a vendor is set
@@ -348,7 +359,7 @@ const Gallery = () => {
 
       <h2 className="text-2xl font-bold mb-6 text-center">Gallery</h2>
 
-      {isAdminLoggedIn() && (
+      {canEdit && (
         <div className="text-center mb-6">
           <button
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
@@ -363,7 +374,7 @@ const Gallery = () => {
         </div>
       )}
 
-      {isAdminLoggedIn() && showForm && (
+      {canEdit && showForm && (
         <div className="mb-6 space-y-4">
           <FileUploader
             onFileAccepted={(file) => setFormData({ ...formData, image: file })}
@@ -421,7 +432,7 @@ const Gallery = () => {
 
       {/* Admin list */}
       <ul className="mt-8 space-y-4">
-        {isAdminLoggedIn() &&
+        {canEdit &&
           images.map((img) => (
             <li
               key={img._id}
@@ -440,7 +451,7 @@ const Gallery = () => {
                 />
                 <p>{img.caption}</p>
               </div>
-              {isAdminLoggedIn() && (
+              {canEdit && (
                 <div className="space-x-2">
                   <button
                     className="bg-yellow-500 text-white px-3 py-1 rounded"

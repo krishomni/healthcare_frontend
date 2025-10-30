@@ -1,30 +1,39 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { isAdminLoggedIn } from "../pages/portfolios/localVendor/services/auth";
+import { useParams } from "react-router-dom";
+import { canEditPortfolio } from "../pages/portfolios/localVendor/services/auth";
 
 const VendorContext = createContext();
 export const useVendor = () => useContext(VendorContext);
 
 export function VendorProvider({ children, forceDefault = false }) {
+  const { id } = useParams(); // get vendorId from route
   const [vendorId, setVendorId] = useState(() => {
     if (forceDefault) {
       // Always return demo vendor for Examples
       return "68af9176f5115d59643841d9";
     }
-    // try to restore from localStorage first
-    return localStorage.getItem("vendorId") || null;
+    // Try from URL first, then localStorage fallback
+    return id || localStorage.getItem("vendorId") || null;
   });
 
+  // Whenever URL changes, update vendorId
   useEffect(() => {
-    // Persist to localStorage whenever vendorId changes
+    if (id && id !== vendorId) {
+      setVendorId(id);
+    }
+  }, [id]);
+
+  // Persist to localStorage whenever vendorId changes
+  useEffect(() => {
     if (vendorId) {
       localStorage.setItem("vendorId", vendorId);
     }
   }, [vendorId]);
 
+  // Default to demo vendor if not logged in
   useEffect(() => {
-    // If no vendor selected and not logged in → default to demo vendor
-    if (!vendorId && !isAdminLoggedIn()) {
-      setVendorId("68af9176f5115d59643841d9"); // 👈 fixed demo vendor ID
+    if (!vendorId && !canEditPortfolio()) {
+      setVendorId("68af9176f5115d59643841d9");
     }
   }, [vendorId]);
 
