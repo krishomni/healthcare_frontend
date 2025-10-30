@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useVendorApi } from "../services/api";
 import { useVendor } from "../../../../context/VendorContext";
 import { FiEdit } from "react-icons/fi";
-import { isAdminLoggedIn } from "../services/auth";
+import { canEditPortfolio } from "../services/auth";
+import { AuthContext } from "../../../../context/AuthContext";
 import FileUploader from "../components/FileUploader";
 import { toast } from "react-toastify";
 
@@ -19,6 +20,9 @@ const Banner = () => {
   const [editData, setEditData] = useState(null);
   const { vendorId } = useVendor();
   const api = useVendorApi();
+
+  const { user } = useContext(AuthContext);
+  const canEdit = canEditPortfolio(vendorId);
 
   useEffect(() => {
     if (!vendorId) return; // don’t fetch until a vendor is set
@@ -39,8 +43,8 @@ const Banner = () => {
         toast.error("Please upload a valid image file");
         return;
       }
-      if (img.size > 3 * 1024 * 1024) {
-        toast.error("Please upload an image under 3MB");
+      if (img.size > 4 * 1024 * 1024) {
+        toast.error("Please upload an image under 4MB");
         return;
       }
     }
@@ -74,8 +78,6 @@ const Banner = () => {
     );
   }
 
-  const isAdmin = isAdminLoggedIn();
-
   return (
     <section id="home" className="relative">
       <div
@@ -99,7 +101,7 @@ const Banner = () => {
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/45" />
 
-        {isAdmin && !editing && (
+        {canEdit && !editing && (
           <button
             onClick={() => {
               setEditing(true);

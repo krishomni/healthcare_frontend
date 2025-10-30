@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useState, useContext } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
-import { isAdminLoggedIn } from "../services/auth";
+import { canEditPortfolio } from "../services/auth";
 import VendorSelector from "./VendorSelector";
 import { AuthContext } from "../../../../context/AuthContext";
 
@@ -13,6 +13,8 @@ const Navbar = () => {
   const { username, id } = useParams(); //capture vendor route params
 
   const basePath = `/portfolios/vendor/${username}/${id}`;
+
+  const canEdit = canEditPortfolio(id);
 
   const navLinks = [
     { label: "Home", href: `${basePath}#home` },
@@ -45,7 +47,7 @@ const Navbar = () => {
           {user?.role === "admin" && <VendorSelector />}
         </div>
 
-        {isAdminLoggedIn() && (
+        {canEdit && (
           <Link
             to="admin/tagged"
             className="text-green-600 font-semibold hover:underline"
@@ -85,7 +87,7 @@ const Navbar = () => {
           {/* 🔹 Vendor Selector also in mobile view */}
           {user?.role === "admin" && <VendorSelector />}
 
-          {isAdminLoggedIn() && (
+          {canEdit && (
             <Link
               to="admin/tagged"
               onClick={closeMenu}

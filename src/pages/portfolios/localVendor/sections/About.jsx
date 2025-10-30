@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { useVendor } from "../../../../context/VendorContext";
 import { useVendorApi } from "../services/api";
 import FileUploader from "../components/FileUploader";
-import { isAdminLoggedIn } from "../services/auth";
+import { canEditPortfolio } from "../services/auth";
+import { AuthContext } from "../../../../context/AuthContext";
 
 const MAX_IMAGES = 4;
 
@@ -19,9 +20,12 @@ const AboutSection = () => {
   const [bottomImages, setBottomImages] = useState([]);
   const dragIndexRef = useRef(null);
 
-  // 🔹 initialize vendor-aware API
+  //  initialize vendor-aware API
   const { vendorId } = useVendor();
   const api = useVendorApi();
+
+  const { user } = useContext(AuthContext);
+  const canEdit = canEditPortfolio(vendorId);
 
   useEffect(() => {
     if (!vendorId) return; // don’t fetch until vendor selected
@@ -84,7 +88,7 @@ const AboutSection = () => {
         ? [...updatedBlocks, ...rightBlocks]
         : [...leftBlocks, ...updatedBlocks];
 
-    // 🔹 vendor-aware updateAbout
+    // vendor-aware updateAbout
     api
       .updateAbout({
         contentBlocks: mergedBlocks.map(({ isEditing, clientId, ...b }) => b),
@@ -170,12 +174,12 @@ const AboutSection = () => {
             <div
               key={block._id || block.clientId}
               className="group relative p-4 mb-4 rounded-xl bg-slate-50/60"
-              draggable={isAdminLoggedIn()}
+              draggable={canEdit}
               onDragStart={() => onDragStart("left", idx)}
               onDragOver={onDragOver}
               onDrop={() => onDrop("left", idx)}
             >
-              {isAdminLoggedIn() && (
+              {canEdit && (
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-3 text-sm">
                   <button
                     onClick={() => handleEditToggle("left", idx)}
@@ -227,7 +231,7 @@ const AboutSection = () => {
             </div>
           ))}
 
-          {isAdminLoggedIn() && (
+          {canEdit && (
             <button
               className="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow hover:brightness-105 transition"
               onClick={() => handleAddTextBlock("left")}
@@ -248,12 +252,12 @@ const AboutSection = () => {
             <div
               key={block._id || block.clientId}
               className="group relative p-4 mb-4 rounded-xl bg-slate-50/60"
-              draggable={isAdminLoggedIn()}
+              draggable={canEdit}
               onDragStart={() => onDragStart("right", idx)}
               onDragOver={onDragOver}
               onDrop={() => onDrop("right", idx)}
             >
-              {isAdminLoggedIn() && (
+              {canEdit && (
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-3 text-sm">
                   <button
                     onClick={() => handleEditToggle("right", idx)}
@@ -305,7 +309,7 @@ const AboutSection = () => {
             </div>
           ))}
 
-          {isAdminLoggedIn() && (
+          {canEdit && (
             <button
               className="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow hover:brightness-105 transition"
               onClick={() => handleAddTextBlock("right")}
@@ -323,7 +327,7 @@ const AboutSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: 0.1 }}
       >
-        {isAdminLoggedIn() && (
+        {canEdit && (
           <div className="mb-4 flex items-center justify-between">
             <input
               type="file"
@@ -353,7 +357,7 @@ const AboutSection = () => {
                 loading="lazy"
                 className="block w-full h-auto ..."
               />
-              {isAdminLoggedIn() && (
+              {canEdit && (
                 <button
                   onClick={() => handleDeleteImage(src)}
                   className="absolute top-2 right-2 px-2.5 py-1.5 rounded-md text-xs font-medium bg-white/80 backdrop-blur hover:bg-white shadow transition"
