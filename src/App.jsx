@@ -50,7 +50,7 @@ import HealthcareSearch from "./pages/portfolios/healthcare/pages/SearchResults.
 import HealthcareLogin from "./pages/portfolios/healthcare/pages/auth/Login.jsx";
 import HealthcareAdminDashboard from "./pages/portfolios/healthcare/pages/admin/AdminDashboard.jsx";
 import Landing from "./pages/portfolios/healthcare/pages/Landing.jsx";
-import OnlineEditor from "./pages/onlineEditor/OnlineEditor.jsx";
+import OnlineEditor from "./pages/onlineEditor/onlineEditor.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
