@@ -268,6 +268,58 @@ case 6: // Cleaning Lady Portfolio
           </p>
         )}
       </div>
+
+      <div className="mb-6">
+        {/* Title and icon centered above the box */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-10 h-10 bg-slate-600 rounded-lg flex items-center justify-center mr-3">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-slate-800">
+            Online Code Editor
+          </h3>
+        </div>
+        
+        {/* Main content box */}
+        <div className="rounded-lg p-6 border bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200 hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 text-left">
+              <p className="text-slate-600 leading-relaxed mb-3">
+                Build custom web applications with our integrated development environment. 
+                Create, edit, and preview your projects with real-time updates and AI assistance.
+              </p>
+              <div className="flex items-center text-sm text-slate-500">
+                <span className="flex items-center mr-4">
+                  <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                  Live Preview
+                </span>
+                <span className="flex items-center mr-4">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                  AI Assistant
+                </span>
+                <span className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                  Real-time Sync
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={() => navigate('/editor')}
+              className="bg-slate-600 hover:bg-slate-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 ml-6 whitespace-nowrap hover:scale-105 shadow-md hover:shadow-lg"
+            >
+              <span className="flex items-center">
+                Launch Editor
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div>
         <h1 className="text-gray-900 text-2xl font-bold mb-6">
           Choose a Template
