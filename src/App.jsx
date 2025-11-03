@@ -50,6 +50,7 @@ import HealthcareSearch from "./pages/portfolios/healthcare/pages/SearchResults.
 import HealthcareLogin from "./pages/portfolios/healthcare/pages/auth/Login.jsx";
 import HealthcareAdminDashboard from "./pages/portfolios/healthcare/pages/admin/AdminDashboard.jsx";
 import Landing from "./pages/portfolios/healthcare/pages/Landing.jsx";
+import OnlineEditor from "./pages/onlineEditor/OnlineEditor.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -165,7 +166,7 @@ export default function App() {
 \       <Route path="/portfolios/healthcare/search" element={<HealthcareSearch />} />
         <Route path="/portfolios/healthcare/auth/login" element={<HealthcareLogin />} />
         <Route path="/portfolios/healthcare/:practiceId/admin/dashboard" element={<HealthcareAdminDashboard />} />
-
+        <Route path="/editor/*" element={<OnlineEditor />} />
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (
