@@ -145,12 +145,14 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { MdAccountCircle } from "react-icons/md";
-
+import "./cleanNavbar.css";
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [initials, setInitials] = useState('DOM');
   const [isVisitorLoggedIn, setIsVisitorLoggedIn] = useState(false);
   const [visitorName, setVisitorName] = useState('');
+const [showVisitorsTab, setShowVisitorsTab] = useState(false);
+const [isOwner, setIsOwner] = useState(false); // ADD THIS LINE
 
   const navigate = useNavigate();
   const { portfolioId } = useParams();
@@ -159,38 +161,131 @@ export default function Navbar() {
     ? `/portfolios/cleaningService/${portfolioId}`
     : `/portfolios/cleaningService`;
 
-  const checkAuthStatus = () => {
-    try {
-      // Check portfolio owner
-      const user = localStorage.getItem('user');
-      if (user) {
-        const userData = JSON.parse(user);
-        const userInitials = userData?.name 
-          ? userData.name.trim().split(' ').map(n => n[0]).join('').toUpperCase() 
-          : 'DOM';
-        setInitials(userInitials);
-      } else {
-        setInitials('DOM');
-      }
+// const checkAuthStatus = async () => {
+//   try {
+//     const visitor = localStorage.getItem('visitor');
+//     const visitorToken = localStorage.getItem('visitorToken');
+    
+//     if (visitor && visitorToken) {
+//       // This is a VISITOR, not an owner
+//       const visitorData = JSON.parse(visitor);
+//       setIsVisitorLoggedIn(true);
+//       setVisitorName(visitorData.name || '');
+//       setIsOwner(false);
+//       setInitials('DOM');
+//     } else {
+//       // Not a visitor, check if owner
+//       setIsVisitorLoggedIn(false);
+//       setVisitorName('');
       
-      // Check visitor
-      const visitor = localStorage.getItem('visitor');
-      if (visitor) {
-        const visitorData = JSON.parse(visitor);
-        setIsVisitorLoggedIn(true);
-        setVisitorName(visitorData.name || '');
-      } else {
-        setIsVisitorLoggedIn(false);
-        setVisitorName('');
-      }
-    } catch (error) {
-      console.error('Error checking auth:', error);
+//       const token = localStorage.getItem('token');
+//       const userId = localStorage.getItem('userId'); // Logged-in user's ID
+      
+//       if (token && userId && portfolioId) {
+//         try {
+//           // Fetch the portfolio to get its userId
+//           const response = await fetch(
+//             `${import.meta.env.VITE_BACKEND_API}/api/portfolios/${portfolioId}`,
+//             { headers: { Authorization: `Bearer ${token}` } }
+//           );
+          
+//           if (response.ok) {
+//             const data = await response.json();
+//             const portfolioUserId = data.portfolio.userId;
+            
+//             console.log('🔍 Comparing IDs:');
+//             console.log('   Portfolio userId:', portfolioUserId);
+//             console.log('   Logged-in userId:', userId);
+            
+//             // Compare: Does this portfolio belong to the logged-in user?
+//             if (portfolioUserId === userId) {
+//               setIsOwner(true);
+//               setInitials('OWN');
+//               console.log('✅ User owns this portfolio - showing toggle');
+//             } else {
+//               setIsOwner(false);
+//               setInitials('DOM');
+//               console.log('❌ User does NOT own this portfolio - hiding toggle');
+//             }
+//           } else {
+//             setIsOwner(false);
+//             setInitials('DOM');
+//           }
+//         } catch (error) {
+//           console.error('Error checking ownership:', error);
+//           setIsOwner(false);
+//           setInitials('DOM');
+//         }
+//       } else {
+//         setIsOwner(false);
+//         setInitials('DOM');
+//       }
+//     }
+    
+//     // Load toggle state from localStorage
+//     const savedToggleState = localStorage.getItem(`showVisitors_${portfolioId}`);
+//     setShowVisitorsTab(savedToggleState === 'true');
+//   } catch (error) {
+//     console.error('Error checking auth:', error);
+//     setInitials('DOM');
+//     setIsVisitorLoggedIn(false);
+//     setVisitorName('');
+//     setIsOwner(false);
+//   }
+// };
+const checkAuthStatus = () => {
+  // console.log('🔍 NAVBAR - portfolioId from useParams:', portfolioId);
+  try {
+    const visitor = localStorage.getItem('visitor');
+    const visitorToken = localStorage.getItem('visitorToken');
+    
+    if (visitor && visitorToken) {
+      // This is a VISITOR, not an owner
+      const visitorData = JSON.parse(visitor);
+      setIsVisitorLoggedIn(true);
+      setVisitorName(visitorData.name || '');
+      setIsOwner(false);
       setInitials('DOM');
+    } else {
+      // Not a visitor - check if portfolio in array
       setIsVisitorLoggedIn(false);
       setVisitorName('');
+      
+      const userPortfolios = localStorage.getItem('userPortfolios');
+      console.log('📦 userPortfolios from localStorage:', userPortfolios);
+      
+      if (userPortfolios && portfolioId) {
+        const portfoliosList = JSON.parse(userPortfolios);
+        console.log('📁 User portfolios array:', portfoliosList);
+        console.log('🔍 Current portfolioId:', portfolioId);
+        
+        if (portfoliosList.includes(portfolioId)) {
+          setIsOwner(true);
+          setInitials('OWN');
+          console.log('✅ Portfolio IS in array - showing toggle');
+        } else {
+          setIsOwner(false);
+          setInitials('DOM');
+          console.log('❌ Portfolio NOT in array - hiding toggle');
+        }
+      } else {
+        setIsOwner(false);
+        setInitials('DOM');
+        console.log('⚠️ No userPortfolios or no portfolioId');
+      }
     }
-  };
-
+    
+    // Load toggle state from localStorage
+    const savedToggleState = localStorage.getItem(`showVisitors_${portfolioId}`);
+    setShowVisitorsTab(savedToggleState === 'true');
+  } catch (error) {
+    console.error('Error checking auth:', error);
+    setInitials('DOM');
+    setIsVisitorLoggedIn(false);
+    setVisitorName('');
+    setIsOwner(false);
+  }
+};
   useEffect(() => {
     checkAuthStatus();
     
@@ -204,7 +299,12 @@ export default function Navbar() {
       window.removeEventListener('visitor-auth-change', handleAuthChange);
     };
   }, []);
-
+  const handleToggleVisitors = () => {
+    const newState = !showVisitorsTab;
+    setShowVisitorsTab(newState);
+    // Save to localStorage
+    localStorage.setItem(`showVisitors_${portfolioId}`, newState.toString());
+  };
   const handleVisitorLogout = () => {
     localStorage.removeItem('visitor');
     localStorage.removeItem('visitorToken');
@@ -241,9 +341,25 @@ export default function Navbar() {
         <NavLink to={`${BASE}/about`}>About</NavLink>
         <NavLink to={`${BASE}/services`}>Services</NavLink>
         <NavLink to={`${BASE}/charges`}>Pricing</NavLink>
+        {showVisitorsTab &&  isOwner &&(
+          <NavLink to={`${BASE}/visitors`}>Visitors</NavLink>
+        )}
       </div>
 
       <div className="nav-right">
+        {isOwner && portfolioId && (
+          <div className="visitor-toggle-container">
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={showVisitorsTab}
+                onChange={handleToggleVisitors}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+            <span className="toggle-label">Visitors</span>
+          </div>
+        )}
         <div
           className="account-icon"
           onClick={() => setShowDropdown(!showDropdown)}

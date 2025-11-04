@@ -12,6 +12,8 @@ import CleaningPage from "./pages/portfolios/cleaningService/src/App.jsx";
 import VisitorLogin from './components/GuestAuth/VisitorLogin.jsx'
 import VisitorSignup from './components/GuestAuth/VisitorSignup.jsx';
 import VisitorProfile from './components/GuestAuth/VisitorProfile.jsx';
+import VisitorData from './pages/portfolios/cleaningService/components/VisitorData';
+
 
 import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
@@ -178,7 +180,10 @@ export default function App() {
 
 <Route path="/portfolios/cleaningService/:portfolioId/visitor-profile" element={<VisitorProfile />} />
 <Route path="/portfolios/cleaningService/visitor-profile" element={<VisitorProfile />} />
-
+<Route 
+  path="/portfolios/cleaningService/:portfolioId/visitors" 
+  element={<VisitorData />} 
+/>
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (

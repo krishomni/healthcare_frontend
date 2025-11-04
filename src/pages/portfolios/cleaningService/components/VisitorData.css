@@ -1,0 +1,105 @@
+.visitors-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #f5f7fa;
+}
+
+.visitors-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.visitors-header h1 {
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1.1em;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.2em;
+  color: #666;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.table-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.visitors-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.visitors-table thead {
+  background: #5b3cd9;
+  color: white;
+}
+
+.visitors-table th {
+  padding: 20px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.visitors-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.visitors-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.visitors-table td {
+  padding: 20px;
+  color: #333;
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cell-content .icon {
+  font-size: 1.2em;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px 20px !important;
+  color: #999;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .visitors-table {
+    font-size: 0.9em;
+  }
+  
+  .visitors-table th,
+  .visitors-table td {
+    padding: 12px;
+  }
+}
