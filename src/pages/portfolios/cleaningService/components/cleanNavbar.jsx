@@ -152,7 +152,7 @@ export default function Navbar() {
   const [isVisitorLoggedIn, setIsVisitorLoggedIn] = useState(false);
   const [visitorName, setVisitorName] = useState('');
 const [showVisitorsTab, setShowVisitorsTab] = useState(false);
-const [isOwner, setIsOwner] = useState(false); // ADD THIS LINE
+const [isOwner, setIsOwner] = useState(false); 
 
   const navigate = useNavigate();
   const { portfolioId } = useParams();
@@ -161,80 +161,9 @@ const [isOwner, setIsOwner] = useState(false); // ADD THIS LINE
     ? `/portfolios/cleaningService/${portfolioId}`
     : `/portfolios/cleaningService`;
 
-// const checkAuthStatus = async () => {
-//   try {
-//     const visitor = localStorage.getItem('visitor');
-//     const visitorToken = localStorage.getItem('visitorToken');
-    
-//     if (visitor && visitorToken) {
-//       // This is a VISITOR, not an owner
-//       const visitorData = JSON.parse(visitor);
-//       setIsVisitorLoggedIn(true);
-//       setVisitorName(visitorData.name || '');
-//       setIsOwner(false);
-//       setInitials('DOM');
-//     } else {
-//       // Not a visitor, check if owner
-//       setIsVisitorLoggedIn(false);
-//       setVisitorName('');
-      
-//       const token = localStorage.getItem('token');
-//       const userId = localStorage.getItem('userId'); // Logged-in user's ID
-      
-//       if (token && userId && portfolioId) {
-//         try {
-//           // Fetch the portfolio to get its userId
-//           const response = await fetch(
-//             `${import.meta.env.VITE_BACKEND_API}/api/portfolios/${portfolioId}`,
-//             { headers: { Authorization: `Bearer ${token}` } }
-//           );
-          
-//           if (response.ok) {
-//             const data = await response.json();
-//             const portfolioUserId = data.portfolio.userId;
-            
-//             console.log('🔍 Comparing IDs:');
-//             console.log('   Portfolio userId:', portfolioUserId);
-//             console.log('   Logged-in userId:', userId);
-            
-//             // Compare: Does this portfolio belong to the logged-in user?
-//             if (portfolioUserId === userId) {
-//               setIsOwner(true);
-//               setInitials('OWN');
-//               console.log('✅ User owns this portfolio - showing toggle');
-//             } else {
-//               setIsOwner(false);
-//               setInitials('DOM');
-//               console.log('❌ User does NOT own this portfolio - hiding toggle');
-//             }
-//           } else {
-//             setIsOwner(false);
-//             setInitials('DOM');
-//           }
-//         } catch (error) {
-//           console.error('Error checking ownership:', error);
-//           setIsOwner(false);
-//           setInitials('DOM');
-//         }
-//       } else {
-//         setIsOwner(false);
-//         setInitials('DOM');
-//       }
-//     }
-    
-//     // Load toggle state from localStorage
-//     const savedToggleState = localStorage.getItem(`showVisitors_${portfolioId}`);
-//     setShowVisitorsTab(savedToggleState === 'true');
-//   } catch (error) {
-//     console.error('Error checking auth:', error);
-//     setInitials('DOM');
-//     setIsVisitorLoggedIn(false);
-//     setVisitorName('');
-//     setIsOwner(false);
-//   }
-// };
+
 const checkAuthStatus = () => {
-  // console.log('🔍 NAVBAR - portfolioId from useParams:', portfolioId);
+  console.log('🔍 NAVBAR - portfolioId from useParams:', portfolioId);
   try {
     const visitor = localStorage.getItem('visitor');
     const visitorToken = localStorage.getItem('visitorToken');

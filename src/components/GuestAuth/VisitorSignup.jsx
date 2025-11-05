@@ -432,6 +432,7 @@ export default function VisitorSignup() {
           name: name,
           email: email,
           password: password,
+          portfolioId: portfolioId,
         })
       });
 
