@@ -118,94 +118,157 @@ export default function ResumeUpload() {
 */
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-      <div className="w-full max-w-xl p-5">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2 text-center">
-          Upload Your Resume
+      <div className="w-full max-w-6xl p-5">
+        <h2 className="text-3xl font-bold text-slate-800 mb-2 text-center">
+          Get Started with Your Portfolio
         </h2>
-        <p className="text-slate-500 mb-6 text-center max-w-lg mx-auto">
-          Easily upload your PDF resume to enhance your portfolio and showcase
-          your experience. Your resume will be securely stored and used to help
-          personalize your profile.
+        <p className="text-slate-500 mb-8 text-center max-w-2xl mx-auto">
+          Choose how you'd like to begin: upload your existing resume to enhance your portfolio, 
+          or start building custom web applications with our online editor.
         </p>
-        <label className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 disabled:opacity-50 w-50 cursor-pointer block mx-auto mb-6">
-          Choose PDF File
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </label>
-
-        {file && (
-          <div>
-            <div className="text-body-muted pt-5">
-              <p>
-                <strong>File Name:</strong> {file.name}
+        
+        {/* Side by side layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          
+          {/* Resume Upload Section */}
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 hover:from-blue-50 hover:to-blue-100 border border-slate-200 rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                Upload Your Resume
+              </h3>
+              <p className="text-slate-500 text-sm">
+                Upload your PDF resume to enhance your portfolio and showcase your experience.
               </p>
-              <p>
-                <strong>Size:</strong> {(file.size / 1024).toFixed(2)} KB
-              </p>
-              <p>
-                <strong>Type:</strong> {file.type}
-              </p>
-
-              {file.type === "text/plain" && fileContent && (
-                <pre className="mt-3 mb-3 whitespace-pre-wrap bg-slate-800 p-3 rounded max-h-96 overflow-auto text-white">
-                  {fileContent}
-                </pre>
-              )}
-
-              {file.type === "application/pdf" && fileContent && (
-                <iframe
-                  src={fileContent}
-                  title="PDF Preview"
-                  width="100%"
-                  height="500px"
-                  className="mt-4 border rounded"
-                />
-              )}
             </div>
 
-            <div>
-              <button
-                className="center px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors shadow-lg border border-blue-500 disabled:opacity-50 w-50 cursor-pointer flex items-center justify-center mt-4"
-                onClick={handleUpload}
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-400 border-r-2 border-slate-700"></span>
-                    <span className="text-blue-400 font-semibold animate-pulse">
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                PDF Analysis & Parsing
+              </div>
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                Portfolio Enhancement
+              </div>
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-purple-400 rounded-full mr-3"></span>
+                Quick Setup Process
+              </div>
+            </div>
+
+            <label className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg cursor-pointer block text-center mb-4">
+              <span className="flex items-center justify-center">
+                Choose PDF File
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </span>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+
+            {file && (
+              <div className="mt-4 space-y-4">
+                <div className="bg-white bg-opacity-50 rounded-lg p-4 text-sm text-slate-600">
+                  <p><strong>File:</strong> {file.name}</p>
+                  <p><strong>Size:</strong> {(file.size / 1024).toFixed(2)} KB</p>
+                </div>
+
+                {file.type === "application/pdf" && fileContent && (
+                  <iframe
+                    src={fileContent}
+                    title="PDF Preview"
+                    width="100%"
+                    height="200px"
+                    className="border rounded-lg bg-white"
+                  />
+                )}
+
+                <button
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50"
+                  onClick={handleUpload}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-200"></span>
                       Uploading...
                     </span>
-                  </span>
-                ) : (
-                  "Upload"
-                )}
-              </button>
-            </div>
-          </div>
-        )}
+                  ) : (
+                    <span className="flex items-center justify-center">
+                      Upload Resume
+                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                    </span>
+                  )}
+                </button>
 
-        {uploaded && (
-          <div className="mt-6 flex items-center justify-center gap-2 text-blue-600 font-semibold">
-            <svg
-              className="w-6 h-6 text-blue-500"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            Resume uploaded successfully!
+                {uploaded && (
+                  <div className="flex items-center justify-center gap-2 text-blue-600 font-semibold bg-white bg-opacity-50 rounded-lg p-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Resume uploaded successfully!
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Online Editor Section */}
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 hover:from-blue-50 hover:to-blue-100 border border-slate-200 rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                Online Code Editor
+              </h3>
+              <p className="text-slate-500 text-sm">
+                Build custom web applications with our integrated development environment.
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                Live Preview & Real-time Updates
+              </div>
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-blue-400 rounded-full mr-3"></span>
+                AI-Powered Code Assistant
+              </div>
+              <div className="flex items-center text-sm text-slate-600">
+                <span className="w-2 h-2 bg-purple-400 rounded-full mr-3"></span>
+                Multi-project Management
+              </div>
+            </div>
+
+            <button 
+              onClick={() => navigate('/editor')}
+              className="w-full bg-slate-600 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              <span className="flex items-center justify-center">
+                Launch Editor
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

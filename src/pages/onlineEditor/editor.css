@@ -1,0 +1,252 @@
+.online-editor {
+    background: #090909;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.editor-top-bar {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+}
+
+.editor-top-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.editor-home {
+    padding: 16px;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.editor-projects-table {
+    text-align: left;
+}
+
+.editor-projects-table th {
+    text-align: left;
+}
+
+.editor-main-container {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.editor-left-panel {
+    background: #111;
+    padding: 8px;
+}
+
+.editor-preview-info {
+    display: flex;
+    justify-content: space-between;
+    color: #aaa;
+    margin-bottom: 6px;
+}
+
+.editor-preview-iframe {
+    width: 100%;
+    height: 95%;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #000;
+}
+
+.editor-right-panel {
+    padding: 10px;
+    background: #0d0d0d;
+    color: #eee;
+}
+
+.editor-controls {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.editor-multipage-info {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #121212;
+}
+
+.editor-pages-list {
+    font-size: 12px;
+    color: #bbb;
+    margin-bottom: 6px;
+}
+
+.editor-hints {
+    font-size: 12px;
+    color: #e2b714;
+}
+
+.editor-routing-note {
+    font-size: 12px;
+    color: #9aa;
+    margin-top: 6px;
+}
+
+.editor-section {
+    margin-bottom: 10px;
+}
+
+.editor-section summary {
+    cursor: pointer;
+}
+
+.editor-textarea {
+    width: 100%;
+    height: 220px;
+    background: #141414;
+    color: #fff;
+    border-radius: 8px;
+    border: 1px solid #333;
+    padding: 10px;
+}
+
+.editor-note {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+}
+
+.editor-data-tab {
+    background: #0b0b0b;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    overflow: auto;
+    height: 320px;
+}
+
+.editor-separator {
+    border-color: #222;
+    margin: 12px 0;
+}
+
+.editor-promo-section {
+    background: #101010;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.editor-promo-header {
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-promo-subtitle {
+    font-size: 12px;
+    color: #9aa;
+}
+
+.editor-radio-group {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.editor-radio-group label {
+    cursor: pointer;
+}
+
+.editor-promo-textarea {
+    width: 100%;
+    height: 120px;
+    background: #141414;
+    color: #fff;
+    border-radius: 8px;
+    border: 1px solid #333;
+    padding: 10px;
+}
+
+.editor-promo-controls {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.editor-tweet {
+    font-size: 12px;
+    color: #8ad;
+}
+
+.editor-ai-note {
+    font-size: 12px;
+    color: #9aa;
+    margin-top: 6px;
+}
+
+.editor-preview-container {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.editor-preview-header {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    background: #0d0d0d;
+}
+
+.editor-project-id {
+    color: #9aa;
+}
+
+.editor-preview-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.editor-preview-frame {
+    background: #111;
+    padding: 8px;
+}
+
+.editor-iframe {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #000;
+}
+
+
+/* Button styles scoped to editor */
+
+.online-editor button {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.online-editor button:hover {
+    background: #444;
+}
+
+.online-editor button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
