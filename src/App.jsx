@@ -7,7 +7,13 @@ import Tip from "./components/Tip";
 import Footer from "./components/Footer";
 import "./App.css";
 import ResumeUpload from "./components/ResumeUpload";
+
 import CleaningPage from "./pages/portfolios/cleaningService/src/App.jsx";
+import VisitorLogin from './components/GuestAuth/VisitorLogin.jsx'
+import VisitorSignup from './components/GuestAuth/VisitorSignup.jsx';
+import VisitorProfile from './components/GuestAuth/VisitorProfile.jsx';
+import VisitorData from './pages/portfolios/cleaningService/components/VisitorData';
+
 
 import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
@@ -166,7 +172,18 @@ export default function App() {
 \       <Route path="/portfolios/healthcare/search" element={<HealthcareSearch />} />
         <Route path="/portfolios/healthcare/auth/login" element={<HealthcareLogin />} />
         <Route path="/portfolios/healthcare/:practiceId/admin/dashboard" element={<HealthcareAdminDashboard />} />
-        <Route path="/editor/*" element={<OnlineEditor />} />
+        <Route path="/editor/*" element={<OnlineEditor />} />          <Route path="/portfolios/cleaningService/:portfolioId/visitor-login" element={<VisitorLogin />} />
+<Route path="/portfolios/cleaningService/visitor-login" element={<VisitorLogin />} />
+
+<Route path="/portfolios/cleaningService/:portfolioId/visitor-signup" element={<VisitorSignup />} />
+<Route path="/portfolios/cleaningService/visitor-signup" element={<VisitorSignup />} />
+
+<Route path="/portfolios/cleaningService/:portfolioId/visitor-profile" element={<VisitorProfile />} />
+<Route path="/portfolios/cleaningService/visitor-profile" element={<VisitorProfile />} />
+<Route 
+  path="/portfolios/cleaningService/:portfolioId/visitors" 
+  element={<VisitorData />} 
+/>
       </Routes>
       <FloatingHelpButton />
       {adminRequested && (

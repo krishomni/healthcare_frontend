@@ -90,37 +90,63 @@ export const AuthProvider = ({ children }) => {
       setIsOwner(false);
     }
   }, [currentPortfolioId, user]);
-
-  const login = async (email, password) => {
-    try {
-      console.log('🔍 LOGIN FUNCTION CALLED');
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_API}/api/auth/login`,
-        { email, password }
-      );
-      const { token, user } = response.data;
-      
-      console.log('🔍 LOGIN RESPONSE USER:', user);
-      console.log('🔍 USER EMAIL:', user.email);
-      console.log('🔍 USER ID:', user._id || user.id);
-      
-      // Save to localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('email', user.email);
-      localStorage.setItem('userId', user._id || user.id);
-      
-      console.log('🔍 SAVED TO LOCALSTORAGE');
-      console.log('🔍 CHECK:', localStorage.getItem('email'), localStorage.getItem('userId'));
-      
-      setUser(user);
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Login failed'
-      };
+const login = async (email, password) => {
+  try {
+    console.log('🔍 LOGIN FUNCTION CALLED');
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_API}/api/auth/login`,
+      { email, password }
+    );
+    const { token, user, portfolioIds } = response.data;  // ← ADD portfolioIds
+    
+    // ... existing code ...
+    
+    localStorage.setItem('token', token);
+    localStorage.setItem('email', user.email);
+    localStorage.setItem('userId', user._id || user.id);
+    
+    // ✅ ADD THIS:
+    if (portfolioIds) {
+      localStorage.setItem('userPortfolios', JSON.stringify(portfolioIds));
+      console.log('📁 Stored portfolio IDs:', portfolioIds);
     }
-  };
+    
+    setUser(user);
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.response?.data?.message || 'Login failed' };
+  }
+};
+  // const login = async (email, password) => {
+  //   try {
+  //     console.log('🔍 LOGIN FUNCTION CALLED');
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_BACKEND_API}/api/auth/login`,
+  //       { email, password }
+  //     );
+  //     const { token, user } = response.data;
+      
+  //     console.log('🔍 LOGIN RESPONSE USER:', user);
+  //     console.log('🔍 USER EMAIL:', user.email);
+  //     console.log('🔍 USER ID:', user._id || user.id);
+      
+  //     // Save to localStorage
+  //     localStorage.setItem('token', token);
+  //     localStorage.setItem('email', user.email);
+  //     localStorage.setItem('userId', user._id || user.id);
+      
+  //     console.log('🔍 SAVED TO LOCALSTORAGE');
+  //     console.log('🔍 CHECK:', localStorage.getItem('email'), localStorage.getItem('userId'));
+      
+  //     setUser(user);
+  //     return { success: true };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: error.response?.data?.message || 'Login failed'
+  //     };
+  //   }
+  // };
 
   const logout = () => {
     localStorage.removeItem('token');
