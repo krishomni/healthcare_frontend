@@ -31,6 +31,7 @@ import UserProfile from "./components/UserProfile/UserProfile.jsx";
 import OnboardingInfoPage from "./pages/onboarding/OnboardingInfoPage";
 import ITAdminPage from "./components/ITAdminPage.jsx";
 import TicketingPage from "./pages/ticketing/TicketingPage.jsx";
+import PortfolioEditLogViewer from "./components/PortfolioEditLogViewer.jsx";
 import { VendorProvider } from "./context/VendorContext.jsx";
 import Solutions from "./components/Solutions/Solutions.jsx";
 import Vendors from "./components/Solutions/Vendors";
@@ -139,6 +140,7 @@ export default function App() {
           }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
+        <Route path="/logs" element={<PortfolioEditLogViewer />} />
         <Route
           path="/itadmin/ticketing-system"
           element={

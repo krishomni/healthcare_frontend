@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
 import { v4 as uuidv4 } from "uuid";
+import { startTracking, stopTracking, logPortfolioAction } from "../utils/portfolioEditLogger";
 
 export default function ResumeUpload() {
   const apiUrl = import.meta.env.VITE_BACKEND_API;
@@ -20,6 +21,26 @@ export default function ResumeUpload() {
     }
     return id;
   });
+
+  // Start tracking on component mount
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const name = localStorage.getItem("name");
+    const userId = localStorage.getItem("userId");
+    
+    startTracking({
+      sessionId: sessionId,
+      userId: userId || 'anonymous',
+      portfolioType: 'projectManager',
+      name: name,
+      email: email,
+    });
+
+    // Cleanup on unmount
+    return () => {
+      stopTracking();
+    };
+  }, [sessionId]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -60,9 +81,22 @@ export default function ResumeUpload() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Uploaded:", res.data);
+      
+      // Log portfolio creation action
+      const portfolioId = res.data?._id || res.data?.id || null;
+      await logPortfolioAction('created', {
+        sessionId: sessionId,
+        userId: localStorage.getItem("userId") || 'anonymous',
+        portfolioID: portfolioId,
+        portfolioType: 'projectManager',
+        name: localStorage.getItem("name"),
+        email: email,
+      });
+      
       setUploaded(true);
       setFile(null);
       setFileContent(null);
+      stopTracking(); // Stop tracking before removing session
       localStorage.removeItem("onboardingSessionId"); // remove sessionId after successful upload
       navigate("/dashboard"); // Redirect after upload
     } catch (err) {

@@ -4,6 +4,7 @@
     import { toast } from 'react-toastify';
     import handymanAPI from './api.js';
     import { AuthContext } from '../../../context/AuthContext';
+    import { startTracking, stopTracking, logPortfolioAction } from '../../../utils/portfolioEditLogger';
 
     const EditHandymanPortfolio = () => {
     const { id } = useParams();
@@ -95,6 +96,25 @@
     useEffect(() => {
         loadProjects();
     }, [id]);
+
+    // Start tracking when component loads
+    useEffect(() => {
+        if (formData && user) {
+            const sessionId = localStorage.getItem("onboardingSessionId") || `session_${Date.now()}`;
+            startTracking({
+                sessionId: sessionId,
+                userId: user?.id || user?._id || 'anonymous',
+                portfolioID: id,
+                portfolioType: 'handyman',
+                name: user?.name || formData?.hero?.title || null,
+                email: user?.email || null,
+            });
+        }
+        
+        return () => {
+            stopTracking();
+        };
+    }, [formData, user, id]);
 
     // --- nested path setter (already supports hero.imageUrl etc.) ---
     const setNested = (path, value) => {
@@ -242,6 +262,17 @@
 
             await handymanAPI.put(`/api/handyman/portfolio/${pid}`, fd);
         }
+
+        // Log portfolio update action
+        const sessionId = localStorage.getItem("onboardingSessionId") || `session_${Date.now()}`;
+        await logPortfolioAction('updated', {
+            sessionId: sessionId,
+            userId: user?.id || user?._id || 'anonymous',
+            portfolioID: id,
+            portfolioType: 'handyman',
+            name: user?.name || formData?.hero?.title || null,
+            email: user?.email || null,
+        });
 
         toast.success('All changes saved!');
         await loadProjects(); // refresh local state/dirty flags
