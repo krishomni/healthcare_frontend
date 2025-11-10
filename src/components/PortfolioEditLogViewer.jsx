@@ -196,9 +196,9 @@ export default function PortfolioEditLogViewer() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {log.portfolioType}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                            {log.sessionId?.substring(0, 20)}...
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          <code className="text-xs bg-gray-100 px-2 py-1 rounded break-all">
+                            {log.sessionId || 'N/A'}
                           </code>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -256,21 +256,29 @@ export default function PortfolioEditLogViewer() {
                             <table className="min-w-full text-xs">
                               <thead>
                                 <tr>
-                                  <th className="px-2 py-1 text-left">Time</th>
-                                  <th className="px-2 py-1 text-left">Event</th>
-                                  <th className="px-2 py-1 text-left">Position</th>
-                                  <th className="px-2 py-1 text-left">Element</th>
+                                  <th className="px-2 py-1 text-center align-top">Time</th>
+                                  <th className="px-2 py-1 text-center align-top">Event</th>
+                                  <th className="px-2 py-1 text-center align-top">Position</th>
+                                  <th className="px-2 py-1 text-center align-top">Element</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {log.mouseInfo.slice(0, 100).map((event, idx) => (
-                                  <tr key={idx} className="border-t">
-                                    <td className="px-2 py-1">{formatDate(event.timestamp)}</td>
-                                    <td className="px-2 py-1">{event.event}</td>
-                                    <td className="px-2 py-1">({event.x}, {event.y})</td>
-                                    <td className="px-2 py-1 text-gray-600">{event.element?.substring(0, 50)}...</td>
-                                  </tr>
-                                ))}
+                                {log.mouseInfo.slice(0, 100).map((event, idx) => {
+                                  // Get the part before the first dot
+                                  const getElementBeforeFirstDot = (element) => {
+                                    if (!element) return 'N/A';
+                                    const firstDotIndex = element.indexOf('.');
+                                    return firstDotIndex !== -1 ? element.substring(0, firstDotIndex) : element;
+                                  };
+                                  return (
+                                    <tr key={idx} className="border-t">
+                                      <td className="px-2 py-1 align-top">{formatDate(event.timestamp)}</td>
+                                      <td className="px-2 py-1 align-top">{event.event}</td>
+                                      <td className="px-2 py-1 align-top">({event.x}, {event.y})</td>
+                                      <td className="px-2 py-1 text-gray-600 align-top">{getElementBeforeFirstDot(event.element)}</td>
+                                    </tr>
+                                  );
+                                })}
                                 {log.mouseInfo.length > 100 && (
                                   <tr>
                                     <td colSpan="4" className="px-2 py-1 text-center text-gray-500">

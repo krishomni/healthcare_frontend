@@ -72,9 +72,9 @@ export default function Navbar() {
             {user && user.role === "admin" && (
               <button
                 className="relative transition-colors text-slate-800 px-4 py-2 rounded-xl overflow-hidden group"
-                onClick={() => navigate("/itadmin/ticketing-system")}
+                onClick={() => navigate("/admin-choice")}
               >
-                <span className="relative z-10">Ticketing</span>
+                <span className="relative z-10">Admin</span>
                 <span className="absolute inset-0 w-1/3 h-full bg-blue-200/40 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
               </button>
             )}
@@ -230,10 +230,10 @@ export default function Navbar() {
                 className="w-full text-left px-6 py-3 text-slate-800 hover:bg-blue-100 rounded-lg flex items-center"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  navigate("/itadmin/ticketing-system");
+                  navigate("/admin-choice");
                 }}
               >
-                Ticketing
+                Admin
               </button>
             )}
             {user && (
