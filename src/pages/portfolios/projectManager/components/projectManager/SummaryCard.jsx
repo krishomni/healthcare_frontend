@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../../../context/AuthContext";
 import axios from "axios";
+import { startTracking, stopTracking, logPortfolioAction } from "../../../../../utils/portfolioEditLogger";
 
 //attach token to each axios request
 axios.interceptors.request.use(
@@ -32,6 +33,27 @@ const SummaryCard = ({ portfolio }) => {
     setEditData(portfolio || {});
   }, [portfolio]);
 
+  // Start tracking when editing starts
+  useEffect(() => {
+    if (isEditing && portfolio) {
+      const sessionId = localStorage.getItem("onboardingSessionId") || `session_${Date.now()}`;
+      startTracking({
+        sessionId: sessionId,
+        userId: user?.id || user?._id || 'anonymous',
+        portfolioID: portfolio._id || portfolio.id || null,
+        portfolioType: 'projectManager',
+        name: portfolio.name,
+        email: portfolio.email || user?.email,
+      });
+    }
+    
+    return () => {
+      if (isEditing) {
+        stopTracking();
+      }
+    };
+  }, [isEditing, portfolio, user]);
+
   // Mutation for saving summary data
   const saveSummaryMutation = useMutation({
     mutationFn: async (summaryData) => {
@@ -40,9 +62,21 @@ const SummaryCard = ({ portfolio }) => {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       console.log("Save successful:", data);
       toast.success("Summary saved successfully!");
+      
+      // Log portfolio update action
+      const sessionId = localStorage.getItem("onboardingSessionId") || `session_${Date.now()}`;
+      await logPortfolioAction('updated', {
+        sessionId: sessionId,
+        userId: user?.id || user?._id || 'anonymous',
+        portfolioID: portfolio?._id || portfolio?.id || null,
+        portfolioType: 'projectManager',
+        name: portfolio?.name || user?.name,
+        email: portfolio?.email || user?.email,
+      });
+      
       queryClient.invalidateQueries(["portfolio"]);
     },
     onError: (error) => {

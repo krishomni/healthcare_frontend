@@ -6,6 +6,7 @@ import handymanAPI from "../../pages/portfolios/handyman/api.js";
 import { useVendor } from "../../context/VendorContext.jsx";
 const backendUrl = import.meta.env.VITE_BACKEND_API;
 import { AuthContext } from "../../context/AuthContext";
+import { logPortfolioAction } from "../../utils/portfolioEditLogger";
 
 export default function OnboardingInfoPage() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function OnboardingInfoPage() {
             formData.append("description", user.bio || "My business portfolio");
 
             toast.info(
-              "We’re generating your site using your uploaded file. This may take a few moments..."
+              "We're generating your site using your uploaded file. This may take a few moments..."
             );
 
             res = await axios.post(`${backendUrl}/vendor/inject`, formData, {
@@ -105,6 +106,18 @@ export default function OnboardingInfoPage() {
 
           console.log("response: ", res.data);
           const id = res.data._id;
+          
+          // Log portfolio creation action
+          const sessionId = localStorage.getItem("onboardingSessionId") || `session_${Date.now()}`;
+          await logPortfolioAction('created', {
+            sessionId: sessionId,
+            userId: user?.id || user?._id || 'anonymous',
+            portfolioID: id,
+            portfolioType: 'handyman',
+            name: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.name || null,
+            email: user?.email || null,
+          });
+          
           navigate(`/portfolios/handyman/${id}`);
           navigate(`/portfolios/handyman/${id}`);
         } catch (error) {
