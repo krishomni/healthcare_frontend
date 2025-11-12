@@ -6,41 +6,48 @@ export default function ExamplePortfolios() {
   const portfolios = [
     {
       title: "Project Manager",
-      summary: "Porftolio showcasing Project Manager's Resume",
+      summary: "Portfolio showcasing Project Manager's Resume",
       location: "/portfolios/project-manager/example/689b833c90c7ecc042b7b2ac",
     },
 
     {
       title: "Software Engineer",
-      summary: "Porftolio showcasing Sofware Engineer's Resume",
+      summary: "Portfolio showcasing Sofware Engineer's Resume",
     },
 
     {
       title: "Data Scientist",
-      summary: "Porftolio showcasing Data Scientist's Resume",
+      summary: "Portfolio showcasing Data Scientist's Resume",
       location: "/portfolios/data-scientist",
     },
 
     {
       title: "Local Food Vendor",
-      summary: "Porftolio showcasing a Local Food Vendor",
+      summary: "Portfolio showcasing a Local Food Vendor",
       location: "/portfolios/localVendor",
     },
 
     {
       title: "Photographer",
-      summary: "Porftolio showcasing Photography Portfolio",
+      summary: "Portfolio showcasing Photography Portfolio",
       location: "/portfolios/photographer",
     },
 
     {
       title: "Handyman/Local Repair Services",
-      summary: "Porftolio showcasing Handyman and Repair services",
+      summary: "Portfolio showcasing Handyman and Repair services",
       location: "/portfolios/handyman",
     },
+
+    {
+      title: "Healthcare Professional",
+      summary: "Portfolio showcasing Healthcare Services",
+      location: "/portfolios/healthcare",
+    },
+
      {
       title: "Cleaner/Local Cleaning Services",
-      summary: "Porftolio showcasing Cleaning services",
+      summary: "Portfolio showcasing Cleaning services",
             location: "/portfolios/cleaningService/about"    },
   ];
 
