@@ -14,6 +14,7 @@ export default function UserProfile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [currentTab, setCurrentTab] = useState("Profile Information");
+  const [portfolioVisible, setPortfolioVisible] = useState(true);
 
   // Fetch user data on mount
   useEffect(() => {
@@ -155,6 +156,51 @@ export default function UserProfile() {
         </main>
       )}
 
+      {/* Account Settings */}
+      {currentTab === "Account Settings" && (
+        <main className="flex-1 flex justify-center items-start py-12 px-4 md:px-12 bg-gray-50">
+          <section className="w-full max-w-3xl bg-white rounded-2xl shadow border border-gray-200 p-8">
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Account Settings</h2>
+              <p className="text-gray-600">Manage your account preferences and privacy settings.</p>
+            </div>
+
+            {/* Privacy Settings */}
+            <div className="space-y-6">
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Privacy Settings</h3>
+                
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900">Portfolio Visibility</h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Allow your portfolios to be visible to the public. When disabled, only you can view your portfolios.
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <ToggleSwitch 
+                      enabled={portfolioVisible} 
+                      onChange={setPortfolioVisible}
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-3 text-xs text-gray-500">
+                  {portfolioVisible ? "✓ Your portfolios are currently visible to everyone" : "⚠ Your portfolios are currently private"}
+                </div>
+              </div>
+
+              {/* Future settings can be added here */}
+              <div className="pt-4">
+                <div className="text-sm text-gray-500 italic">
+                  More account settings will be available soon...
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      )}
+
       {/* Billing */}
       {currentTab === "Billing" && <ManageBillingComponent />}
     </div>
@@ -181,5 +227,25 @@ function ProfileField({ label, name, value, editable, onChange }) {
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       {editable ? <input className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" name={name} value={value ?? ""} onChange={onChange} /> : <div className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900">{displayValue}</div>}
     </div>
+  );
+}
+
+// Toggle switch component
+function ToggleSwitch({ enabled, onChange }) {
+  return (
+    <button
+      type="button"
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+        enabled ? 'bg-blue-600' : 'bg-gray-200'
+      }`}
+      onClick={() => onChange(!enabled)}
+    >
+      <span className="sr-only">Toggle portfolio visibility</span>
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+          enabled ? 'translate-x-6' : 'translate-x-1'
+        }`}
+      />
+    </button>
   );
 }

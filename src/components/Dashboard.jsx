@@ -8,10 +8,11 @@ import { AuthContext } from "../context/AuthContext.jsx";
 export default function Dashboard() {
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_API;
-  const { contextLoggedIn, user } = useContext(AuthContext);
+  const { contextLoggedIn, user, token } = useContext(AuthContext);
 
   const [myPortfolios, setMyPortfolios] = useState([]);
   const [otherPortfolios, setOtherPortfolios] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
 
   // robust identity getters
   const loggedInEmail = (user?.email || localStorage.getItem("email") || "")
@@ -29,7 +30,10 @@ export default function Dashboard() {
   // re-run when login state OR user object changes
   useEffect(() => {
     fetchPortfolios();
-  }, [contextLoggedIn, loggedInEmail, loggedInId]);
+    if (contextLoggedIn && token) {
+      fetchProjects();
+    }
+  }, [contextLoggedIn, loggedInEmail, loggedInId, token]);
 
   // read owner email from common places; if handyman lacks email but userId==me → it's mine
   const ownerEmail = (obj, type) => {
@@ -111,13 +115,27 @@ export default function Dashboard() {
     }
   };
 
+  const fetchProjects = async () => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/projects`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const projects = Array.isArray(res.data) ? res.data : [];
+      setMyProjects(projects);
+    } catch (err) {
+      toast.error("Error fetching projects");
+      console.error(err);
+    }
+  };
+
   const handleAddPortfolio = () => navigate("/resume");
 
   const handleCardClick = (p) => {
     if (p.type === "handyman") {
       navigate(`/portfolios/handyman/${p._id}`);
     } else if (p.type === "cleaningLady") {
-    navigate(`/portfolios/cleaningService/${p._id}/about`); // add your route here
+    navigate(`/portfolios/cleaningService/${p._id}/about`); 
   
     } else if (p.type === "vendor") {
       const username = (p.name || p.email || "vendor")
@@ -127,6 +145,30 @@ export default function Dashboard() {
     } else {
       const username = (p.email || "").split("@")[0];
       navigate(`/portfolios/project-manager/${username}/${p._id}`);
+    }
+  };
+
+  const handleProjectClick = (projectId) => {
+    navigate(`/editor?project=${projectId}`);
+  };
+
+  const handleNewProject = async () => {
+    try {
+      const res = await axios.post(`${backendUrl}/api/projects`, {}, {
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      
+      if (res.data.ok && res.data.activeProjectId) {
+        navigate(`/editor?project=${res.data.activeProjectId}`);
+      } else {
+        toast.error("Failed to create project");
+      }
+    } catch (err) {
+      toast.error("Error creating project");
+      console.error(err);
     }
   };
 
@@ -160,6 +202,42 @@ export default function Dashboard() {
                 >
                   <span className="text-5xl text-blue-400 font-bold">+</span>
                   <span className="mt-2 text-slate-500">Add Portfolio</span>
+                </button>
+              </div>
+            </section>
+          )}
+
+          {/* My Projects (Editor) */}
+          {contextLoggedIn && (
+            <section>
+              <h2 className="text-2xl font-semibold mb-6 text-slate-800">
+                My Projects
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
+                {myProjects.map((project) => (
+                  <div
+                    key={project.projectId}
+                    className="bg-white rounded-xl shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                    onClick={() => handleProjectClick(project.projectId)}
+                  >
+                    <div className="font-semibold text-slate-800 mb-2">
+                      {project.name}
+                    </div>
+                    <div className="text-sm text-slate-500 mb-2">
+                      ID: {project.projectId}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Updated: {new Date(project.updatedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+                <button
+                  onClick={handleNewProject}
+                  className="flex flex-col items-center justify-center bg-white rounded-xl shadow-md p-6 border-2 border-dashed border-slate-300 hover:border-green-400 transition-all min-h-[180px] cursor-pointer"
+                  style={{ minHeight: "180px" }}
+                >
+                  <span className="text-5xl text-green-400 font-bold">+</span>
+                  <span className="mt-2 text-slate-500">New Project</span>
                 </button>
               </div>
             </section>

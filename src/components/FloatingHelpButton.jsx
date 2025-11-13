@@ -7,7 +7,7 @@ export default function FloatingHelpButton() {
 
   return (
     <div
-      className={`fixed top-20 right-0 z-50 flex flex-col items-end transition-all duration-300`}
+      className={`fixed top-34 right-0 z-50 flex flex-col items-end transition-all duration-300`}
       style={{ minWidth: open ? 160 : 48 }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
