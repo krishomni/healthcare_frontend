@@ -1,29 +1,29 @@
-import React from 'react';
+import React from "react";
 
-const PreviewPanel = ({ 
-  current, 
-  previewUrl, 
-  onToggleView, 
-  onGoHome, 
+const PreviewPanel = ({
+  current,
+  previewUrl,
+  onToggleView,
+  onGoHome,
   onOpenInNewTab,
   onReloadPreview,
   token,
   API,
-  linesToText
+  linesToText,
 }) => {
   const handleReloadPreview = async () => {
     if (!current) return;
-    
+
     try {
       const res = await fetch(`${API}/api/projects/${current.projectId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const p = await res.json();
       const html = linesToText(p.frontendJson?.lines || {});
-      
+
       onReloadPreview(html, p);
     } catch (error) {
-      console.error('Error reloading preview:', error);
+      console.error("Error reloading preview:", error);
     }
   };
 
@@ -47,9 +47,7 @@ const PreviewPanel = ({
           >
             Open in New Tab
           </button>
-          <button onClick={handleReloadPreview}>
-            Reload Preview
-          </button>
+          <button onClick={handleReloadPreview}>Reload Preview</button>
         </div>
       </div>
       <div className="editor-preview-frame">
