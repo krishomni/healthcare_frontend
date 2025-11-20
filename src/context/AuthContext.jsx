@@ -42,28 +42,28 @@ export function AuthProvider({ children }) {
   //   }
   // }, [token]);
   useEffect(() => {
-  if (!token) return;
-  if (token) {
-    axios
-      .get(`${backendUrl}/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setUser(res.data.user);
-        
-        // ✅ ADD THIS CODE:
-        if (res.data.portfolioIds) {
-          localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
-          console.log("📁 Stored portfolio IDs (from getMe):", res.data.portfolioIds);
-        }
-      })
-      .catch(() => {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem("token");
-      });
-  }
-}, [token]);
+    if (!token) return;
+    if (token) {
+      axios
+        .get(`${backendUrl}/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setUser(res.data.user);
+
+          // ✅ ADD THIS CODE:
+          if (res.data.portfolioIds) {
+            localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
+            console.log("📁 Stored portfolio IDs (from getMe):", res.data.portfolioIds);
+          }
+        })
+        .catch(() => {
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem("token");
+        });
+    }
+  }, [token]);
 
   useEffect(() => {
     if (pendingFile) console.log("✅ pendingFile stored:", pendingFile.name);
@@ -73,34 +73,34 @@ export function AuthProvider({ children }) {
   //   console.log("User++++++++++++++++++++", user);
   // }, [user]);
   const login = async (email, password) => {
-  try {
-    const res = await axios.post(`${backendUrl}/user/login`, {
-      email,
-      password,
-    });
-    
-    setUser((prev) => ({ ...prev, ...res.data.user }));
-    setToken(res.data.token);
-    localStorage.setItem("email", res.data.user.email);
-    localStorage.setItem("userId", res.data.user._id || res.data.user.id);
-    localStorage.setItem("token", res.data.token);
-    
-    // STORE PORTFOLIO IDs - ADD THESE LINES
-    if (res.data.portfolioIds) {
-      localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
-      console.log("📁 Stored portfolio IDs:", res.data.portfolioIds);
-    } else {
-      console.log("⚠️ No portfolioIds received from backend");
+    try {
+      const res = await axios.post(`${backendUrl}/user/login`, {
+        email,
+        password,
+      });
+
+      setUser((prev) => ({ ...prev, ...res.data.user }));
+      setToken(res.data.token);
+      localStorage.setItem("email", res.data.user.email);
+      localStorage.setItem("userId", res.data.user._id || res.data.user.id);
+      localStorage.setItem("token", res.data.token);
+
+      // STORE PORTFOLIO IDs - ADD THESE LINES
+      if (res.data.portfolioIds) {
+        localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
+        console.log("📁 Stored portfolio IDs:", res.data.portfolioIds);
+      } else {
+        console.log("⚠️ No portfolioIds received from backend");
+      }
+
+      console.log("logged In");
+      toast.success("Logged In!");
+    } catch (err) {
+      toast.error("Login failed");
+      console.log("Login failed", err);
+      throw err;
     }
-    
-    console.log("logged In");
-    toast.success("Logged In!");
-  } catch (err) {
-    toast.error("Login failed");
-    console.log("Login failed", err);
-    throw err;
-  }
-};
+  };
   // const login = async (email, password) => {
   //   try {
   //     const res = await axios.post(`${backendUrl}/user/login`, {
@@ -124,14 +124,12 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("email"); // ADD THIS LINE
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userPortfolios"); 
+    localStorage.clear();
     // clear all React Query caches
     queryClient.clear();
     console.log("Logged Out");
     toast.success("Logged Out!");
+    setContextLoggedIn(false);
   };
 
   const refreshUser = async () => {

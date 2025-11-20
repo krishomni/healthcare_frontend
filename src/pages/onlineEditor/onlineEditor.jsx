@@ -1,15 +1,16 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import "./editor.css";
 import { AuthContext } from "../../context/AuthContext";
-import MonacoCodeEditor from './MonacoCodeEditor';
-import ProjectsList from './ProjectsList';
-import PreviewPanel from './PreviewPanel';
-import PromoSection from './PromoSection';
-import EditorControls from './EditorControls';
-import MultiPageInfo from './MultiPageInfo';
-import BackendEditor from './BackendEditor';
-import DataViewer from './DataViewer';
+import MonacoCodeEditor from "./MonacoCodeEditor";
+import ProjectsList from "./ProjectsList";
+import PreviewPanel from "./PreviewPanel";
+import PromoSection from "./PromoSection";
+import EditorControls from "./EditorControls";
+import MultiPageInfo from "./MultiPageInfo";
+import BackendEditor from "./BackendEditor";
+import DataViewer from "./DataViewer";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import axiosAuth from "../../utils/axiosAuth";
 
 // Helper functions
 const linesToText = (linesObj = {}) => {
@@ -91,38 +92,41 @@ function detectMultiPage(html = "") {
   return { detected: true, pages: list, defaultPage, hints };
 }
 
-// HTML parsing and element mapping 
+// HTML parsing and element mapping
 const parseHTMLToElementMap = (html) => {
-  const lines = html.split('\n');
+  const lines = html.split("\n");
   const elementMap = new Map();
-  let elementCount = 0; 
-  
+  let elementCount = 0;
+
   lines.forEach((line, index) => {
     const trimmed = line.trim();
-    if (trimmed.startsWith('<') && !trimmed.startsWith('<!') && !trimmed.startsWith('</') && !trimmed.includes('</')) {
+    if (trimmed.startsWith("<") && !trimmed.startsWith("<!") && !trimmed.startsWith("</") && !trimmed.includes("</")) {
       // opening tag
       elementCount++;
-      
+
       const tagMatch = trimmed.match(/^<(\w+)([^>]*)/);
       if (tagMatch) {
         const tagName = tagMatch[1].toLowerCase();
         const attributes = tagMatch[2];
-        
+
         let selector = tagName;
-      
+
         const idMatch = attributes.match(/id\s*=\s*["']([^"']+)["']/);
         if (idMatch) {
           selector = `#${idMatch[1]}`;
         } else {
           const classMatch = attributes.match(/class\s*=\s*["']([^"']+)["']/);
           if (classMatch) {
-            const classes = classMatch[1].split(/\s+/).filter(c => c).join('.');
+            const classes = classMatch[1]
+              .split(/\s+/)
+              .filter((c) => c)
+              .join(".");
             selector = `${tagName}.${classes}`;
           } else {
             selector = `${tagName}:nth-of-type(${elementCount})`;
           }
         }
-        
+
         if (import.meta.env.DEV) {
           console.log(`Line ${index + 1}: "${trimmed}" -> Selector: "${selector}"`);
         }
@@ -130,7 +134,7 @@ const parseHTMLToElementMap = (html) => {
       }
     }
   });
-  
+
   return elementMap;
 };
 
@@ -188,6 +192,8 @@ export default function OnlineEditor() {
   const { token } = useContext(AuthContext);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_API;
+  const [isCurrentPublic, setIsCurrentPublic] = useState(false);
 
   // Load user + projects
   const loadUser = async () => {
@@ -209,10 +215,10 @@ export default function OnlineEditor() {
 
   // handle proj param from URL
   useEffect(() => {
-    const projectParam = searchParams.get('project');
+    const projectParam = searchParams.get("project");
     if (projectParam && projects.length > 0) {
       // check if the project exists in user's projects
-      const project = projects.find(p => p.projectId === projectParam);
+      const project = projects.find((p) => p.projectId === projectParam);
       if (project) {
         openProject(projectParam);
       }
@@ -238,6 +244,7 @@ export default function OnlineEditor() {
     const res = await fetch(`${API}/api/projects/${projectId}`, { headers: { Authorization: `Bearer ${token}` } });
     const p = await res.json();
     setCurrent(p);
+    setIsCurrentPublic(p?.isPublic || false);
     setFrontendText(linesToText(p.frontendJson?.lines));
     setBackendText(linesToText(p.backendJson?.lines));
     setDataJson(p.dataJson || { name: "" });
@@ -255,6 +262,7 @@ export default function OnlineEditor() {
     const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     setPreviewUrl(url);
     setCurrent(p);
+    setIsCurrentPublic(p?.isPublic || false);
     setView("preview");
     runHealth();
   };
@@ -297,8 +305,8 @@ export default function OnlineEditor() {
       console.log("Saving backend text:", backendText);
 
       const body = JSON.stringify({
-        frontendText: frontendText,  
-        backendText: backendText     
+        frontendText: frontendText,
+        backendText: backendText,
       });
 
       const res = await fetchJson(`${API}/api/projects/${current.projectId}`, {
@@ -490,14 +498,14 @@ export default function OnlineEditor() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'p' && current) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "p" && current) {
         e.preventDefault();
         toggleView();
       }
     };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [current, view]);
 
   const handleReloadPreview = (html, project) => {
@@ -510,10 +518,10 @@ export default function OnlineEditor() {
   // sesize handling for editor panels
   const handleResizeStart = (e) => {
     e.preventDefault();
-    document.body.style.cursor = 'ew-resize';
-    document.body.style.userSelect = 'none';
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = "ew-resize";
+    document.body.style.userSelect = "none";
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   const handleMouseMove = (e) => {
@@ -524,10 +532,38 @@ export default function OnlineEditor() {
   };
 
   const handleMouseUp = () => {
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  };
+
+  const handleTogglePublic = async () => {
+    if (!current) return;
+
+    try {
+      const res = await axiosAuth.patch(`${backendUrl}/api/publicProjects/togglePublic/${current.projectId}`);
+
+      // Get the updated status from response
+      const updatedStatus = res.data?.isPublic;
+
+      // Ensure we have a valid boolean
+      if (typeof updatedStatus === "boolean") {
+        setIsCurrentPublic(updatedStatus);
+        setCurrent((prev) => ({ ...prev, isPublic: updatedStatus }));
+
+        // Optional: Add visual feedback
+        console.log(`Project is now ${updatedStatus ? "public" : "private"}`);
+      } else {
+        // Fallback: toggle the current state
+        const newStatus = !isCurrentPublic;
+        setIsCurrentPublic(newStatus);
+        setCurrent((prev) => ({ ...prev, isPublic: newStatus }));
+      }
+    } catch (error) {
+      console.error("Toggle public failed:", error);
+      alert("Failed to toggle project visibility. Please try again.");
+    }
   };
 
   // Handle window resize
@@ -539,8 +575,8 @@ export default function OnlineEditor() {
       }
     };
 
-    window.addEventListener('resize', handleWindowResize);
-    return () => window.removeEventListener('resize', handleWindowResize);
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
   }, [leftPanelWidth]);
 
   return (
@@ -549,8 +585,8 @@ export default function OnlineEditor() {
         <div>
           <strong>FindVirtual.me — Online Editor</strong>
           {current && (
-            <span style={{ marginLeft: '20px', color: '#8aadf4' }}>
-              {view === 'editor' ? '📝 Edit Mode' : view === 'preview' ? '👁 Preview Mode' : ''}
+            <span style={{ marginLeft: "20px", color: "#8aadf4" }}>
+              {view === "editor" ? "📝 Edit Mode" : view === "preview" ? "👁 Preview Mode" : ""}
             </span>
           )}
         </div>
@@ -570,27 +606,17 @@ export default function OnlineEditor() {
         />
       ) : view === "editor" ? (
         <div className="editor-main-container">
-          <div 
-            className="editor-left-panel"
-            style={{ width: leftPanelWidth }}
-          >
+          <div className="editor-left-panel" style={{ width: leftPanelWidth }}>
             <div className="editor-preview-info">
               <div>
                 <strong>Live Preview</strong> — Active Project: {current.projectId}
               </div>
               <div>Health: Mongo = {health.mongo || "checking"}</div>
             </div>
-            <iframe 
-              title="preview" 
-              src={blobUrl || null}
-              className="editor-preview-iframe" 
-            />
+            <iframe title="preview" src={blobUrl || null} className="editor-preview-iframe" />
           </div>
 
-          <div 
-            className="editor-resize-handle"
-            onMouseDown={handleResizeStart}
-          />
+          <div className="editor-resize-handle" onMouseDown={handleResizeStart} />
 
           <div className="editor-right-panel">
             <EditorControls
@@ -599,6 +625,8 @@ export default function OnlineEditor() {
               onToggleView={toggleView}
               onGoHome={() => setView("home")}
               current={current}
+              onTogglePublic={handleTogglePublic}
+              isPublic={isCurrentPublic}
             />
 
             <MultiPageInfo mpInfo={mpInfo} />
@@ -607,23 +635,23 @@ export default function OnlineEditor() {
               <summary>
                 <strong>Frontend (editable)</strong>
               </summary>
-              <div className="editor-monaco-container" style={{ height: '400px' }}>
+              <div className="editor-monaco-container" style={{ height: "400px" }}>
                 <MonacoCodeEditor
                   height="100%"
                   language="html"
                   theme="vs-dark"
                   value={frontendText}
-                  onChange={(value) => setFrontendText(value || '')}
+                  onChange={(value) => setFrontendText(value || "")}
                   onMount={(editor, monaco) => {
                     setMonacoEditor(editor);
                   }}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
-                    lineNumbers: 'on',
-                    renderWhitespace: 'boundary',
+                    lineNumbers: "on",
+                    renderWhitespace: "boundary",
                     scrollBeyondLastLine: false,
-                    wordWrap: 'on',
+                    wordWrap: "on",
                     automaticLayout: true,
                   }}
                 />
@@ -633,17 +661,41 @@ export default function OnlineEditor() {
               </div>
             </details>
 
-            <BackendEditor
+            {/* <BackendEditor
               backendText={backendText}
               onBackendTextChange={setBackendText}
-            />
+            /> */}
+            <details open className="editor-section">
+              <summary>
+                <strong>Backend (editable)</strong>
+              </summary>
+              <div className="editor-monaco-container" style={{ height: "400px" }}>
+                <MonacoCodeEditor
+                  height="100%"
+                  language="javascript"
+                  theme="vs-dark"
+                  value={backendText}
+                  onChange={(value) => setBackendText(value || "")}
+                  onMount={(editor, monaco) => {
+                    setMonacoEditor(editor);
+                  }}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    lineNumbers: "on",
+                    renderWhitespace: "boundary",
+                    scrollBeyondLastLine: false,
+                    wordWrap: "on",
+                    automaticLayout: true,
+                  }}
+                />
+              </div>
+              <div className="editor-note">
+                This is the JS lines joined as text. Saving will split back into numbered lines in Mongo.
+              </div>
+            </details>
 
-            <DataViewer
-              current={current}
-              data={dataJson}
-              loading={false}
-              error={null}
-            />
+            <DataViewer current={current} data={dataJson} loading={false} error={null} />
 
             <hr className="editor-separator" />
 
