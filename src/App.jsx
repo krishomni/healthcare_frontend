@@ -9,11 +9,10 @@ import "./App.css";
 import ResumeUpload from "./components/ResumeUpload";
 
 import CleaningPage from "./pages/portfolios/cleaningService/src/App.jsx";
-import VisitorLogin from './components/GuestAuth/VisitorLogin.jsx'
-import VisitorSignup from './components/GuestAuth/VisitorSignup.jsx';
-import VisitorProfile from './components/GuestAuth/VisitorProfile.jsx';
-import VisitorData from './pages/portfolios/cleaningService/components/VisitorData';
-
+import VisitorLogin from "./components/GuestAuth/VisitorLogin.jsx";
+import VisitorSignup from "./components/GuestAuth/VisitorSignup.jsx";
+import VisitorProfile from "./components/GuestAuth/VisitorProfile.jsx";
+import VisitorData from "./pages/portfolios/cleaningService/components/VisitorData";
 
 import PortfolioPage from "./pages/portfolios/projectManager/pages/PortfolioPage";
 import PhotographerPage from "./pages/portfolios/photographer/PhotographerApp.jsx";
@@ -52,13 +51,14 @@ import HealthcareBlog from "./pages/portfolios/healthcare/pages/blog/Blog.jsx";
 import HealthcareBlogPost from "./pages/portfolios/healthcare/pages/blog/BlogPost.jsx";
 import HealthcareContact from "./pages/portfolios/healthcare/pages/Contact.jsx";
 import HealthcareGallery from "./pages/portfolios/healthcare/pages/Gallery.jsx";
-import HealthcareRegister from './pages/portfolios/healthcare/pages/auth/Register.jsx';
+import HealthcareRegister from "./pages/portfolios/healthcare/pages/auth/Register.jsx";
 import HealthcareSearch from "./pages/portfolios/healthcare/pages/SearchResults.jsx";
 import HealthcareLogin from "./pages/portfolios/healthcare/pages/auth/Login.jsx";
 import HealthcareAdminDashboard from "./pages/portfolios/healthcare/pages/admin/AdminDashboard.jsx";
 import Landing from "./pages/portfolios/healthcare/pages/Landing.jsx";
 import OnlineEditor from "./pages/onlineEditor/onlineEditor.jsx";
 import AdminChoicePanel from "./components/AdminChoicePanel.jsx";
+import FullStackEditor from "./pages/onlineEditor/webContainerTest.jsx";
 
 export default function App() {
   const [adminRequested, setAdminRequested] = useState(false);
@@ -66,7 +66,6 @@ export default function App() {
   const handleGetStarted = () => {
     if (loggedIn) return;
     // Show tip/suggestion for plus button
-
   };
 
   const handleRequestAdmin = () => {
@@ -77,29 +76,16 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<About onGetStarted={handleGetStarted} />} />
-        <Route
-          path="/dashboard"
-          element={<Dashboard onRequestAdmin={handleRequestAdmin} />}
-        />
+        <Route path="/dashboard" element={<Dashboard onRequestAdmin={handleRequestAdmin} />} />
         <Route path={"/signup"} element={<SignUp />} />
         <Route path="/occupations" element={<Occupations />} />
         <Route path="/resume" element={<ResumeUpload />} />
         <Route path="/portfolios" element={<ExamplePortfolios />} />
-        <Route
-          path="/portfolios/project-manager/:username/:id"
-          element={<PortfolioPage />}
-        />
+        <Route path="/portfolios/project-manager/:username/:id" element={<PortfolioPage />} />
         <Route path="/portfolios/software-engineer" />
-        <Route
-          path="/portfolios/data-scientist/*"
-          element={<DataScientistPage />}
-        />
+        <Route path="/portfolios/data-scientist/*" element={<DataScientistPage />} />
         {/* <Route path="/portfolios/localVendor/*" element={<LocalVendorApp />} /> */}
-
-        <Route
-          path="/portfolios/cleaningService/*"
-          element={<CleaningPage />}
-        />
+        <Route path="/portfolios/cleaningService/*" element={<CleaningPage />} />
         <Route
           path="/portfolios/localVendor"
           element={
@@ -108,25 +94,15 @@ export default function App() {
             </VendorProvider>
           }
         />
-        <Route
-          path="/portfolios/photographer/*"
-          element={<PhotographerPage />}
-        />
-        <Route
-          path="/portfolios/cleaningService/*"
-          element={<CleaningPage />}
-        />
+        <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
+        <Route path="/portfolios/cleaningService/*" element={<CleaningPage />} />
         <Route path="/portfolios/photographer/*" element={<PhotographerPage />} />
         <Route path="/portfolios/handyman" element={<HandymanShowcasePage />} />
         {/* Route 2: The dynamic, data-driven page for a specific user's portfolio */}
         <Route path="/portfolios/handyman/:id" element={<HandymanPage />} />
         {/* Route 3: The page where a logged-in user can edit their portfolio */}
-        <Route
-          path="/portfolios/handyman/:id/edit"
-          element={<EditHandymanPortfolio />}
-        />
+        <Route path="/portfolios/handyman/:id/edit" element={<EditHandymanPortfolio />} />
         {/*successfull subscription page} */}
-
         <Route path={"/success"} element={<SuccessPage />} />
         <Route path="/support" element={<ITForm />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
@@ -148,8 +124,22 @@ export default function App() {
           }
         />
         <Route path="/admin_page" element={<ITAdminPage />} />
-        <Route path="/admin-choice" element = {<AdminRoute><AdminChoicePanel/></AdminRoute>} />
-        <Route path="/itadmin/logs" element={<AdminRoute><PortfolioEditLogViewer /></AdminRoute>} />
+        <Route
+          path="/admin-choice"
+          element={
+            <AdminRoute>
+              <AdminChoicePanel />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/itadmin/logs"
+          element={
+            <AdminRoute>
+              <PortfolioEditLogViewer />
+            </AdminRoute>
+          }
+        />
         <Route
           path="/itadmin/ticketing-system"
           element={
@@ -164,7 +154,6 @@ export default function App() {
         <Route path="/solutions/restaurant" element={<Restaurant />} />
         <Route path="/solutions/property" element={<Property />} />
         <Route path="/solutions/farmers" element={<Farmers />} />
-        
         <Route path="/portfolios/healthcare/auth/register" element={<HealthcareRegister />} />
         <Route path="/portfolios/healthcare/:practiceId" element={<HealthcareHome />} />
         <Route path="/portfolios/healthcare" element={<Landing />} />
@@ -173,26 +162,21 @@ export default function App() {
         <Route path="/portfolios/healthcare/:practiceId/blog/:id" element={<HealthcareBlogPost />} />
         <Route path="/portfolios/healthcare/:practiceId/gallery" element={<HealthcareGallery />} />
         <Route path="/portfolios/healthcare/:practiceId/contact" element={<HealthcareContact />} />
-\       <Route path="/portfolios/healthcare/search" element={<HealthcareSearch />} />
+        \ <Route path="/portfolios/healthcare/search" element={<HealthcareSearch />} />
         <Route path="/portfolios/healthcare/auth/login" element={<HealthcareLogin />} />
         <Route path="/portfolios/healthcare/:practiceId/admin/dashboard" element={<HealthcareAdminDashboard />} />
-        <Route path="/editor/*" element={<OnlineEditor />} />          <Route path="/portfolios/cleaningService/:portfolioId/visitor-login" element={<VisitorLogin />} />
-<Route path="/portfolios/cleaningService/visitor-login" element={<VisitorLogin />} />
-
-<Route path="/portfolios/cleaningService/:portfolioId/visitor-signup" element={<VisitorSignup />} />
-<Route path="/portfolios/cleaningService/visitor-signup" element={<VisitorSignup />} />
-
-<Route path="/portfolios/cleaningService/:portfolioId/visitor-profile" element={<VisitorProfile />} />
-<Route path="/portfolios/cleaningService/visitor-profile" element={<VisitorProfile />} />
-<Route 
-  path="/portfolios/cleaningService/:portfolioId/visitors" 
-  element={<VisitorData />} 
-/>
+        <Route path="/editor/*" element={<OnlineEditor />} />{" "}
+        <Route path="/portfolios/cleaningService/:portfolioId/visitor-login" element={<VisitorLogin />} />
+        <Route path="/portfolios/cleaningService/visitor-login" element={<VisitorLogin />} />
+        <Route path="/portfolios/cleaningService/:portfolioId/visitor-signup" element={<VisitorSignup />} />
+        <Route path="/portfolios/cleaningService/visitor-signup" element={<VisitorSignup />} />
+        <Route path="/portfolios/cleaningService/:portfolioId/visitor-profile" element={<VisitorProfile />} />
+        <Route path="/portfolios/cleaningService/visitor-profile" element={<VisitorProfile />} />
+        <Route path="/portfolios/cleaningService/:portfolioId/visitors" element={<VisitorData />} />
+        <Route path="/testPage" element={<FullStackEditor />} />
       </Routes>
       <FloatingHelpButton />
-      {adminRequested && (
-        <Tip message="Request received! Our admin team will contact you shortly." />
-      )}
+      {adminRequested && <Tip message="Request received! Our admin team will contact you shortly." />}
       <Footer />
       <CookieConsent />
       <CookieSettings />
