@@ -11,7 +11,7 @@ import axios from "axios";
 import TicketingPage from "../pages/ticketing/TicketingPage";
 
 // mock axios globally
-vi.mock("axios");
+jest.mock("axios");
 
 // sample data (3 visible tickets)
 const sampleTickets = [
@@ -52,7 +52,7 @@ const sampleTickets = [
 
 describe("TicketingPage", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // 1. Basic rendering test
@@ -66,15 +66,11 @@ describe("TicketingPage", () => {
     expect(screen.getByText(/Loading…/i)).toBeInTheDocument();
 
     // Wait until tickets appear (loading gone)
-    await waitFor(() =>
-      expect(screen.queryByText(/Loading…/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByText(/Loading…/i)).not.toBeInTheDocument());
 
     // Header + Filter button
     expect(screen.getByText("Ticket Board")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Filter: On/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter: On/i })).toBeInTheDocument();
 
     // Should render 3 ticket cards
     const cards = screen.getAllByRole("article", { name: /Ticket card/i });
@@ -112,11 +108,7 @@ describe("TicketingPage", () => {
     axios.get.mockRejectedValueOnce(new Error("Network Error"));
     render(<TicketingPage />);
 
-    await waitFor(() =>
-      expect(
-        screen.getByText(/Failed to fetch tickets/i)
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText(/Failed to fetch tickets/i)).toBeInTheDocument());
   });
 
   // 3. Filter toggle behavior test
@@ -124,9 +116,7 @@ describe("TicketingPage", () => {
     axios.get.mockResolvedValueOnce({ data: sampleTickets });
     render(<TicketingPage />);
 
-    await waitFor(() =>
-      expect(screen.queryByText(/Loading…/i)).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByText(/Loading…/i)).not.toBeInTheDocument());
 
     const toggle = screen.getByRole("button", { name: /Filter: On/i });
     expect(toggle).toBeInTheDocument();

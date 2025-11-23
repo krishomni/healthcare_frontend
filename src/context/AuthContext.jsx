@@ -24,23 +24,6 @@ export function AuthProvider({ children }) {
   const backendUrl = import.meta.env.VITE_BACKEND_API;
   const queryClient = useQueryClient();
   const [pendingFile, setPendingFile] = useState(null);
-
-  //auto login attempt if token is present when loading into FindVirtual.me
-  // useEffect(() => {
-  //   if (!token) return;
-  //   if (token) {
-  //     axios
-  //       .get(`${backendUrl}/user/me`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       })
-  //       .then((res) => setUser(res.data.user))
-  //       .catch(() => {
-  //         setToken(null);
-  //         setUser(null);
-  //         localStorage.removeItem("token");
-  //       });
-  //   }
-  // }, [token]);
   useEffect(() => {
     if (!token) return;
     if (token) {
@@ -101,25 +84,6 @@ export function AuthProvider({ children }) {
       throw err;
     }
   };
-  // const login = async (email, password) => {
-  //   try {
-  //     const res = await axios.post(`${backendUrl}/user/login`, {
-  //       email,
-  //       password,
-  //     });
-  //     setUser((prev) => ({ ...prev, ...res.data.user }));
-  //     setToken(res.data.token);
-  //     localStorage.setItem("email", res.data.user.email); // ADD THIS LINE
-  //     localStorage.setItem("userId", res.data.user._id || res.data.user.id);
-  //     localStorage.setItem("token", res.data.token);
-  //     console.log("logged In");
-  //     toast.success("Logged In!");
-  //   } catch (err) {
-  //     toast.error("Login failed");
-  //     console.log("Login failed", err);
-  //     throw err;
-  //   }
-  // };
 
   const logout = () => {
     setUser(null);
@@ -151,6 +115,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         token,
         login,
         logout,

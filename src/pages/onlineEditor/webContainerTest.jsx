@@ -37,62 +37,65 @@ app.listen(3000, () => console.log('Server running on port 3000'));
   const [logs, setLogs] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const webContainerRef = useRef(null);
+  const processRef = useRef(null);
+  const installedRef = useRef(false);
 
   const addLog = (msg) => setLogs((prev) => [...prev, { time: new Date().toLocaleTimeString(), msg }]);
 
   const runProject = async () => {
     setLogs([]);
     setIsRunning(true);
-    addLog("Booting WebContainer...");
+    addLog("Starting...");
 
     try {
       let wc = webContainerRef.current;
 
+      // Boot only first time
       if (!wc) {
+        addLog("Booting WebContainer...");
         wc = await WebContainer.boot();
         webContainerRef.current = wc;
+
+        await wc.fs.writeFile(
+          "package.json",
+          JSON.stringify({ type: "module", dependencies: { express: "^4.18.2" } }, null, 2)
+        );
       }
 
-      addLog("WebContainer booted.");
-
-      // Write package.json
-      await wc.fs.writeFile(
-        "package.json",
-        JSON.stringify(
-          {
-            type: "module",
-            dependencies: { express: "^4.18.2" },
-          },
-          null,
-          2
-        )
-      );
-
-      // Write project files
+      // Write/update code files
       await wc.fs.writeFile("index.js", backendCode);
       await wc.fs.writeFile("index.html", frontendCode);
+      addLog("Files updated.");
 
-      addLog("Files written.");
+      // Install dependencies only once
+      if (!installedRef.current) {
+        addLog("Installing dependencies...");
+        const install = await wc.spawn("npm", ["install"]);
 
-      // Install
-      addLog("Installing dependencies...");
-      const install = await wc.spawn("npm", ["install"]);
+        install.output.pipeTo(
+          new WritableStream({
+            write(data) {
+              addLog(`[npm] ${data}`);
+            },
+          })
+        );
 
-      install.output.pipeTo(
-        new WritableStream({
-          write(data) {
-            addLog(`[npm] ${data}`);
-          },
-        })
-      );
+        await install.exit;
+        installedRef.current = true;
+        addLog("Dependencies installed.");
+      }
 
-      await install.exit;
+      // Stop old server if running
+      if (processRef.current) {
+        addLog("Stopping previous server...");
+        processRef.current.kill();
+        processRef.current = null;
+      }
 
-      addLog("Dependencies installed.");
-
-      // Run backend
+      // Start backend again
       addLog("Starting backend server...");
       const process = await wc.spawn("node", ["index.js"]);
+      processRef.current = process;
 
       process.output.pipeTo(
         new WritableStream({
@@ -102,16 +105,17 @@ app.listen(3000, () => console.log('Server running on port 3000'));
         })
       );
 
-      // Open server URL
       wc.on("server-ready", (port, url) => {
-        addLog(`Server running at ${url}`);
+        addLog(`Server running → ${url}`);
         setPreviewUrl(url);
       });
-      addLog("Preview ready!");
     } catch (err) {
       addLog("ERROR: " + err.message);
+    } finally {
+      setIsRunning(false);
     }
   };
+
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
