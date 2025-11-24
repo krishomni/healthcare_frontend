@@ -1,0 +1,39 @@
+    {
+    "projectManager": {
+        "portfolio": {
+        "title": "Sample PM Portfolio",
+        "role": "Project Manager",
+        "summary": "Sample PM portfolio created from fixture"
+        }
+    },
+    "vendor": {
+        "name": "Fixture Food Vendor",
+        "email": "vendor@example.com",
+        "phone": "123-456-7890",
+        "description": "My test vendor portfolio"
+    },
+    "handyman": {
+        "hero": {
+        "phoneNumber": "555-111-2222"
+        },
+        "contact": {
+        "phone": "555-111-2222",
+        "email": "handyman@example.com"
+        }
+    },
+    "cleaningService": {
+        "slug": "fixture-cleaning-service",
+        "templateType": "cleaning-service",
+        "businessName": "Fixture Cleaning Service",
+        "contactInfo": {
+        "phone": "555-999-0000",
+        "email": "cleaning@example.com"
+        },
+        "roomPricing": [
+        { "roomType": "bedroom", "price": 50 },
+        { "roomType": "kitchen", "price": 70 },
+        { "roomType": "bathroom", "price": 40 },
+        { "roomType": "livingRoom", "price": 60 }
+        ]
+    }
+    }

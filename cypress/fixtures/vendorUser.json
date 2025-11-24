@@ -1,0 +1,8 @@
+    {
+    "name": "Vendor User",
+    "username": "test_vendor",
+    "email": "vendor@example.com",
+    "password": "Password123!",
+    "goal": "grow-business",
+    "industry": "local-business"
+    }
