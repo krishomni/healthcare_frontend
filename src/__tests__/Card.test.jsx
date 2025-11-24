@@ -1,4 +1,4 @@
-/*import React from "react";
+import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Card from "../pages/ticketing/components/Card";
@@ -17,9 +17,9 @@ const baseTicket = {
 };
 
 function renderCard(overrides = {}, handlers = {}) {
-  const onEditStatus = handlers.onEditStatus || vi.fn();
-  const onDelete = handlers.onDelete || vi.fn();
-  const onAddReply = handlers.onAddReply || vi.fn();
+  const onEditStatus = handlers.onEditStatus || jest.fn();
+  const onDelete = handlers.onDelete || jest.fn();
+  const onAddReply = handlers.onAddReply || jest.fn();
 
   render(
     <Card
@@ -123,7 +123,7 @@ describe("Card", () => {
   });
 
   it("submits a reply via onAddReply and clears the input", async () => {
-    const onAddReply = vi.fn().mockResolvedValue(undefined);
+    const onAddReply = jest.fn().mockResolvedValue(undefined);
     renderCard({}, { onAddReply });
 
     const card = screen.getByRole("article", { name: /Ticket card/i });
@@ -141,8 +141,8 @@ describe("Card", () => {
   });
 
   it("calls onEditStatus and onDelete handlers", async () => {
-    const onEditStatus = vi.fn();
-    const onDelete = vi.fn();
+    const onEditStatus = jest.fn();
+    const onDelete = jest.fn();
     renderCard({}, { onEditStatus, onDelete });
 
     const card = screen.getByRole("article", { name: /Ticket card/i });
@@ -165,4 +165,3 @@ describe("Card", () => {
     expect(within(card).queryByPlaceholderText(/Write a reply/i)).not.toBeInTheDocument();
   });
 });
-*/

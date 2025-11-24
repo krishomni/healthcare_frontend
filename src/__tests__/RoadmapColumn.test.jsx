@@ -1,4 +1,4 @@
-/*import React from "react";
+import React from "react";
 import { render, screen } from "@testing-library/react";
 import RoadmapColumn from "../pages/ticketing/components/RoadmapColumn";
 
@@ -32,4 +32,3 @@ describe("RoadmapColumn", () => {
     expect(screen.queryByRole("article")).not.toBeInTheDocument();
   });
 });
-*/

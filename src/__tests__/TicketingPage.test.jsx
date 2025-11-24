@@ -1,17 +1,17 @@
-/**
+/*
  * @fileoverview Full test suite for TicketingPage.jsx
  * Tests:
  *  - Successful GET request renders tickets visibly
  *  - Handles loading & error state gracefully
  */
 
-/*import React from "react";
+import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import axios from "axios";
 import TicketingPage from "../pages/ticketing/TicketingPage";
 
 // mock axios globally
-vi.mock("axios");
+jest.mock("axios");
 
 // sample data (3 visible tickets)
 const sampleTickets = [
@@ -52,7 +52,7 @@ const sampleTickets = [
 
 describe("TicketingPage", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // 1. Basic rendering test
@@ -140,4 +140,3 @@ describe("TicketingPage", () => {
     expect(toggle).toHaveAttribute("aria-pressed", "false");
   });
 });
-*/
