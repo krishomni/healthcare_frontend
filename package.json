@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -55,6 +57,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "babel-jest": "^30.2.0",
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
+    "cypress": "^15.7.0",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

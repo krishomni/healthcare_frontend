@@ -60,7 +60,7 @@ const sampleProjects = [
 const HandymanShowcasePage = () => {
   const showcaseData = {
     hero: {
-      title: 'Trusted Handyman for Home Repairs & Maintenance',
+      title: 'Trusted Handyman for Home Repairs & Maintenance(CICD CHECK)',
       subtitle: 'Licensed, Insured, and Ready to Help. Call us today!',
       phoneNumber: '(123) 456-7890',
       imageUrl:

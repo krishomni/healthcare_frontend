@@ -40,7 +40,9 @@ describe("Card", () => {
     const card = screen.getByRole("article", { name: /Ticket card/i });
 
     // Ticket ID chip (tolerate whitespace)
-    expect(within(card).getByText(new RegExp(`Ticket ID\\s*:\\s*${baseTicket.ticketID}`, "i"))).toBeInTheDocument();
+    expect(
+      within(card).getByText(new RegExp(`Ticket ID\\s*:\\s*${baseTicket.ticketID}`, "i"))
+    ).toBeInTheDocument();
 
     // Request type
     expect(within(card).getByText(baseTicket.requestType)).toBeInTheDocument();
@@ -58,7 +60,9 @@ describe("Card", () => {
     // Details are hidden initially:
     // Use the heading that only exists inside the details panel,
     // not the button label "Description / Details"
-    expect(within(card).queryByRole("heading", { name: /^Description$/i })).not.toBeInTheDocument();
+    expect(
+      within(card).queryByRole("heading", { name: /^Description$/i })
+    ).not.toBeInTheDocument();
   });
 
   it("toggles details open and closed", async () => {
@@ -70,13 +74,17 @@ describe("Card", () => {
     // Open details
     await userEvent.click(toggle);
     // Now the inner details <h4> should exist
-    expect(within(card).getByRole("heading", { name: /^Description$/i })).toBeInTheDocument();
+    expect(
+      within(card).getByRole("heading", { name: /^Description$/i })
+    ).toBeInTheDocument();
     expect(within(card).getByText("Here are the details!")).toBeInTheDocument();
 
     // Close details
     const closeBtn = within(card).getByRole("button", { name: /Close/i });
     await userEvent.click(closeBtn);
-    expect(within(card).queryByRole("heading", { name: /^Description$/i })).not.toBeInTheDocument();
+    expect(
+      within(card).queryByRole("heading", { name: /^Description$/i })
+    ).not.toBeInTheDocument();
   });
 
   it("shows 'No replies yet' when none; lists replies when present", async () => {
@@ -84,7 +92,9 @@ describe("Card", () => {
     renderCard();
     const firstCard = screen.getAllByRole("article", { name: /Ticket card/i })[0];
 
-    await userEvent.click(within(firstCard).getByRole("button", { name: /Description \/ Details/i }));
+    await userEvent.click(
+      within(firstCard).getByRole("button", { name: /Description \/ Details/i })
+    );
     expect(within(firstCard).getByText(/No replies yet/i)).toBeInTheDocument();
 
     // Second render: with replies
@@ -93,10 +103,19 @@ describe("Card", () => {
       ticketID: "T00002",
       replies: ["First reply", "Second reply"],
     };
-    render(<Card ticket={repliesTicket} onEditStatus={() => {}} onDelete={() => {}} onAddReply={() => {}} />);
+    render(
+      <Card
+        ticket={repliesTicket}
+        onEditStatus={() => {}}
+        onDelete={() => {}}
+        onAddReply={() => {}}
+      />
+    );
 
     const secondCard = screen.getAllByRole("article", { name: /Ticket card/i })[1];
-    await userEvent.click(within(secondCard).getByRole("button", { name: /Description \/ Details/i }));
+    await userEvent.click(
+      within(secondCard).getByRole("button", { name: /Description \/ Details/i })
+    );
 
     expect(within(secondCard).queryByText(/No replies yet/i)).not.toBeInTheDocument();
     expect(within(secondCard).getByText("First reply")).toBeInTheDocument();
@@ -108,7 +127,9 @@ describe("Card", () => {
     renderCard({}, { onAddReply });
 
     const card = screen.getByRole("article", { name: /Ticket card/i });
-    await userEvent.click(within(card).getByRole("button", { name: /Description \/ Details/i }));
+    await userEvent.click(
+      within(card).getByRole("button", { name: /Description \/ Details/i })
+    );
 
     const textarea = within(card).getByPlaceholderText(/Write a reply/i);
     await userEvent.type(textarea, "Thanks for the report!");
@@ -137,7 +158,9 @@ describe("Card", () => {
     renderCard({ status: "Completed" });
 
     const card = screen.getByRole("article", { name: /Ticket card/i });
-    await userEvent.click(within(card).getByRole("button", { name: /Description \/ Details/i }));
+    await userEvent.click(
+      within(card).getByRole("button", { name: /Description \/ Details/i })
+    );
 
     expect(within(card).queryByPlaceholderText(/Write a reply/i)).not.toBeInTheDocument();
   });
