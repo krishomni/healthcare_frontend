@@ -127,6 +127,85 @@ describe("AuthContext", () => {
     expect(contextValue.user.email).toBe("updated@test.com");
     expect(toast.success).toHaveBeenCalledWith("user refreshed");
   });
+
+  test("contextLogin sets contextLoggedIn to true", async () => {
+    let contextValue;
+
+    render(
+      <AuthProvider>
+        <TestConsumer callback={(v) => (contextValue = v)} />
+      </AuthProvider>
+    );
+
+    contextValue.contextLogin();
+
+    await waitFor(() => {
+      expect(contextValue.contextLoggedIn).toBe(true);
+    });
+  });
+
+  test("contextLogout clears old deprecated login state", async () => {
+    localStorage.setItem("token", "abc");
+
+    let contextValue;
+
+    render(
+      <AuthProvider>
+        <TestConsumer callback={(v) => (contextValue = v)} />
+      </AuthProvider>
+    );
+
+    contextValue.contextLogout();
+
+    await waitFor(() => {
+      expect(contextValue.contextLoggedIn).toBe(false);
+    });
+
+    expect(localStorage.getItem("token")).toBe(null);
+    expect(toast.success).toHaveBeenCalledWith("Logged Out!");
+  });
+
+  test("does not call axios.get when token does not exist", () => {
+    localStorage.clear(); // no token
+
+    render(
+      <AuthProvider>
+        <TestConsumer callback={() => {}} />
+      </AuthProvider>
+    );
+
+    expect(axios.get).not.toHaveBeenCalled();
+  });
+
+  test("pendingFile is null by default", () => {
+    let contextValue;
+
+    render(
+      <AuthProvider>
+        <TestConsumer callback={(v) => (contextValue = v)} />
+      </AuthProvider>
+    );
+
+    expect(contextValue.pendingFile).toBe(null);
+  });
+
+  test("refreshUser handles error correctly", async () => {
+    localStorage.setItem("token", "err123");
+
+    axios.get.mockRejectedValue(new Error("bad"));
+
+    let contextValue;
+    render(
+      <AuthProvider>
+        <TestConsumer callback={(v) => (contextValue = v)} />
+      </AuthProvider>
+    );
+
+    await contextValue.refreshUser();
+
+    expect(contextValue.user).toBe(null);
+    expect(toast.error).toHaveBeenCalledWith("error refreshing user");
+  });
 });
 
 // Helper: wraps async calls the same way React Testing Library expects

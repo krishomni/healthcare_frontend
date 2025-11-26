@@ -14,8 +14,7 @@ const Auth = ({ onClose }) => {
   const [focusedField, setFocusedField] = useState(null);
   const { login, logout, user } = useContext(AuthContext);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +41,7 @@ const Auth = ({ onClose }) => {
 
   return (
     <div
+      data-testid="backdrop"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 min-h-screen"
       style={{ backdropFilter: "blur(2px)" }}
       onClick={onClose}
@@ -62,15 +62,12 @@ const Auth = ({ onClose }) => {
             <span className="text-white text-lg font-bold">FV</span>
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-slate-800 mb-2 text-center">
-          Welcome
-        </h1>
-        <p className="text-center text-slate-600 mb-8">
-          {user ? "Hello" : "Sign in to manage your portfolio"}
-        </p>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2 text-center">Welcome</h1>
+        <p className="text-center text-slate-600 mb-8">{user ? "Hello" : "Sign in to manage your portfolio"}</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="relative">
             <label
+              htmlFor="email"
               className={`absolute left-4 text-sm transition-all duration-300 ${
                 focusedField === "email" || form.email
                   ? "transform -translate-y-5 text-blue-600 text-xs"
@@ -80,6 +77,7 @@ const Auth = ({ onClose }) => {
               Email
             </label>
             <input
+              id="email"
               name="email"
               type="email"
               value={form.email}
@@ -94,6 +92,7 @@ const Auth = ({ onClose }) => {
 
           <div className="relative">
             <label
+              htmlFor="password"
               className={`absolute left-4 text-sm transition-all duration-300 ${
                 focusedField === "password" || form.password
                   ? "transform -translate-y-5 text-blue-600 text-xs"
@@ -103,6 +102,7 @@ const Auth = ({ onClose }) => {
               Password
             </label>
             <input
+              id="password"
               name="password"
               type="password"
               value={form.password}
@@ -115,18 +115,14 @@ const Auth = ({ onClose }) => {
             />
           </div>
 
-          {error && (
-            <div className="text-red-500 text-sm text-center py-1">{error}</div>
-          )}
+          {error && <div className="text-red-500 text-sm text-center py-1">{error}</div>}
 
           <button
             type="submit"
             className="relative w-full px-6 py-4 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl font-semibold hover:from-slate-600 hover:to-slate-800 transition-all duration-300 shadow-lg shadow-blue-900/30 overflow-hidden group"
             disabled={loading}
           >
-            <span className="relative z-10">
-              {loading ? "Processing..." : "Sign In"}
-            </span>
+            <span className="relative z-10">{loading ? "Processing..." : "Sign In"}</span>
             <span className="absolute inset-0 w-1/3 h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
           </button>
 

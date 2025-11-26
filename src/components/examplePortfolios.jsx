@@ -45,10 +45,11 @@ export default function ExamplePortfolios() {
       location: "/portfolios/healthcare",
     },
 
-     {
+    {
       title: "Cleaner/Local Cleaning Services",
       summary: "Portfolio showcasing Cleaning services",
-            location: "/portfolios/cleaningService/about"    },
+      location: "/portfolios/cleaningService/about",
+    },
   ];
 
   const navigate = useNavigate();
@@ -61,16 +62,21 @@ export default function ExamplePortfolios() {
   if (location.state?.from === "about") {
     displayPortfolios = portfolios.slice(0, 3);
   } else if (location.state?.from === "occupations") {
-    displayPortfolios = portfolios.slice(-4);
+    displayPortfolios = portfolios.filter((p) =>
+      [
+        "Local Food Vendor",
+        "Handyman/Local Repair Services",
+        "Healthcare Professional",
+        "Cleaner/Local Cleaning Services",
+      ].includes(p.title)
+    );
   }
 
   return (
     <>
       <main className="min-h-screen bg-slate-50 pt-24 px-4">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-8 text-slate-800">
-            Portfolios
-          </h2>
+          <h2 className="text-2xl font-semibold mb-8 text-slate-800">Portfolios</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {displayPortfolios.map((p, i) => (
               <div
@@ -79,9 +85,7 @@ export default function ExamplePortfolios() {
                 onClick={() => handleCardClick(p)}
               >
                 {/* PortfolioCard content here */}
-                <div className="font-semibold text-slate-800 mb-2">
-                  {p.title}
-                </div>
+                <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
                 <div className="text-slate-600">{p.summary}</div>
               </div>
             ))}
