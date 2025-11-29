@@ -33,11 +33,12 @@ export function AuthProvider({ children }) {
         })
         .then((res) => {
           setUser(res.data.user);
+          console.log("res.data in auth context: ", res.data);
 
           // ✅ ADD THIS CODE:
           if (res.data.portfolioIds) {
             localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
-            console.log("📁 Stored portfolio IDs (from getMe):", res.data.portfolioIds);
+            console.log("📁 Stored portfolio IDs (from getMe useEffect()):", res.data.portfolioIds);
           }
         })
         .catch(() => {
@@ -71,7 +72,7 @@ export function AuthProvider({ children }) {
       // STORE PORTFOLIO IDs - ADD THESE LINES
       if (res.data.portfolioIds) {
         localStorage.setItem("userPortfolios", JSON.stringify(res.data.portfolioIds));
-        console.log("📁 Stored portfolio IDs:", res.data.portfolioIds);
+        console.log("📁 Stored portfolio IDs (from login()):", res.data.portfolioIds);
       } else {
         console.log("⚠️ No portfolioIds received from backend");
       }
