@@ -1,8 +1,8 @@
     import React from "react";
     import { render, screen, fireEvent } from "@testing-library/react";
     import { MemoryRouter } from "react-router-dom";
-    import Navbar from "../../components/Navbar";
-    import { AuthContext } from "../../context/AuthContext";
+    import Navbar from "../components/Navbar";
+    import { AuthContext } from "../context/AuthContext";
 
     const mockNavigate = jest.fn();
 
@@ -17,13 +17,13 @@
     });
 
     // Mock Auth and SignUp so we don't pull in their full logic
-    jest.mock("../../pages/login/Auth.jsx", () => (props) => (
+    jest.mock("../pages/login/Auth.jsx", () => (props) => (
     <div data-testid="auth-modal" onClick={props.onSignUpClick}>
         Auth Component
     </div>
     ));
 
-    jest.mock("../../pages/login/SignUp.jsx", () => (props) => (
+    jest.mock("../pages/login/SignUp.jsx", () => (props) => (
     <div data-testid="signup-modal" onClick={props.onLoginClick}>
         SignUp Component
     </div>

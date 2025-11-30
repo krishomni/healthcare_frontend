@@ -1,10 +1,10 @@
     import React from "react";
     import { render, screen, fireEvent } from "@testing-library/react";
     import { MemoryRouter } from "react-router-dom";
-    import CTAbutton from "../../components/CTAbutton";
-    import Tip from "../../components/Tip";
-    import CookieConsent from "../../components/CookieConsent";
-    import FloatingHelpButton from "../../components/FloatingHelpButton";
+    import CTAbutton from "../components/CTAbutton";
+    import Tip from "../components/Tip";
+    import CookieConsent from "../components/CookieConsent";
+    import FloatingHelpButton from "../components/FloatingHelpButton";
 
     const mockNavigate = jest.fn();
 
