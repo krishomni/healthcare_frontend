@@ -1,4 +1,4 @@
-    import axiosAuth from "../../utils/axiosAuth";
+    import axiosAuth from "../utils/axiosAuth";
 
     describe("axiosAuth helper", () => {
     afterEach(() => {

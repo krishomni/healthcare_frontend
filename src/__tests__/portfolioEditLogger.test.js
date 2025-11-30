@@ -5,7 +5,7 @@
     logPortfolioAction,
     getSessionId,
     updatePortfolioInfo,
-    } from "../../utils/portfolioEditLogger";
+    } from "../utils/portfolioEditLogger";
 
     jest.mock("axios");
 
@@ -58,7 +58,7 @@
 
     // Re-require the module AFTER resetModules
     // eslint-disable-next-line global-require
-    const { getSessionId } = require("../../utils/portfolioEditLogger");
+    const { getSessionId } = require("../utils/portfolioEditLogger");
 
     // 1) When onboardingSessionId exists in localStorage
     localStorage.setItem("onboardingSessionId", "stored-session");
