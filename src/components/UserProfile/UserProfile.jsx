@@ -17,8 +17,10 @@ import ManageBillingComponent from "./ManageBillingComponent";
 import { AuthContext } from "../../context/AuthContext";
 import axiosAuth from "../../utils/axiosAuth";
 import { useNavigate } from "react-router-dom";
+import { useHandleCardClick } from "../../utils/useHandleCardClick";
 
 export default function UserProfile() {
+  const { handleCardClick } = useHandleCardClick();
   const apiUrl = import.meta.env.VITE_BACKEND_API || "http://localhost:5000";
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -118,12 +120,6 @@ export default function UserProfile() {
             setCurrentTab={setCurrentTab}
           />
           <SidebarItem
-            icon={<PanelsTopLeft className="w-5, h-5" />}
-            label="Portfolios"
-            currentTab={currentTab}
-            setCurrentTab={setCurrentTab}
-          />
-          <SidebarItem
             icon={<Settings className="w-5 h-5" />}
             label="Account Settings"
             currentTab={currentTab}
@@ -161,7 +157,6 @@ export default function UserProfile() {
           </button>
         </div>
       </aside>
-
       {/* Main Content */}
       {currentTab === "Profile Information" && (
         <main className="flex-1 flex justify-center items-start py-12 px-4 md:px-12 bg-gray-50">
@@ -255,10 +250,6 @@ export default function UserProfile() {
           </section>
         </main>
       )}
-
-      {/* Portfolios */}
-      {currentTab === "Portfolios" && <div className="pt-16">Portfolios tab</div>}
-
       {/* Account Settings */}
       {currentTab === "Account Settings" && (
         <main className="flex-1 flex justify-center items-start py-12 px-4 md:px-12 bg-gray-50">
@@ -301,7 +292,6 @@ export default function UserProfile() {
           </section>
         </main>
       )}
-
       {/* Billing */}
       {currentTab === "Billing" && <ManageBillingComponent />}
     </div>

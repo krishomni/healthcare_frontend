@@ -4,8 +4,11 @@ import { useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { useHandleCardClick } from "../utils/useHandleCardClick";
+import axiosAuth from "../utils/axiosAuth.js";
 
 export default function Dashboard() {
+  const { handleCardClick } = useHandleCardClick();
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_API;
   const { contextLoggedIn, user, token } = useContext(AuthContext);
@@ -27,10 +30,10 @@ export default function Dashboard() {
   useEffect(() => {
     fetchPortfolios();
     fetchPublicProjects();
-    if (contextLoggedIn && token) {
+    if (user) {
       fetchProjects();
     }
-  }, [contextLoggedIn, loggedInEmail, loggedInId, token]);
+  }, [user, token]);
 
   // read owner email from common places; if handyman lacks email but userId==me → it's mine
   const ownerEmail = (obj, type) => {
@@ -58,37 +61,34 @@ export default function Dashboard() {
 
   const fetchPortfolios = async () => {
     try {
-      // regular portfolios
-      const res = await axios.get(`${backendUrl}/api/portfolios/all-portfolios?t=${Date.now()}`);
-
-      const allPortfolios = Array.isArray(res.data) ? res.data : [];
-
-      const regular = (Array.isArray(res.data) ? res.data : [])
-        .filter((p) => !p.templateType || p.templateType !== "cleaning-service")
-        .map((p) => toCard(p, "general"));
-      // handyman portfolios
-      const h = await axios.get(`${backendUrl}/api/handyman-template`);
-      const handyman = (Array.isArray(h.data) ? h.data : []).map((d) => toCard(d, "handyman"));
-      // cleaning service portfolios
-      const cleaningLady = allPortfolios
-        .filter((p) => p.templateType === "cleaning-service")
-        .map((p) => toCard(p, "cleaningLady"));
-
-      // vendor portfolios
-      const v = await axios.get(`${backendUrl}/vendor`);
-      const vendors = (Array.isArray(v.data) ? v.data : []).map((d) => toCard(d, "vendor"));
-      const all = [...regular, ...handyman, ...vendors, ...cleaningLady];
-
-      const mine = all.filter((p) => p.email && p.email.toLowerCase() === loggedInEmail);
-      const others = all.filter((p) => !p.email || p.email.toLowerCase() !== loggedInEmail);
-
-      if (mine.length === 0 && others.length === 0) toast.info("No portfolios found");
-
-      setMyPortfolios(mine);
-      setOtherPortfolios(others);
+      //get public portfolios
+      fetchPublicPotfolios();
+      //get your own portfolios if signed in
+      if (user) {
+        fetchMyPortfolios();
+      }
     } catch (err) {
       toast.error("Error fetching portfolios");
       console.error(err);
+    }
+  };
+
+  const fetchPublicPotfolios = async () => {
+    const pubPortfs = await axiosAuth.get("/publicPortfolios/public");
+    setOtherPortfolios(pubPortfs.data.portfolios);
+  };
+
+  const fetchMyPortfolios = async () => {
+    if (!user) return;
+    try {
+      const promises = user.portfolios.map(({ portfolioId, portfolioType }) =>
+        axiosAuth.get(`/publicPortfolios/${portfolioType}/${portfolioId}`).then((res) => res.data)
+      );
+
+      const fullPortfolios = await Promise.all(promises);
+      setMyPortfolios(fullPortfolios);
+    } catch (err) {
+      console.error("Error fetching full portfolios:", err);
     }
   };
 
@@ -115,13 +115,32 @@ export default function Dashboard() {
       if (res.data.success) {
         const projects = Array.isArray(res.data.projects) ? res.data.projects : [];
         setPublicProjects(projects);
-        console.log("public projc:::::::::", projects);
       } else {
         toast.error("Problem fetching Public Projects");
       }
     } catch (error) {
       toast.error("Error fetching public projects");
-      console.error(err);
+      console.error(error);
+    }
+  };
+
+  const togglePublic = async (portfolio) => {
+    try {
+      const res = await axiosAuth.patch(`/publicPortfolios/${portfolio._id}/toggle-public`);
+
+      if (res.data?.success) {
+        toast.success("Toggled Public Setting");
+
+        setMyPortfolios((prev) =>
+          prev.map((p) => (p._id === portfolio._id ? { ...p, isPublic: res.data.portfolio.isPublic } : p))
+        );
+        fetchPublicPotfolios();
+      } else {
+        toast.error("Could not toggle public");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error toggling public setting");
     }
   };
 
@@ -154,26 +173,8 @@ export default function Dashboard() {
       newWindow.onload = () => URL.revokeObjectURL(url);
     }
   };
-  useEffect(() => {
-    console.log("public projects: ", publicProjects);
-    console.log("my Projects", myProjects);
-  }, [publicProjects, myProjects]);
 
   const handleAddPortfolio = () => navigate("/resume");
-
-  const handleCardClick = (p) => {
-    if (p.type === "handyman") {
-      navigate(`/portfolios/handyman/${p._id}`);
-    } else if (p.type === "cleaningLady") {
-      navigate(`/portfolios/cleaningService/${p._id}/about`);
-    } else if (p.type === "vendor") {
-      const username = (p.name || p.email || "vendor").toLowerCase().replace(/\s+/g, "-");
-      navigate(`/portfolios/vendor/${username}/${p._id}`);
-    } else {
-      const username = (p.email || "").split("@")[0];
-      navigate(`/portfolios/project-manager/${username}/${p._id}`);
-    }
-  };
 
   const handleProjectClick = (projectId) => {
     navigate(`/editor?project=${projectId}`);
@@ -208,17 +209,33 @@ export default function Dashboard() {
       <main className="min-h-screen bg-slate-50 pt-24 px-4">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* My Portfolios */}
-          {contextLoggedIn && (
+          {user && (
             <section>
               <h2 className="text-2xl font-semibold mb-6 text-slate-800">My Portfolios</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
                 {myPortfolios.map((p) => (
                   <div
                     key={p._id}
-                    className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
+                    className="bg-white rounded-xl shadow-md p-6 cursor-pointer relative"
                     onClick={() => handleCardClick(p)}
                   >
-                    <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent card click
+                        togglePublic(p);
+                      }}
+                      className={`absolute top-3 right-3 w-16 h-6 rounded-full cursor-pointer transition-colors duration-300 flex items-center
+      ${Boolean(p.isPublic) ? "bg-blue-600" : "bg-gray-300"}`}
+                    >
+                      <div
+                        className={`absolute w-3/4 py-1 flex items-center justify-center rounded-full bg-gray-900 text-white text-xs font-medium transition-transform duration-300 border border-gray-600
+        ${Boolean(p.isPublic) ? "translate-x-[16px]" : "translate-x-0"}`}
+                      >
+                        {Boolean(p.isPublic) ? "public" : "private"}
+                      </div>
+                    </div>
+
+                    <div className="mt-8 font-semibold text-slate-800 mb-2">{p.title}</div>
                     <div className="text-slate-600">{p.name}</div>
                   </div>
                 ))}
@@ -235,7 +252,7 @@ export default function Dashboard() {
           )}
 
           {/* My Projects */}
-          {contextLoggedIn && (
+          {user && (
             <section>
               <h2 className="text-2xl font-semibold mb-6 text-slate-800">My Projects</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
@@ -295,18 +312,18 @@ export default function Dashboard() {
             <section>
               <h2 className="text-2xl font-semibold mb-6 text-slate-800">Public Portfolios</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-6">
-                {otherPortfolios
-                  .filter((p) => p.title && p.name)
-                  .map((p) => (
-                    <div
-                      key={p._id}
-                      className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
-                      onClick={() => handleCardClick(p)}
-                    >
-                      <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
-                      <div className="text-slate-600">{p.name}</div>
-                    </div>
-                  ))}
+                {otherPortfolios.map((p) => (
+                  <div
+                    key={p._id}
+                    className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
+                    onClick={() => handleCardClick(p)}
+                  >
+                    <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
+                    <div className="font-semibold text-slate-800 mb-2">{p.portfolioTitle}</div>
+                    <div className="text-slate-600">{p.name}</div>
+                    <div className="text-slate-600">{p._id}</div>
+                  </div>
+                ))}
               </div>
             </section>
           ) : (
