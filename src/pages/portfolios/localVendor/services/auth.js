@@ -7,8 +7,8 @@ import { AuthContext } from "../../../../context/AuthContext";
  *  - an admin (user.role === "admin"), OR
  *  - the portfolio ID exists in user.portfolios.
  */
-export const canEditPortfolio = (vendorId) => {
-  const { user } = useContext(AuthContext);
+export const canEditPortfolio = (user, vendorId) => {
+  //const { user } = useContext(AuthContext);
 
   if (!user) return false;
 

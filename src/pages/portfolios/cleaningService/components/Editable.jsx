@@ -1,18 +1,16 @@
+import React, { useState, useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-
-import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../context/AuthContext';
-
-const Editable = ({ 
-  type, 
-  value, 
-  onChange, 
+const Editable = ({
+  type,
+  value,
+  onChange,
   field,
-  options = [], 
-  tag: Tag = 'div', 
-  className = '',
+  options = [],
+  tag: Tag = "div",
+  className = "",
   asBackground = false,
-  isExample = false
+  isExample = false,
 }) => {
   const { isAdmin } = useContext(AuthContext);
   const [editing, setEditing] = useState(false);
@@ -20,12 +18,12 @@ const Editable = ({
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  console.log('🔍 Editable component:', { 
-    type, 
-    isAdmin, 
-    isExample,
-    value: value?.substring(0, 50) 
-  });
+  // console.log('🔍 Editable component:', {
+  //   type,
+  //   isAdmin,
+  //   isExample,
+  //   value: value?.substring(0, 50)
+  // });
 
   // Update tempValue when value prop changes
   useEffect(() => {
@@ -34,18 +32,18 @@ const Editable = ({
   }, [value]);
 
   const backendUrl = import.meta.env.VITE_BACKEND_API;
-  
+
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
 
     const response = await fetch(`${backendUrl}/upload/image`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
     });
 
     if (!response.ok) {
-      throw new Error('Failed to upload image');
+      throw new Error("Failed to upload image");
     }
 
     const data = await response.json();
@@ -55,49 +53,52 @@ const Editable = ({
   const handleSave = async () => {
     try {
       setUploading(true);
-      
+
       let finalValue = tempValue;
-      
+
       // Handle image upload
-      if (type === 'image' && previewUrl) {
+      if (type === "image" && previewUrl) {
         const fileInput = document.querySelector(`input[type="file"][data-editing="true"]`);
         const file = fileInput?.files?.[0];
-        
+
         if (file) {
           const cloudinaryUrl = await uploadToCloudinary(file);
           finalValue = cloudinaryUrl;
         }
       }
-      
+
       // Save to backend
-      const token = localStorage.getItem('token');
-      const fieldName = className.includes('tagline1') ? 'tagline1' 
-                      : className.includes('tagline2') ? 'tagline2'
-                      : className.includes('tagline3') ? 'tagline3'
-                      : className.includes('businessName') ? 'businessName'
-                      : 'content';
-      
+      const token = localStorage.getItem("token");
+      const fieldName = className.includes("tagline1")
+        ? "tagline1"
+        : className.includes("tagline2")
+        ? "tagline2"
+        : className.includes("tagline3")
+        ? "tagline3"
+        : className.includes("businessName")
+        ? "businessName"
+        : "content";
+
       await fetch(`${backendUrl}/api/portfolios/my-portfolio`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          [fieldName]: finalValue
-        })
+          [fieldName]: finalValue,
+        }),
       });
-      
+
       // Update local state
       onChange(finalValue);
       setEditing(false);
       setPreviewUrl(null);
-      
-      alert('✅ Saved successfully!');
-      
+
+      alert("✅ Saved successfully!");
     } catch (error) {
-      console.error('Error saving:', error);
-      alert('Failed to save. Please try again.');
+      console.error("Error saving:", error);
+      alert("Failed to save. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -107,17 +108,17 @@ const Editable = ({
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+      if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image file");
         return;
       }
-      
+
       // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        alert("File size must be less than 5MB");
         return;
       }
-      
+
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       setTempValue(url);
@@ -127,7 +128,7 @@ const Editable = ({
   // Cleanup preview URL when component unmounts or editing changes
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -138,20 +139,21 @@ const Editable = ({
 
   if (!canEdit) {
     // Not admin or is example: just show the value
-    if (type === 'text') return <Tag className={className}>{value}</Tag>;
-    if (type === 'image') {
+    if (type === "text") return <Tag className={className}>{value}</Tag>;
+    if (type === "image") {
       return asBackground ? null : (
-        <img 
-          src={value} 
-          alt="" 
+        <img
+          src={value}
+          alt=""
           className={className}
           onError={(e) => {
-            e.target.src = "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
+            e.target.src =
+              "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
           }}
         />
       );
     }
-    if (type === 'layout') return null;
+    if (type === "layout") return null;
     return null;
   }
 
@@ -160,38 +162,43 @@ const Editable = ({
     <div className="editable relative">
       {editing ? (
         <div className={asBackground ? "bg-white p-3 rounded-lg shadow-lg min-w-64 z-50 relative" : "admin-controls"}>
-          {type === 'text' && (
+          {type === "text" && (
             <textarea
               className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-300 focus:outline-none resize-none"
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
-              rows={Math.min(3, (tempValue || '').split('\n').length || 1)}
+              rows={Math.min(3, (tempValue || "").split("\n").length || 1)}
               disabled={uploading}
             />
           )}
-          
-          {type === 'image' && (
+
+          {type === "image" && (
             <div className="space-y-3">
-              <img 
-                src={previewUrl || tempValue} 
-                alt="" 
-                className={asBackground ? "w-20 h-20 object-cover rounded border border-gray-200" : "w-28 h-28 object-cover rounded border border-gray-200"}
+              <img
+                src={previewUrl || tempValue}
+                alt=""
+                className={
+                  asBackground
+                    ? "w-20 h-20 object-cover rounded border border-gray-200"
+                    : "w-28 h-28 object-cover rounded border border-gray-200"
+                }
                 onError={(e) => {
-                  e.target.src = "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
+                  e.target.src =
+                    "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
                 }}
               />
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
-                className={`block w-full ${asBackground ? 'text-xs' : 'text-sm'}`}
+                className={`block w-full ${asBackground ? "text-xs" : "text-sm"}`}
                 disabled={uploading}
                 data-editing="true"
               />
               <input
                 type="url"
                 placeholder="Or paste image URL"
-                value={previewUrl ? '' : tempValue}
+                value={previewUrl ? "" : tempValue}
                 onChange={(e) => {
                   setTempValue(e.target.value);
                   if (previewUrl) {
@@ -199,13 +206,15 @@ const Editable = ({
                     setPreviewUrl(null);
                   }
                 }}
-                className={`w-full px-2 py-1 border border-gray-300 rounded ${asBackground ? 'text-xs' : 'text-sm'} focus:ring-1 focus:ring-blue-300 focus:outline-none`}
+                className={`w-full px-2 py-1 border border-gray-300 rounded ${
+                  asBackground ? "text-xs" : "text-sm"
+                } focus:ring-1 focus:ring-blue-300 focus:outline-none`}
                 disabled={uploading}
               />
             </div>
           )}
-          
-          {type === 'layout' && (
+
+          {type === "layout" && (
             <select
               className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-300 focus:outline-none"
               value={tempValue}
@@ -220,19 +229,20 @@ const Editable = ({
             </select>
           )}
 
-          <div className={`flex gap-${asBackground ? '2' : '3'} mt-${asBackground ? '3' : '4'}`}>
+          <div className={`flex gap-${asBackground ? "2" : "3"} mt-${asBackground ? "3" : "4"}`}>
             <button
               onClick={handleSave}
               disabled={uploading}
-              className={asBackground 
-                ? `px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1`
-                : `admin-button disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1`
+              className={
+                asBackground
+                  ? `px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1`
+                  : `admin-button disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1`
               }
             >
               {uploading && (
                 <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {uploading ? 'Uploading...' : 'Save'}
+              {uploading ? "Uploading..." : "Save"}
             </button>
             <button
               onClick={() => {
@@ -244,9 +254,10 @@ const Editable = ({
                 setEditing(false);
               }}
               disabled={uploading}
-              className={asBackground 
-                ? "px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                : "admin-button-secondary disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className={
+                asBackground
+                  ? "px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  : "admin-button-secondary disabled:bg-gray-400 disabled:cursor-not-allowed"
               }
             >
               Cancel
@@ -255,7 +266,7 @@ const Editable = ({
         </div>
       ) : (
         <div className="group relative">
-          {type === 'text' && (
+          {type === "text" && (
             <div className="inline-block">
               <Tag className={className}>{value}</Tag>
               <button
@@ -266,16 +277,17 @@ const Editable = ({
               </button>
             </div>
           )}
-          
-          {type === 'image' && (
+
+          {type === "image" && (
             <div className="relative">
               {!asBackground && (
-                <img 
-                  src={value} 
-                  alt="" 
+                <img
+                  src={value}
+                  alt=""
                   className={className}
                   onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
+                    e.target.src =
+                      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?auto=format&fit=crop&w=800&q=80";
                   }}
                 />
               )}
@@ -284,17 +296,18 @@ const Editable = ({
                   e.stopPropagation();
                   setEditing(true);
                 }}
-                className={asBackground 
-                  ? `${className} opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-black text-white px-3 py-1 rounded hover:bg-gray-800`
-                  : "absolute top-2 left-2 text-xs bg-black text-white px-3 py-1 rounded hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                className={
+                  asBackground
+                    ? `${className} opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-black text-white px-3 py-1 rounded hover:bg-gray-800`
+                    : "absolute top-2 left-2 text-xs bg-black text-white px-3 py-1 rounded hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
                 }
               >
-                {asBackground ? 'Edit Image' : 'Edit'}
+                {asBackground ? "Edit Image" : "Edit"}
               </button>
             </div>
           )}
 
-          {type === 'layout' && (
+          {type === "layout" && (
             <div className="p-3 bg-gray-50 rounded-md flex flex-col items-center text-center">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-700">Layout:</span>

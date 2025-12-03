@@ -11,7 +11,7 @@ export default function Dashboard() {
   const { handleCardClick } = useHandleCardClick();
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_API;
-  const { contextLoggedIn, user, token } = useContext(AuthContext);
+  const { user, token, refreshUser } = useContext(AuthContext);
 
   const [myPortfolios, setMyPortfolios] = useState([]);
   const [otherPortfolios, setOtherPortfolios] = useState([]);
@@ -76,6 +76,7 @@ export default function Dashboard() {
   const fetchPublicPotfolios = async () => {
     const pubPortfs = await axiosAuth.get("/publicPortfolios/public");
     setOtherPortfolios(pubPortfs.data.portfolios);
+    console.log("ohter portfolios+++++++++: ", otherPortfolios);
   };
 
   const fetchMyPortfolios = async () => {
@@ -86,6 +87,7 @@ export default function Dashboard() {
       );
 
       const fullPortfolios = await Promise.all(promises);
+      console.log("full portfolios 21412412412412412: ", fullPortfolios);
       setMyPortfolios(fullPortfolios);
     } catch (err) {
       console.error("Error fetching full portfolios:", err);
@@ -176,6 +178,25 @@ export default function Dashboard() {
 
   const handleAddPortfolio = () => navigate("/resume");
 
+  const handleDeletePortfolio = async (portfolioId) => {
+    try {
+      const res = await axiosAuth.delete(`/publicPortfolios/${portfolioId}`);
+
+      const { data } = res;
+
+      if (data.success) {
+        toast.success(`Deleted portfolio: ${data.portfolio._id}`);
+        console.log("Successfully deleted portfolio", data);
+        refreshUser();
+      } else {
+        toast.error(data.message || "Could not delete portfolio");
+      }
+    } catch (error) {
+      toast.error("There was an error deleting portfolio");
+      console.error(error);
+    }
+  };
+
   const handleProjectClick = (projectId) => {
     navigate(`/editor?project=${projectId}`);
   };
@@ -235,8 +256,21 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="mt-8 font-semibold text-slate-800 mb-2">{p.title}</div>
-                    <div className="text-slate-600">{p.name}</div>
+                    <div className="mt-8 font-semibold text-slate-800 mb-2">
+                      {user.portfolios.find((portfolio) => p._id === portfolio.portfolioId)?.portfolioType || "Unknown"}
+                    </div>
+
+                    <div className="text-slate-600">{p._id}</div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent card click
+                        handleDeletePortfolio(p._id);
+                      }}
+                      className="mt-4 px-4 py-2 rounded bg-gray-400 text-white hover:bg-red-500 transition-colors duration-300"
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))}
 
@@ -318,9 +352,13 @@ export default function Dashboard() {
                     className="bg-white rounded-xl shadow-md p-6 cursor-pointer"
                     onClick={() => handleCardClick(p)}
                   >
+                    {/* portfolioType for future use */}
+                    <div className="font-semibold text-slate-800 mb-2">{p.portfolioType}</div>
                     <div className="font-semibold text-slate-800 mb-2">{p.title}</div>
                     <div className="font-semibold text-slate-800 mb-2">{p.portfolioTitle}</div>
+                    <div className="font-semibold text-slate-800 mb-2">{p.businessName}</div>
                     <div className="text-slate-600">{p.name}</div>
+                    <div className="text-slate-600">{p.email}</div>
                     <div className="text-slate-600">{p._id}</div>
                   </div>
                 ))}
