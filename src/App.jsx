@@ -79,7 +79,14 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard onRequestAdmin={handleRequestAdmin} />} />
         <Route path={"/signup"} element={<SignUp />} />
         <Route path="/occupations" element={<Occupations />} />
-        <Route path="/resume" element={<ResumeUpload />} />
+        <Route
+          path="/resume"
+          element={
+            <VendorProvider>
+              <ResumeUpload />
+            </VendorProvider>
+          }
+        />
         <Route path="/portfolios" element={<ExamplePortfolios />} />
         <Route path="/portfolios/project-manager/:username/:id" element={<PortfolioPage />} />
         <Route path="/portfolios/software-engineer" />
